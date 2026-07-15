@@ -809,6 +809,11 @@
         window.pywebview.api.save_data(payload); return;
       }
     }catch(e){}
+    try{
+      if(window.AndroidBridge && window.AndroidBridge.saveData){
+        window.AndroidBridge.saveData(payload); return;
+      }
+    }catch(e){}
     if(!pendingFlush){
       pendingFlush=true;
       window.addEventListener("pywebviewready",function(){ pendingFlush=false; nativeFlush(); },{once:true});
@@ -952,6 +957,13 @@
         return true;
       }
     }catch(e){ console.error("pywebview file",e); }
+    try{
+      if(window.AndroidBridge && window.AndroidBridge.saveFile){
+        var afn=window.AndroidBridge.saveFile(name,content);
+        if(window.__toast) window.__toast(afn?("فایل در پوشه دانلود ذخیره شد: "+afn):"ذخیره فایل ناموفق بود");
+        return true;
+      }
+    }catch(e){ console.error("android file",e); }
     try{
       var blob=new Blob([content],{type:mime+";charset=utf-8"});
       var a=document.createElement("a");

@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+def verFile = new File(rootDir, "../VERSION")
+def verName = verFile.exists() ? verFile.text.trim() : "0.0.0"
+def vp = verName.tokenize('.')
+def verCode = vp[0].toInteger() * 10000 + vp[1].toInteger() * 100 + vp[2].toInteger()
+
+android {
+    namespace 'ir.dashboard.shakhsi'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "ir.dashboard.shakhsi"
+        minSdk 24
+        targetSdk 34
+        versionCode verCode
+        versionName verName
+    }
+
+    signingConfigs {
+        release {
+            def ks = System.getenv("ANDROID_KS_FILE")
+            if (ks != null) {
+                storeFile file(ks)
+                storePassword System.getenv("ANDROID_KS_PASS")
+                keyAlias (System.getenv("ANDROID_KEY_ALIAS") ?: "dashboard")
+                keyPassword (System.getenv("ANDROID_KEY_PASS") ?: System.getenv("ANDROID_KS_PASS"))
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (System.getenv("ANDROID_KS_FILE") != null) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

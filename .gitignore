@@ -4,3 +4,8 @@ __pycache__/
 *.pyc
 /*.deb
 *.tmp
+android-signing/
+android/.gradle/
+android/local.properties
+android/**/build/
+android/app/src/main/assets/
