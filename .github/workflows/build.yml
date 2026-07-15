@@ -1,0 +1,53 @@
+name: CI & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gi gir1.2-gtk-3.0 \
+            gir1.2-webkit2-4.1 xvfb dbus
+
+      - name: Smoke tests (save + restore)
+        run: dbus-run-session -- xvfb-run -a sh tests/run.sh
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build .deb
+        run: ./build-deb.sh
+
+      - name: Sanity-check package
+        run: |
+          dpkg-deb --info dist/*.deb
+          dpkg-deb --contents dist/*.deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-shakhsi-deb
+          path: dist/*.deb
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.deb \
+            --title "$GITHUB_REF_NAME" --generate-notes

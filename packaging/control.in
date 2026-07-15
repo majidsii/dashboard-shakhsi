@@ -1,0 +1,13 @@
+Package: dashboard-shakhsi
+Version: @VERSION@
+Section: utils
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.8), python3-gi, gir1.2-gtk-3.0, gir1.2-webkit2-4.1 | gir1.2-webkit2-4.0
+Installed-Size: @SIZE@
+Maintainer: Dashboard User <user@localhost>
+Description: Personal dashboard with tasks and finance tracking (Persian)
+ Liquid-glass style personal dashboard: task manager with priorities
+ and filters, plus finance tracking (income, expenses, debts,
+ installments) with Jalali calendar and charts.
+ All data persists locally in ~/.local/share/dashboard-shakhsi/.

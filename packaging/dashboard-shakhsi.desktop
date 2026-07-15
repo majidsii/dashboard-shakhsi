@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=داشبورد شخصی
+Name[en]=Personal Dashboard
+GenericName=Tasks & Finance
+Comment=مدیریت کارها و امور مالی شخصی
+Comment[en]=Manage personal tasks and finances
+Exec=dashboard-shakhsi
+Icon=dashboard-shakhsi
+Terminal=false
+Categories=Utility;Office;Finance;
+Keywords=tasks;todo;finance;کارها;مالی;داشبورد;
+StartupNotify=true
+StartupWMClass=dashboard-shakhsi

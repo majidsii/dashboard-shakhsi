@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>داشبورد شخصی</title>
+<style>
+@font-face{
+  font-family:'Vazirmatn';
+  src:url('fonts/Vazirmatn-Variable.woff2') format('woff2');
+  font-weight:100 900;font-style:normal;font-display:swap;
+}
+</style>
+<style>
+  :root{
+    color-scheme: light;
+    --spring:cubic-bezier(.32,1.35,.4,1);
+    --bg:linear-gradient(180deg,#eef1f9 0%,#e8ecf7 52%,#e0e6f3 100%);
+    --blob1:rgba(122,155,255,.60); --blob2:rgba(196,132,255,.46);
+    --blob3:rgba(94,224,182,.44);  --blob4:rgba(255,152,182,.46);
+    --sheenband:rgba(255,255,255,.34); --grain-o:.032;
+    --ink:#0f1325; --muted:rgba(22,28,58,.64); --faint:rgba(22,28,58,.4);
+    --hair:rgba(255,255,255,.55); --hair-top:rgba(255,255,255,.9);
+    --glass-fill:linear-gradient(135deg,rgba(255,255,255,.46),rgba(255,255,255,.16));
+    --menu-fill:rgba(252,253,255,.74);
+    --rim:linear-gradient(150deg,rgba(255,255,255,.95),rgba(255,255,255,.3) 32%,rgba(255,255,255,.07) 60%,rgba(255,255,255,.55));
+    --sheen:radial-gradient(130% 65% at 50% -18%,rgba(255,255,255,.6),rgba(255,255,255,0) 55%);
+    --sheen-o:.5;
+    --shadow:0 14px 44px rgba(30,42,94,.15),0 3px 10px rgba(30,42,94,.06);
+    --shadow-lg:0 24px 70px rgba(30,42,94,.25),0 6px 18px rgba(30,42,94,.1);
+    --drop:0 5px 16px rgba(25,35,80,.1);
+    --drop-lg:0 9px 26px rgba(25,35,80,.17);
+    --row:rgba(255,255,255,.5);
+    --field:rgba(255,255,255,.42);
+    --inner:rgba(255,255,255,.34);
+    --line:rgba(28,38,80,.12);
+    --track:rgba(28,38,80,.13);
+    --thumb:rgba(255,255,255,.85);
+    --thumb-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.5),0 3px 12px rgba(25,35,80,.2);
+    --blue:#007aff; --accent:#007aff; --accent2:#5ac8fa;
+    --accent-soft:rgba(0,122,255,.13);
+    --grad:linear-gradient(135deg,#0a84ff,#5ac8fa);
+    --grad-glow:0 10px 26px rgba(0,122,255,.35);
+    --inc:#34c759; --inc-soft:rgba(52,199,89,.15);
+    --ex:#ff3b30;  --ex-soft:rgba(255,59,48,.12);
+    --amber:#ff9500; --amber-soft:rgba(255,149,0,.16);
+    --violet:#af52de; --violet-soft:rgba(175,82,222,.13);
+    --p3:#ff3b30; --p3-soft:rgba(255,59,48,.13);
+    --p2:#ff9500; --p2-soft:rgba(255,149,0,.16);
+    --p1:#32ade6; --p1-soft:rgba(50,173,230,.15);
+    --danger:#ff3b30; --danger-soft:rgba(255,59,48,.12);
+    --tip-bg:rgba(255,255,255,.85); --tip-ink:#0f1325;
+    --toast-bg:rgba(255,255,255,.82);
+  }
+  [data-theme="dark"]{
+    color-scheme: dark;
+    --bg:linear-gradient(180deg,#080a13 0%,#05060d 55%,#030409 100%);
+    --blob1:rgba(48,108,255,.42); --blob2:rgba(140,62,255,.34);
+    --blob3:rgba(0,199,255,.26);  --blob4:rgba(255,80,164,.26);
+    --sheenband:rgba(255,255,255,.07); --grain-o:.05;
+    --ink:#f4f5fa; --muted:rgba(230,235,255,.66); --faint:rgba(230,235,255,.38);
+    --hair:rgba(255,255,255,.14); --hair-top:rgba(255,255,255,.28);
+    --glass-fill:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.035));
+    --menu-fill:rgba(26,28,44,.84);
+    --rim:linear-gradient(150deg,rgba(255,255,255,.55),rgba(255,255,255,.14) 32%,rgba(255,255,255,.03) 60%,rgba(255,255,255,.3));
+    --sheen:radial-gradient(130% 65% at 50% -18%,rgba(255,255,255,.3),rgba(255,255,255,0) 55%);
+    --sheen-o:.35;
+    --shadow:0 16px 50px rgba(0,0,0,.5),0 3px 10px rgba(0,0,0,.35);
+    --shadow-lg:0 28px 80px rgba(0,0,0,.65),0 8px 20px rgba(0,0,0,.4);
+    --drop:0 5px 18px rgba(0,0,0,.4);
+    --drop-lg:0 9px 26px rgba(0,0,0,.55);
+    --row:rgba(255,255,255,.07);
+    --field:rgba(255,255,255,.075);
+    --inner:rgba(255,255,255,.055);
+    --line:rgba(255,255,255,.12);
+    --track:rgba(255,255,255,.13);
+    --thumb:rgba(255,255,255,.17);
+    --thumb-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.16),0 4px 14px rgba(0,0,0,.45);
+    --blue:#0a84ff; --accent:#0a84ff; --accent2:#64d2ff;
+    --accent-soft:rgba(10,132,255,.2);
+    --grad:linear-gradient(135deg,#0a84ff,#64d2ff);
+    --grad-glow:0 10px 30px rgba(10,132,255,.4);
+    --inc:#30d158; --inc-soft:rgba(48,209,88,.16);
+    --ex:#ff453a;  --ex-soft:rgba(255,69,58,.14);
+    --amber:#ff9f0a; --amber-soft:rgba(255,159,10,.17);
+    --violet:#bf5af2; --violet-soft:rgba(191,90,242,.16);
+    --p3:#ff453a; --p3-soft:rgba(255,69,58,.16);
+    --p2:#ff9f0a; --p2-soft:rgba(255,159,10,.17);
+    --p1:#64d2ff; --p1-soft:rgba(100,210,255,.16);
+    --danger:#ff453a; --danger-soft:rgba(255,69,58,.15);
+    --tip-bg:rgba(30,32,50,.9); --tip-ink:#f4f5fa;
+    --toast-bg:rgba(30,32,50,.86);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{min-height:100%}
+  body{
+    font-family:'Vazirmatn',system-ui,-apple-system,sans-serif;
+    background:var(--bg);background-attachment:fixed;color:var(--ink);
+    min-height:100vh;padding:24px 16px 84px;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+    line-height:1.6;overflow-x:hidden;
+    transition:background .4s,color .4s;
+  }
+  /* ---- aurora backdrop ---- */
+  .bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+  .bgfx .blob{position:absolute;border-radius:50%;will-change:transform;transition:opacity .4s}
+  .bgfx .b1{width:62vmax;height:62vmax;top:-24vmax;inset-inline-end:-18vmax;
+    background:radial-gradient(circle at 40% 40%,var(--blob1),transparent 64%);
+    animation:blobA 36s ease-in-out infinite alternate}
+  .bgfx .b2{width:54vmax;height:54vmax;top:-12vmax;inset-inline-start:-20vmax;
+    background:radial-gradient(circle at 58% 46%,var(--blob2),transparent 62%);
+    animation:blobB 46s ease-in-out infinite alternate}
+  .bgfx .b3{width:58vmax;height:58vmax;bottom:-26vmax;inset-inline-start:-14vmax;
+    background:radial-gradient(circle at 50% 42%,var(--blob3),transparent 63%);
+    animation:blobC 52s ease-in-out infinite alternate}
+  .bgfx .b4{width:48vmax;height:48vmax;bottom:-18vmax;inset-inline-end:-15vmax;
+    background:radial-gradient(circle at 46% 50%,var(--blob4),transparent 62%);
+    animation:blobD 42s ease-in-out infinite alternate}
+  @keyframes blobA{to{transform:translate(-7vmax,9vmax) scale(1.14)}}
+  @keyframes blobB{to{transform:translate(9vmax,6vmax) scale(1.10)}}
+  @keyframes blobC{to{transform:translate(8vmax,-8vmax) scale(1.16)}}
+  @keyframes blobD{to{transform:translate(-8vmax,-6vmax) scale(1.08)}}
+  .bgfx .sheenband{position:absolute;top:-45%;bottom:-45%;width:58vmax;inset-inline-start:0;
+    background:linear-gradient(90deg,rgba(255,255,255,0),var(--sheenband) 50%,rgba(255,255,255,0));
+    animation:sheenSweep 48s ease-in-out infinite}
+  @keyframes sheenSweep{
+    0%,14%{transform:rotate(16deg) translateX(-95vmax);opacity:0}
+    26%{opacity:1}
+    52%,100%{transform:rotate(16deg) translateX(95vmax);opacity:0}
+  }
+  .bgfx .grain{position:absolute;inset:0;opacity:var(--grain-o);mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+    background-size:240px 240px}
+  @media (prefers-reduced-motion:reduce){
+    .bgfx .blob,.bgfx .sheenband{animation:none}
+  }
+  .app{max-width:780px;margin:0 auto;position:relative;z-index:1}
+
+  /* ================= liquid glass material ================= */
+  .glass{
+    position:relative;border-radius:26px;
+    background:var(--glass-fill);
+    -webkit-backdrop-filter:blur(28px) saturate(185%);
+    backdrop-filter:blur(28px) saturate(185%);
+    box-shadow:var(--shadow);
+    transition:background .35s,box-shadow .35s;
+  }
+  .glass::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;
+    background:var(--rim);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask-composite:exclude;
+    pointer-events:none;
+  }
+  .glass::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;
+    background:var(--sheen);opacity:var(--sheen-o);pointer-events:none;
+  }
+  .card{padding:22px}
+  .glass.card{border-radius:28px}
+
+  /* ================= top bar (floating islands) ================= */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:26px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15.5px;letter-spacing:-.01em;
+    padding:8px 15px;border-radius:999px}
+  .brand .logo{width:31px;height:31px;border-radius:10px;background:var(--grad);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 12px rgba(0,122,255,.35)}
+  .brand .logo svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .brand .btxt{position:relative;z-index:1}
+
+  .tabs{display:flex;gap:2px;padding:5px;border-radius:999px}
+  .thumb{
+    position:absolute;top:5px;bottom:5px;left:0;width:0;opacity:0;border-radius:999px;
+    background:var(--thumb);box-shadow:var(--thumb-shadow);
+    transition:transform .5s var(--spring),width .5s var(--spring),opacity .25s;
+    pointer-events:none;
+  }
+  .tabs button{
+    position:relative;z-index:1;font-family:inherit;font-size:14px;font-weight:700;color:var(--muted);
+    background:transparent;border:none;border-radius:999px;cursor:pointer;
+    padding:8.5px 20px;transition:color .25s;display:flex;align-items:center;gap:7px;
+  }
+  .tabs button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .tabs button.active{color:var(--ink)}
+
+  .theme-btn{width:42px;height:42px;border-radius:999px;cursor:pointer;border:none;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:transform .35s var(--spring)}
+  .theme-btn:active{transform:scale(.92)}
+  .theme-btn svg{width:19px;height:19px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1}
+  [data-theme="dark"] .ic-moon{display:none}
+  html:not([data-theme="dark"]) .ic-sun{display:none}
+
+  .panel{display:none}
+  .panel.on{display:block;animation:fadeUp .35s var(--spring)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ================= section headers ================= */
+  header.sec{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px;padding:0 6px}
+  .head-text h1{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+  .date{color:var(--muted);font-size:13.5px;font-weight:500;margin-top:3px}
+  .status{font-size:14.5px;font-weight:700;margin-top:9px;color:var(--accent);transition:color .3s}
+  .status.warn{color:var(--ex)}
+  .status.alldone{color:var(--amber)}
+
+  /* ================= controls ================= */
+  .f-input,.f-select{
+    width:100%;font-family:inherit;font-size:15px;color:var(--ink);
+    background:var(--field);border:none;border-radius:16px;
+    padding:11px 15px;outline:none;
+    box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);backdrop-filter:blur(12px) saturate(150%);
+    transition:box-shadow .2s,background .3s;
+  }
+  .f-input::placeholder{color:var(--faint)}
+  .f-input:focus,.f-select:focus{box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1.4px var(--accent),0 0 0 4px var(--accent-soft)}
+  .select-wrap{position:relative}
+  .select-wrap .f-select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-inline-end:36px;font-weight:600}
+  .select-wrap::after{
+    content:"";position:absolute;inset-inline-end:15px;top:50%;width:8px;height:8px;
+    border-left:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:translateY(-70%) rotate(-45deg);pointer-events:none;
+  }
+
+  .btn{
+    position:relative;font-family:inherit;font-size:14.5px;font-weight:800;color:#fff;
+    background:var(--grad);border:none;border-radius:999px;
+    padding:11px 22px;cursor:pointer;overflow:hidden;
+    box-shadow:var(--grad-glow),inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.22);
+    transition:transform .35s var(--spring),filter .2s;
+    display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  }
+  .btn::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.5) 46%,transparent 58%);
+    transform:translateX(-140%);transition:transform .7s ease}
+  .btn:hover::after{transform:translateX(140%)}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:scale(.94)}
+  .btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .btn.small{padding:9px 17px;font-size:14px}
+
+  .btn-ghost{
+    font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink);
+    background:var(--field);border:none;border-radius:999px;padding:9px 17px;cursor:pointer;
+    box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair),var(--drop);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);
+    transition:transform .3s var(--spring),box-shadow .2s;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .btn-ghost:hover{box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair),var(--drop-lg)}
+  .btn-ghost:active{transform:scale(.95)}
+  .btn-ghost svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+  .menu-wrap{position:relative}
+  .menu{
+    position:absolute;inset-inline-end:0;top:calc(100% + 9px);z-index:40;
+    min-width:232px;border-radius:22px;padding:6px;display:none;
+    background:var(--menu-fill);
+    -webkit-backdrop-filter:blur(36px) saturate(190%);backdrop-filter:blur(36px) saturate(190%);
+    box-shadow:var(--shadow-lg);
+    animation:menuIn .2s var(--spring);
+  }
+  .menu::after{content:none}
+  .menu.open{display:block}
+  @keyframes menuIn{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+  .menu button{
+    display:flex;align-items:center;gap:10px;width:100%;
+    font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);
+    background:none;border:none;border-radius:15px;padding:9.5px 12px;
+    cursor:pointer;text-align:start;transition:background .13s;
+  }
+  .menu button:hover{background:var(--accent-soft)}
+  .menu button svg{width:17px;height:17px;stroke:var(--accent);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  .menu button .ext{margin-inline-start:auto;font-size:11px;font-weight:800;color:var(--faint);
+    background:var(--field);box-shadow:inset 0 0 0 1px var(--hair);border-radius:7px;padding:1px 7px;letter-spacing:.04em}
+  .menu hr{border:none;border-top:1px solid var(--line);margin:5px 10px}
+
+  .pills{display:flex;gap:5px;flex-wrap:wrap}
+  .pills button{
+    font-family:inherit;font-size:13.5px;font-weight:700;color:var(--muted);
+    background:transparent;border:none;border-radius:999px;cursor:pointer;
+    padding:6.5px 14px;transition:all .2s;
+  }
+  .pills button:hover{color:var(--ink);background:var(--field)}
+  .pills button.active{color:var(--ink);background:var(--thumb);box-shadow:var(--thumb-shadow)}
+  .pills .count{opacity:.55;font-weight:500;margin-inline-start:3px;font-size:12.5px}
+
+  /* ================= TASKS ================= */
+  .ring{position:relative;width:84px;height:84px;flex-shrink:0}
+  .ring svg{width:84px;height:84px;transform:rotate(-90deg)}
+  .ring-bg{fill:none;stroke:var(--track);stroke-width:7}
+  .ring-fg{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;
+    transition:stroke-dashoffset .6s cubic-bezier(.65,0,.35,1),stroke .4s}
+  .ring.full .ring-fg{stroke:var(--amber)}
+  .ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ring-num b{font-size:22px;font-weight:800}
+  .ring-num small{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:3px}
+
+  .toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .search{flex:1;min-width:170px;position:relative}
+  .search svg{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);
+    width:16px;height:16px;stroke:var(--faint);fill:none;stroke-width:2;stroke-linecap:round;pointer-events:none;z-index:1}
+  .search .f-input{padding-inline-start:40px;padding-block:9.5px;font-size:14.5px;border-radius:999px}
+
+  .add{display:flex;gap:8px;margin-bottom:14px;align-items:stretch}
+  .add .f-input{font-size:15.5px;padding:12px 18px;border-radius:999px}
+  .pri-btn{
+    flex-shrink:0;display:flex;align-items:center;gap:7px;
+    font-family:inherit;font-size:13.5px;font-weight:800;
+    background:var(--field);border:none;border-radius:999px;
+    padding:0 16px;cursor:pointer;color:var(--muted);
+    box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    transition:all .2s;
+  }
+  .pri-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .pri-btn.p1{color:var(--p1);background:var(--p1-soft);box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1.3px var(--p1)}
+  .pri-btn.p2{color:var(--p2);background:var(--p2-soft);box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1.3px var(--p2)}
+  .pri-btn.p3{color:var(--p3);background:var(--p3-soft);box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1.3px var(--p3)}
+  .add .go{flex-shrink:0;width:48px;padding:0}
+
+  ul.tlist{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .task{
+    position:relative;display:flex;align-items:center;gap:11px;
+    padding:12px 18px 12px 12px;border-radius:20px;
+    background:var(--row);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);
+    box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair),var(--drop);
+    animation:pop .3s var(--spring);
+  }
+  .task::before{content:"";position:absolute;inset-inline-start:0;top:11px;bottom:11px;width:4px;
+    border-radius:99px;background:transparent;transition:background .25s}
+  .task.p1::before{background:var(--p1)}
+  .task.p2::before{background:var(--p2)}
+  .task.p3::before{background:var(--p3)}
+  .task.done::before{opacity:.35}
+  @keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+  .task.removing{animation:collapse .25s ease forwards}
+  @keyframes collapse{to{opacity:0;transform:translateX(24px)}}
+
+  .check{flex-shrink:0;width:24px;height:24px;border:2px solid var(--faint);border-radius:50%;
+    background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
+  .check:hover{border-color:var(--accent)}
+  .check svg{width:14px;height:14px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
+    opacity:0;transform:scale(.4);transition:.2s}
+  .task.done .check{background:var(--accent);border-color:var(--accent)}
+  .task.done .check svg{opacity:1;transform:scale(1)}
+
+  .txt{flex:1;min-width:0;font-size:15px;cursor:default;word-break:break-word;transition:color .25s}
+  .task.done .txt{color:var(--faint);text-decoration:line-through;text-decoration-thickness:1.5px}
+  .txt-edit{flex:1;min-width:0;font-family:inherit;font-size:15px;color:var(--ink);
+    border:none;border-bottom:2px solid var(--accent);background:transparent;outline:none;padding:1px 0}
+
+  .chip{flex-shrink:0;display:flex;align-items:center;gap:5px;
+    font-family:inherit;font-size:11.5px;font-weight:800;
+    border:none;border-radius:999px;padding:4.5px 11px;cursor:pointer;
+    color:var(--faint);background:transparent;transition:all .15s}
+  .chip svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+  .chip:hover{background:var(--field);color:var(--muted)}
+  .chip.p1{color:var(--p1);background:var(--p1-soft)}
+  .chip.p2{color:var(--p2);background:var(--p2-soft)}
+  .chip.p3{color:var(--p3);background:var(--p3-soft)}
+  .chip.p1 svg,.chip.p2 svg,.chip.p3 svg{fill:currentColor}
+  .task.done .chip{opacity:.45}
+
+  .icon-btn{flex-shrink:0;width:31px;height:31px;border:none;background:transparent;
+    border-radius:999px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:background .15s;opacity:.55}
+  .icon-btn svg{width:17px;height:17px;fill:none;stroke:var(--faint);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+  .icon-btn:hover{opacity:1}
+  .pencil:hover{background:var(--accent-soft)}
+  .pencil:hover svg{stroke:var(--accent)}
+  .del:hover{background:var(--danger-soft)}
+  .del:hover svg{stroke:var(--danger)}
+
+  .empty{text-align:center;padding:48px 20px;color:var(--muted);position:relative;z-index:1}
+  .empty .em-icon{width:58px;height:58px;margin:0 auto 16px;border-radius:999px;background:var(--accent-soft);
+    display:flex;align-items:center;justify-content:center}
+  .empty .em-icon svg{width:27px;height:27px;stroke:var(--accent);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .empty p{font-size:15px;font-weight:700}
+  .empty .sub{font-size:13px;color:var(--faint);margin-top:5px;font-weight:400}
+
+  footer.tfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    margin-top:18px;padding-top:15px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+  footer.tfoot.hidden{display:none}
+  .clear{font-family:inherit;font-size:13.5px;font-weight:700;color:var(--muted);
+    background:none;border:none;cursor:pointer;padding:5px 13px;border-radius:999px;transition:.15s}
+  .clear:hover{color:var(--danger);background:var(--danger-soft)}
+  .clear.armed{color:#fff;background:var(--danger)}
+
+  /* ================= FINANCE ================= */
+  .sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:10px;margin-bottom:14px}
+  .sum{padding:15px 16px;border-radius:24px}
+  .sum .s-top{display:flex;align-items:center;gap:8px;margin-bottom:7px;position:relative;z-index:1}
+  .sum .s-ic{width:29px;height:29px;border-radius:999px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .sum .s-ic svg{width:15px;height:15px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .sum .s-lbl{font-size:12.5px;font-weight:700;color:var(--muted)}
+  .sum .s-val{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.3;position:relative;z-index:1}
+  .sum .s-val small{font-size:11.5px;font-weight:600;color:var(--faint);margin-inline-start:4px}
+  .sum.neg .s-val{color:var(--ex)}
+  .ic-bal{background:var(--accent-soft)} .ic-bal svg{stroke:var(--accent)}
+  .ic-inc{background:var(--inc-soft)} .ic-inc svg{stroke:var(--inc)}
+  .ic-ex{background:var(--ex-soft)} .ic-ex svg{stroke:var(--ex)}
+  .ic-debt{background:var(--amber-soft)} .ic-debt svg{stroke:var(--amber)}
+
+  .fin-card{margin-bottom:14px}
+  .fin-card h2{font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .fin-card h2 svg{width:17px;height:17px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;position:relative;z-index:1}
+
+  .seg{position:relative;display:flex;gap:2px;padding:5px;border-radius:999px;
+    background:var(--field);box-shadow:inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair)}
+  .seg button{
+    position:relative;z-index:1;flex:1;min-width:0;
+    font-family:inherit;font-size:13.5px;font-weight:800;color:var(--muted);
+    background:transparent;border:none;border-radius:999px;cursor:pointer;
+    padding:8px 4px;transition:color .25s;
+  }
+  .seg[data-type="ex"] button.active{color:var(--ex)}
+  .seg[data-type="in"] button.active{color:var(--inc)}
+  .seg[data-type="debt"] button.active{color:var(--amber)}
+  .seg[data-type="inst"] button.active{color:var(--violet)}
+
+  .f-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;position:relative;z-index:1}
+  .f-cell{display:flex;flex-direction:column;gap:5px}
+  .f-cell label{font-size:12.5px;font-weight:700;color:var(--muted);padding:0 4px}
+  .f-cell.wide{grid-column:1/-1}
+  .amount-wrap{position:relative}
+  .amount-wrap .f-input{direction:ltr;text-align:left;font-weight:700;padding-inline-end:66px}
+  .amount-wrap .unit{position:absolute;top:50%;transform:translateY(-50%);inset-inline-end:15px;
+    font-size:12px;font-weight:700;color:var(--faint);pointer-events:none}
+  .f-actions{grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:2px}
+  .hide{display:none !important}
+
+  .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.charts-row{grid-template-columns:1fr}}
+  .chart-box{position:relative;min-height:120px;z-index:1}
+  .chart-box svg{width:100%;height:auto;display:block}
+  .chart-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;color:var(--faint);font-size:13.5px;font-weight:600;text-align:center;padding:10px}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;font-weight:700;color:var(--muted)}
+  .legend .li{display:flex;align-items:center;gap:6px}
+  .legend .dot{width:9px;height:9px;border-radius:999px;flex-shrink:0}
+
+  .dlegend{display:flex;flex-direction:column;gap:6px;margin-top:14px;position:relative;z-index:1}
+  .dlegend .row{display:flex;align-items:center;gap:9px;font-size:13px;cursor:default;
+    padding:5px 8px;border-radius:12px;transition:background .15s}
+  .dlegend .row:hover{background:var(--field)}
+  .dlegend .dot{width:10px;height:10px;border-radius:999px;flex-shrink:0}
+  .dlegend .lbl{flex:1;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dlegend .amt{font-weight:600;color:var(--muted);font-size:12.5px}
+  .dlegend .pct{font-weight:800;color:var(--faint);font-size:12px;min-width:38px;text-align:left;direction:ltr}
+
+  .obj-list{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+  .obj{padding:14px 15px;border-radius:18px;background:var(--inner);box-shadow:inset 0 0 0 1px var(--line)}
+  .obj .o-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .obj .o-name{font-weight:800;font-size:14.5px;flex:1;min-width:120px}
+  .badge{font-size:11px;font-weight:800;border-radius:999px;padding:3px 11px}
+  .badge.debt{color:var(--amber);background:var(--amber-soft)}
+  .badge.inst{color:var(--violet);background:var(--violet-soft)}
+  .badge.ok{color:var(--inc);background:var(--inc-soft)}
+  .obj .o-sub{font-size:12.5px;color:var(--muted);margin-top:5px;font-weight:500}
+  .obj .o-sub b{color:var(--ink);font-weight:800}
+  .bar{height:10px;border-radius:999px;background:var(--track);margin-top:9px;overflow:hidden;position:relative}
+  .bar i{position:absolute;inset-inline-start:0;top:0;bottom:0;border-radius:999px;background:var(--grad);
+    transition:width .5s cubic-bezier(.65,0,.35,1)}
+  .obj.settled .bar i{background:var(--inc)}
+  .o-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;align-items:center}
+  .mini-btn{font-family:inherit;font-size:12.5px;font-weight:800;border:none;border-radius:999px;
+    padding:7px 15px;cursor:pointer;transition:all .2s;
+    color:var(--accent);background:var(--accent-soft)}
+  .mini-btn:hover{filter:brightness(1.08)}
+  .mini-btn:active{transform:scale(.95)}
+  .mini-btn.gray{color:var(--muted);background:transparent}
+  .mini-btn.gray:hover{background:var(--danger-soft);color:var(--danger)}
+  .mini-btn.danger,.mini-btn.danger:hover{color:#fff;background:var(--danger)}
+  .payrow{display:flex;gap:7px;margin-top:10px;align-items:stretch}
+  .payrow .f-input{padding:8px 13px;font-size:13.5px;font-weight:700;direction:ltr;text-align:left;border-radius:14px}
+  .payrow .btn{padding:8px 16px;font-size:13px}
+
+  .txwrap{position:relative;z-index:1}
+  .txrow{display:flex;align-items:center;gap:11px;padding:11px 6px;border-bottom:1px solid var(--line)}
+  .txrow:last-child{border-bottom:none}
+  .txrow .t-ic{width:35px;height:35px;border-radius:999px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .txrow .t-ic svg{width:16px;height:16px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .txrow .t-ic.in{background:var(--inc-soft)} .txrow .t-ic.in svg{stroke:var(--inc)}
+  .txrow .t-ic.ex{background:var(--ex-soft)} .txrow .t-ic.ex svg{stroke:var(--ex)}
+  .txrow .t-main{flex:1;min-width:0}
+  .txrow .t-title{font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .txrow .t-sub{font-size:12px;color:var(--faint);font-weight:500}
+  .txrow .t-amt{font-size:14px;font-weight:800;white-space:nowrap;direction:ltr}
+  .txrow .t-amt.in{color:var(--inc)} .txrow .t-amt.ex{color:var(--ex)}
+
+  /* ================= tooltip / toast ================= */
+  .tip{position:fixed;z-index:70;display:none;pointer-events:none;
+    background:var(--tip-bg);color:var(--tip-ink);
+    -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+    border-radius:14px;padding:8px 12px;font-size:12.5px;font-weight:600;line-height:1.7;max-width:240px;
+    box-shadow:var(--shadow-lg),inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair)}
+  .tip .tdot{display:inline-block;width:8px;height:8px;border-radius:999px;margin-inline-end:5px;vertical-align:baseline}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,16px);
+    background:var(--toast-bg);color:var(--ink);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+    font-size:13.5px;font-weight:700;border-radius:999px;padding:11px 22px;
+    box-shadow:var(--shadow-lg),inset 0 1px 0 var(--hair-top),inset 0 0 0 1px var(--hair);
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .35s var(--spring);
+    z-index:80;max-width:calc(100vw - 40px);text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:10px}
+
+  @media(max-width:560px){
+    .brand .btxt{display:none}
+    .brand{padding:8px 10px}
+  }
+  @media(max-width:480px){
+    .pri-btn span{display:none}
+    .pri-btn{padding:0 13px}
+    .f-grid{grid-template-columns:1fr}
+    .tabs button{padding:8.5px 14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="bgfx" aria-hidden="true">
+  <span class="blob b1"></span><span class="blob b2"></span>
+  <span class="blob b3"></span><span class="blob b4"></span>
+  <span class="sheenband"></span>
+  <span class="grain"></span>
+</div>
+<div class="app">
+  <!-- ================= top bar ================= -->
+  <div class="topbar">
+    <div class="brand glass">
+      <span class="logo"><svg viewBox="0 0 24 24"><path d="M4 13l5 5L20 6"/></svg></span>
+      <span class="btxt">داشبورد شخصی</span>
+    </div>
+    <nav class="tabs glass" id="mainTabs" role="tablist">
+      <span class="thumb"></span>
+      <button id="tabTasks" class="active" role="tab" aria-selected="true">
+        <svg viewBox="0 0 24 24"><path d="M9 11.5l2.5 2.5L17 8"/><rect x="3.5" y="3.5" width="17" height="17" rx="5"/></svg>
+        کارها
+      </button>
+      <button id="tabFin" role="tab" aria-selected="false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="4"/><path d="M3 10h18M16 15h2"/></svg>
+        مالی
+      </button>
+    </nav>
+    <button class="theme-btn glass" id="themeBtn" aria-label="تغییر حالت روشن و تاریک">
+      <svg class="ic-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>
+      <svg class="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3L19 19M19 5l-1.7 1.7M6.7 17.3L5 19"/></svg>
+    </button>
+  </div>
+
+  <!-- ================= TASKS PANEL ================= -->
+  <div class="panel on" id="panelTasks">
+    <header class="sec">
+      <div class="head-text">
+        <h1>کارهای من</h1>
+        <div class="date" id="tDate"></div>
+        <div class="status" id="tStatus"></div>
+      </div>
+      <div class="ring" id="ring">
+        <svg viewBox="0 0 86 86">
+          <circle class="ring-bg" cx="43" cy="43" r="38"></circle>
+          <circle class="ring-fg" id="ringFg" cx="43" cy="43" r="38"></circle>
+        </svg>
+        <div class="ring-num"><b id="ringDone">۰</b><small id="ringTotal">از ۰</small></div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+        <input class="f-input" id="search" type="text" placeholder="جست‌وجو در کارها…" aria-label="جست‌وجو">
+      </div>
+      <div class="select-wrap">
+        <select class="f-select" id="sort" aria-label="مرتب‌سازی">
+          <option value="new">جدیدترین</option>
+          <option value="pri">بر اساس اولویت</option>
+          <option value="abc">الفبا</option>
+        </select>
+      </div>
+      <div class="menu-wrap">
+        <button class="btn small" id="exportBtn" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 21h16"/></svg>
+          خروجی
+        </button>
+        <div class="menu" id="exportMenu" role="menu">
+          <button data-x="md"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>مارک‌داون <span class="ext">MD</span></button>
+          <button data-x="csv"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 10h16M10 10v9"/></svg>جدول اکسل <span class="ext">CSV</span></button>
+          <button data-x="json"><svg viewBox="0 0 24 24"><path d="M8 4c-2 0-2 2-2 3s.5 3-2 3c2.5 0 2 2 2 3s0 3 2 3M16 4c2 0 2 2 2 3s-.5 3 2 3c-2.5 0-2 2-2 3s0 3-2 3"/></svg>داده خام <span class="ext">JSON</span></button>
+          <button data-x="txt"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg>متن ساده <span class="ext">TXT</span></button>
+          <hr>
+          <button data-x="copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>کپی مارک‌داون</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="add">
+      <input class="f-input" id="input" type="text" placeholder="یک کار جدید بنویسید…" aria-label="کار جدید" maxlength="300" autocomplete="off">
+      <button class="pri-btn" id="priBtn" title="اولویت کار جدید — برای تغییر کلیک کنید">
+        <svg viewBox="0 0 24 24"><path d="M5 21V4m0 1h12l-2.7 4L17 13H5"/></svg>
+        <span id="priLabel">اولویت</span>
+      </button>
+      <button class="btn go" id="addBtn" aria-label="افزودن کار">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+
+    <div class="pills" id="filters" style="margin-bottom:14px">
+      <button data-f="all" class="active">همه <span class="count" data-c="all"></span></button>
+      <button data-f="active">فعال <span class="count" data-c="active"></span></button>
+      <button data-f="high">اولویت بالا <span class="count" data-c="high"></span></button>
+      <button data-f="done">انجام‌شده <span class="count" data-c="done"></span></button>
+    </div>
+
+    <ul class="tlist" id="list"></ul>
+
+    <footer class="tfoot hidden" id="tFooter">
+      <span id="footText"></span>
+      <button class="clear" id="clearBtn">پاک کردن انجام‌شده‌ها</button>
+    </footer>
+  </div>
+
+  <!-- ================= FINANCE PANEL ================= -->
+  <div class="panel" id="panelFin">
+    <header class="sec">
+      <div class="head-text">
+        <h1>مالی من</h1>
+        <div class="date" id="fDate"></div>
+        <div class="status" id="fStatus"></div>
+      </div>
+      <div class="menu-wrap">
+        <button class="btn-ghost" id="finExportBtn" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 21h16"/></svg>
+          گزارش و خروجی
+        </button>
+        <div class="menu" id="finExportMenu" role="menu">
+          <button data-x="md"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>گزارش کامل <span class="ext">MD</span></button>
+          <button data-x="csv"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 10h16M10 10v9"/></svg>تراکنش‌ها <span class="ext">CSV</span></button>
+          <button data-x="json"><svg viewBox="0 0 24 24"><path d="M8 4c-2 0-2 2-2 3s.5 3-2 3c2.5 0 2 2 2 3s0 3 2 3M16 4c2 0 2 2 2 3s-.5 3 2 3c-2.5 0-2 2-2 3s0 3-2 3"/></svg>پشتیبان کامل <span class="ext">JSON</span></button>
+          <hr>
+          <button data-x="copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>کپی گزارش</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- summary -->
+    <div class="sum-grid" id="sumGrid">
+      <div class="sum glass" id="sumBal">
+        <div class="s-top"><span class="s-ic ic-bal"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M15.5 14.5h2.5"/></svg></span><span class="s-lbl">موجودی خالص</span></div>
+        <div class="s-val" id="vBal">۰<small>تومان</small></div>
+      </div>
+      <div class="sum glass">
+        <div class="s-top"><span class="s-ic ic-inc"><svg viewBox="0 0 24 24"><path d="M4 16l5-5 4 4 7-8"/><path d="M20 12V7h-5"/></svg></span><span class="s-lbl">درآمد این ماه</span></div>
+        <div class="s-val" id="vInc">۰<small>تومان</small></div>
+      </div>
+      <div class="sum glass">
+        <div class="s-top"><span class="s-ic ic-ex"><svg viewBox="0 0 24 24"><path d="M4 8l5 5 4-4 7 8"/><path d="M20 12v5h-5"/></svg></span><span class="s-lbl">هزینه این ماه</span></div>
+        <div class="s-val" id="vEx">۰<small>تومان</small></div>
+      </div>
+      <div class="sum glass">
+        <div class="s-top"><span class="s-ic ic-debt"><svg viewBox="0 0 24 24"><path d="M12 3v3m0 12v3M7 7.5C7 6 8.5 5 12 5s5 1 5 2.5S15.5 10 12 10s-5 1-5 2.5S8.5 15 12 15s5-1 5-2.5"/></svg></span><span class="s-lbl">بدهی باقی‌مانده</span></div>
+        <div class="s-val" id="vDebt">۰<small>تومان</small></div>
+      </div>
+    </div>
+
+    <!-- add form -->
+    <div class="glass card fin-card">
+      <div class="card-head">
+        <h2><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>ثبت جدید</h2>
+      </div>
+      <div class="seg" id="finSeg" data-type="ex">
+        <span class="thumb"></span>
+        <button data-t="ex" class="active">هزینه</button>
+        <button data-t="in">درآمد</button>
+        <button data-t="debt">بدهی</button>
+        <button data-t="inst">قسط</button>
+      </div>
+      <div class="f-grid">
+        <div class="f-cell wide">
+          <label id="lblTitle">عنوان</label>
+          <input class="f-input" id="fTitle" type="text" maxlength="120" placeholder="مثلاً: خرید هفتگی" autocomplete="off">
+        </div>
+        <div class="f-cell">
+          <label id="lblAmount">مبلغ</label>
+          <div class="amount-wrap">
+            <input class="f-input" id="fAmount" type="text" inputmode="numeric" placeholder="۰" autocomplete="off">
+            <span class="unit">تومان</span>
+          </div>
+        </div>
+        <div class="f-cell" id="cellCatEx">
+          <label>دسته</label>
+          <div class="select-wrap"><select class="f-select" id="fCatEx"></select></div>
+        </div>
+        <div class="f-cell hide" id="cellCatIn">
+          <label>دسته</label>
+          <div class="select-wrap"><select class="f-select" id="fCatIn"></select></div>
+        </div>
+        <div class="f-cell hide" id="cellDebtPaid">
+          <label>پرداخت‌شده تاکنون (اختیاری)</label>
+          <div class="amount-wrap">
+            <input class="f-input" id="fDebtPaid" type="text" inputmode="numeric" placeholder="۰" autocomplete="off">
+            <span class="unit">تومان</span>
+          </div>
+        </div>
+        <div class="f-cell hide" id="cellInstCount">
+          <label>تعداد کل اقساط</label>
+          <input class="f-input" id="fInstCount" type="text" inputmode="numeric" placeholder="مثلاً ۱۲" autocomplete="off">
+        </div>
+        <div class="f-cell hide" id="cellInstPaid">
+          <label>پرداخت‌شده تاکنون (تعداد)</label>
+          <input class="f-input" id="fInstPaid" type="text" inputmode="numeric" placeholder="۰" autocomplete="off">
+        </div>
+        <div class="f-actions">
+          <button class="btn" id="finAdd"><svg viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19 7"/></svg>ثبت</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- trend chart -->
+    <div class="glass card fin-card">
+      <div class="card-head">
+        <h2><svg viewBox="0 0 24 24"><path d="M4 17l5-6 4 3.5L20 6"/></svg>روند ۶ ماه اخیر</h2>
+        <div class="legend">
+          <span class="li"><span class="dot" style="background:var(--inc)"></span>درآمد</span>
+          <span class="li"><span class="dot" style="background:var(--ex)"></span>هزینه</span>
+        </div>
+      </div>
+      <div class="chart-box" id="trendBox"></div>
+    </div>
+
+    <div class="charts-row">
+      <!-- donut -->
+      <div class="glass card fin-card">
+        <div class="card-head">
+          <h2><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.6A9 9 0 0 1 20.4 9H15z"/></svg>هزینه‌ها بر اساس دسته</h2>
+          <div class="pills" id="donutScope">
+            <button data-s="month" class="active">این ماه</button>
+            <button data-s="all">همه</button>
+          </div>
+        </div>
+        <div class="chart-box" id="donutBox"></div>
+        <div class="dlegend" id="donutLegend"></div>
+      </div>
+      <!-- weekly bars -->
+      <div class="glass card fin-card">
+        <div class="card-head">
+          <h2><svg viewBox="0 0 24 24"><path d="M5 20V13M12 20V6M19 20v-4"/></svg>هزینه ۷ روز اخیر</h2>
+        </div>
+        <div class="chart-box" id="weekBox"></div>
+      </div>
+    </div>
+
+    <!-- debts & installments -->
+    <div class="glass card fin-card">
+      <div class="card-head">
+        <h2><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="4"/><path d="M3 9.5h18M7 14.5h5"/></svg>بدهی‌ها و اقساط</h2>
+      </div>
+      <div class="obj-list" id="objList"></div>
+    </div>
+
+    <!-- transactions -->
+    <div class="glass card fin-card">
+      <div class="card-head">
+        <h2><svg viewBox="0 0 24 24"><path d="M4 7h13M4 12h16M4 17h10"/></svg>تراکنش‌های اخیر</h2>
+        <div class="pills" id="txFilters">
+          <button data-t="all" class="active">همه</button>
+          <button data-t="in">درآمد</button>
+          <button data-t="ex">هزینه</button>
+        </div>
+      </div>
+      <div class="txwrap" id="txList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================ storage ============================ */
+  var K_TASKS="tasklist:v1", K_TPREFS="tasklist:prefs:v1", K_FIN="finance:v1", K_APP="app:prefs:v1";
+  var mem={};
+  /* native bridge: data injected by the desktop wrapper before this script runs,
+     every change is pushed back and written to ~/.local/share/dashboard-shakhsi/data.json */
+  var NATIVE=!!(typeof window!=="undefined" && window.__NATIVE_DATA__ &&
+    window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.saveData);
+  function nativeFlush(){
+    try{ window.webkit.messageHandlers.saveData.postMessage(JSON.stringify(window.__NATIVE_DATA__)); }
+    catch(e){ console.error("native save",e); }
+  }
+  var store={
+    get: async function(k){
+      if(NATIVE && Object.prototype.hasOwnProperty.call(window.__NATIVE_DATA__,k)){
+        return {value:window.__NATIVE_DATA__[k]};
+      }
+      if(typeof window!=="undefined" && window.storage){
+        try{ var r=await window.storage.get(k); if(r) return r; }catch(e){}
+      }
+      try{ var v=localStorage.getItem(k); if(v!=null) return {value:v}; }catch(e){}
+      return mem[k]!=null ? {value:mem[k]} : null;
+    },
+    set: async function(k,v){
+      mem[k]=v;
+      if(NATIVE){ window.__NATIVE_DATA__[k]=v; nativeFlush(); }
+      if(typeof window!=="undefined" && window.storage){
+        try{ await window.storage.set(k,v); }catch(e){}
+      }
+      try{ localStorage.setItem(k,v); }catch(e){}
+    }
+  };
+
+  /* ============================ helpers ============================ */
+  var FA="۰۱۲۳۴۵۶۷۸۹";
+  function fa(n){ return String(n).replace(/[0-9]/g,function(d){return FA[+d];}); }
+  function pad(n){ return (n<10?"0":"")+n; }
+  function norm(s){ return String(s).toLowerCase().replace(/ي/g,"ی").replace(/ك/g,"ک"); }
+  function genId(){ return Date.now()+"-"+Math.random().toString(36).slice(2,7); }
+  function r1(x){ return Math.round(x*10)/10; }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  function parseAmount(s){
+    s=String(s==null?"":s)
+      .replace(/[۰-۹]/g,function(d){return String("۰۱۲۳۴۵۶۷۸۹".indexOf(d));})
+      .replace(/[٠-٩]/g,function(d){return String("٠١٢٣٤٥٦٧٨٩".indexOf(d));})
+      .replace(/[^\d]/g,"");
+    return s?parseInt(s.slice(0,15),10):0;
+  }
+  function money(n){
+    n=Math.round(n);
+    var s=Math.abs(n).toLocaleString("en-US");
+    s=fa(s).replace(/,/g,"٬");
+    return (n<0?"−":"")+s;
+  }
+  function moneyT(n){ return money(n)+" تومان"; }
+  function dec1(x){ var v=Math.round(x*10)/10; return fa(String(v)).replace(".","٫"); }
+  function compact(n){
+    n=Math.round(n);
+    var a=Math.abs(n), s;
+    if(a>=1e9) s=dec1(a/1e9)+" میلیارد";
+    else if(a>=1e6) s=dec1(a/1e6)+" میلیون";
+    else if(a>=1e3) s=dec1(a/1e3)+" هزار";
+    else s=fa(a);
+    return (n<0?"−":"")+s;
+  }
+  function bindAmount(inp){
+    inp.addEventListener("input",function(){
+      var v=parseAmount(inp.value);
+      inp.value=v?fa(v.toLocaleString("en-US")).replace(/,/g,"٬"):"";
+    });
+  }
+
+  /* ---- jalali ---- */
+  function toJalali(gy,gm,gd){
+    var gdm=[0,31,59,90,120,151,181,212,243,273,304,334];
+    var jy=(gy<=1600)?0:979;
+    gy-=(gy<=1600)?621:1600;
+    var gy2=(gm>2)?(gy+1):gy;
+    var days=365*gy+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)
+            +Math.floor((gy2+399)/400)-80+gd+gdm[gm-1];
+    jy+=33*Math.floor(days/12053); days%=12053;
+    jy+=4*Math.floor(days/1461); days%=1461;
+    if(days>365){ jy+=Math.floor((days-1)/365); days=(days-1)%365; }
+    var jm=(days<186)?1+Math.floor(days/31):7+Math.floor((days-186)/30);
+    var jd=1+((days<186)?(days%31):((days-186)%30));
+    return [jy,jm,jd];
+  }
+  var MONTHS=["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+  var WDAYS=["یک‌شنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنج‌شنبه","جمعه","شنبه"];
+  var WD_SHORT=["ی","د","س","چ","پ","ج","ش"];
+  function jalaliOf(d){ return toJalali(d.getFullYear(),d.getMonth()+1,d.getDate()); }
+  function jalaliDisplay(d){ var j=jalaliOf(d); return WDAYS[d.getDay()]+"، "+fa(j[2])+" "+MONTHS[j[1]-1]+" "+fa(j[0]); }
+  function jalaliShort(d){ var j=jalaliOf(d); return j[0]+"/"+pad(j[1])+"/"+pad(j[2]); }
+  function jalaliShortFa(d){ var j=jalaliOf(d); return fa(j[0])+"/"+fa(pad(j[1]))+"/"+fa(pad(j[2])); }
+  function jalaliFile(d){ var j=jalaliOf(d); return j[0]+"-"+pad(j[1])+"-"+pad(j[2]); }
+  function nowTime(){ var d=new Date(); return fa(pad(d.getHours()))+":"+fa(pad(d.getMinutes())); }
+  function monthKey(d){ var j=jalaliOf(d); return j[0]*100+j[1]; }
+
+  /* ============================ shared ui ============================ */
+  var tip=document.getElementById("tip");
+  function tipShow(html,x,y){
+    tip.innerHTML=html; tip.style.display="block";
+    var r=tip.getBoundingClientRect();
+    var px=Math.min(Math.max(8,x-r.width/2),window.innerWidth-r.width-8);
+    var py=y-r.height-14; if(py<8) py=y+18;
+    tip.style.left=px+"px"; tip.style.top=py+"px";
+  }
+  function tipHide(){ tip.style.display="none"; }
+
+  var toastEl=document.getElementById("toast"), toastTimer=null;
+  function toast(msg){
+    toastEl.textContent=msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){ toastEl.classList.remove("show"); },2400);
+  }
+  window.__toast=toast;
+
+  function attachMenu(btn,menu){
+    btn.addEventListener("click",function(ev){
+      ev.stopPropagation();
+      var open=menu.classList.toggle("open");
+      btn.setAttribute("aria-expanded",open?"true":"false");
+    });
+    document.addEventListener("click",function(ev){
+      if(!menu.contains(ev.target) && ev.target!==btn && !btn.contains(ev.target)){
+        menu.classList.remove("open"); btn.setAttribute("aria-expanded","false");
+      }
+    });
+  }
+  function closeMenus(){
+    document.querySelectorAll(".menu.open").forEach(function(m){ m.classList.remove("open"); });
+  }
+
+  function download(name,content,mime){
+    if(NATIVE && window.webkit.messageHandlers.saveFile){
+      try{
+        window.webkit.messageHandlers.saveFile.postMessage(JSON.stringify({name:name,content:content}));
+        return true;
+      }catch(e){ console.error("native file",e); }
+    }
+    try{
+      var blob=new Blob([content],{type:mime+";charset=utf-8"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob); a.download=name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },200);
+      return true;
+    }catch(e){ console.error(e); return false; }
+  }
+  function copyText(t){
+    if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+    return new Promise(function(res,rej){
+      var ta=document.createElement("textarea");
+      ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try{ var ok=document.execCommand("copy"); ta.remove(); ok?res():rej(new Error("fail")); }
+      catch(e){ ta.remove(); rej(e); }
+    });
+  }
+
+  var NS="http://www.w3.org/2000/svg";
+  function svgEl(t,attrs){ var e=document.createElementNS(NS,t); for(var k in attrs) e.setAttribute(k,attrs[k]); return e; }
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  /* ============================ theme & tabs ============================ */
+  var appPrefs={ theme:null, tab:"tasks" };
+  function persistApp(){ store.set(K_APP,JSON.stringify(appPrefs)); }
+  function applyTheme(t){
+    if(t==="dark") document.documentElement.setAttribute("data-theme","dark");
+    else document.documentElement.removeAttribute("data-theme");
+    renderFinCharts(); /* re-read css colors */
+  }
+  document.getElementById("themeBtn").addEventListener("click",function(){
+    var dark=document.documentElement.getAttribute("data-theme")==="dark";
+    appPrefs.theme=dark?"light":"dark";
+    applyTheme(appPrefs.theme);
+    persistApp();
+  });
+
+  /* sliding glass thumbs */
+  function makeSlider(container){
+    var thumb=container?container.querySelector(".thumb"):null;
+    return function(){
+      if(!container||!thumb) return;
+      var btn=container.querySelector("button.active");
+      if(!btn||btn.offsetWidth===0) return;
+      thumb.style.width=btn.offsetWidth+"px";
+      thumb.style.transform="translateX("+btn.offsetLeft+"px)";
+      thumb.style.opacity="1";
+    };
+  }
+  var moveTabThumb=makeSlider(document.getElementById("mainTabs"));
+  var moveSegThumb=makeSlider(document.getElementById("finSeg"));
+  window.addEventListener("resize",function(){ moveTabThumb(); moveSegThumb(); });
+  window.addEventListener("load",function(){ moveTabThumb(); moveSegThumb(); });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ moveTabThumb(); moveSegThumb(); });
+
+  var panelTasks=document.getElementById("panelTasks");
+  var panelFin=document.getElementById("panelFin");
+  var tabTasks=document.getElementById("tabTasks");
+  var tabFin=document.getElementById("tabFin");
+  function setTab(t){
+    appPrefs.tab=t;
+    var fin=(t==="fin");
+    panelTasks.classList.toggle("on",!fin);
+    panelFin.classList.toggle("on",fin);
+    tabTasks.classList.toggle("active",!fin);
+    tabFin.classList.toggle("active",fin);
+    tabTasks.setAttribute("aria-selected",!fin?"true":"false");
+    tabFin.setAttribute("aria-selected",fin?"true":"false");
+    if(fin) renderFin();
+    requestAnimationFrame(function(){ moveTabThumb(); if(fin) moveSegThumb(); });
+  }
+  tabTasks.addEventListener("click",function(){ setTab("tasks"); persistApp(); });
+  tabFin.addEventListener("click",function(){ setTab("fin"); persistApp(); });
+
+  /* ============================================================ */
+  /* ========================== TASKS =========================== */
+  /* ============================================================ */
+  var PRI=[
+    {label:"بدون اولویت",short:"اولویت",word:"",emoji:""},
+    {label:"اولویت پایین",short:"پایین",word:"پایین",emoji:"🔵"},
+    {label:"اولویت متوسط",short:"متوسط",word:"متوسط",emoji:"🟠"},
+    {label:"اولویت بالا",short:"بالا",word:"بالا",emoji:"🔴"}
+  ];
+  var PRI_EN=["none","low","medium","high"];
+
+  var tasks=[], tFilter="all", tQuery="", tSort="new", addPri=0;
+  var list=document.getElementById("list");
+  var input=document.getElementById("input");
+  var tFooter=document.getElementById("tFooter");
+  var priBtn=document.getElementById("priBtn");
+  var priLabel=document.getElementById("priLabel");
+
+  function persistTasks(){ store.set(K_TASKS,JSON.stringify(tasks)); }
+  function persistTPrefs(){ store.set(K_TPREFS,JSON.stringify({sort:tSort})); }
+
+  function addTask(text){
+    text=text.trim(); if(!text) return;
+    tasks.unshift({id:genId(),text:text,done:false,priority:addPri,created:Date.now()});
+    persistTasks(); renderTasks();
+  }
+  function findTask(id){ return tasks.find(function(x){return x.id===id;}); }
+  function toggleTask(id){ var t=findTask(id); if(t){ t.done=!t.done; persistTasks(); renderTasks(); } }
+  function cyclePri(id){ var t=findTask(id); if(t){ t.priority=(t.priority+1)%4; persistTasks(); renderTasks(); } }
+  function removeTask(id,el){
+    var go=function(){ tasks=tasks.filter(function(x){return x.id!==id;}); persistTasks(); renderTasks(); };
+    if(el && !matchMedia("(prefers-reduced-motion:reduce)").matches){
+      el.classList.add("removing");
+      el.addEventListener("animationend",go,{once:true});
+    } else go();
+  }
+  function editTask(id,text){
+    var t=findTask(id); text=text.trim();
+    if(t){ if(text) t.text=text; persistTasks(); renderTasks(); }
+  }
+
+  var checkMark='<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg>';
+  var flagIcon='<svg viewBox="0 0 24 24"><path d="M5 21V4m0 1h12l-2.7 4L17 13H5"/></svg>';
+  var pencilIcon='<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>';
+  var trashIcon='<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
+
+  function visibleTasks(){
+    var q=norm(tQuery.trim());
+    var arr=tasks.filter(function(t){
+      if(tFilter==="active"&&t.done) return false;
+      if(tFilter==="done"&&!t.done) return false;
+      if(tFilter==="high"&&t.priority!==3) return false;
+      if(q&&norm(t.text).indexOf(q)===-1) return false;
+      return true;
+    });
+    arr.sort(function(a,b){
+      if(a.done!==b.done) return a.done?1:-1;
+      if(tSort==="pri"){ if(b.priority!==a.priority) return b.priority-a.priority; return b.created-a.created; }
+      if(tSort==="abc") return norm(a.text).localeCompare(norm(b.text),"fa");
+      return b.created-a.created;
+    });
+    return arr;
+  }
+
+  function renderTasks(){
+    var shown=visibleTasks();
+    list.innerHTML="";
+    if(shown.length===0){
+      var msg,sub;
+      if(tasks.length===0){ msg="هنوز کاری اضافه نکرده‌اید"; sub="اولین کار خود را در کادر بالا بنویسید."; }
+      else if(tQuery.trim()){ msg="چیزی پیدا نشد"; sub="عبارت دیگری را جست‌وجو کنید."; }
+      else if(tFilter==="active"){ msg="هیچ کار فعالی نمانده"; sub="همه چیز انجام شده — عالیه!"; }
+      else if(tFilter==="high"){ msg="کاری با اولویت بالا ندارید"; sub="با دکمه پرچم کنار هر کار، اولویت تعیین کنید."; }
+      else{ msg="هنوز کاری انجام نشده"; sub="کارها را با زدن دایره کنارشان تیک بزنید."; }
+      var e=document.createElement("div");
+      e.className="empty";
+      e.innerHTML='<div class="em-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><p>'+msg+'</p><p class="sub">'+sub+'</p>';
+      list.appendChild(e);
+    } else {
+      shown.forEach(function(t){
+        var li=document.createElement("li");
+        li.className="task p"+t.priority+(t.done?" done":"");
+
+        var check=document.createElement("button");
+        check.className="check";
+        check.setAttribute("role","checkbox");
+        check.setAttribute("aria-checked",t.done?"true":"false");
+        check.setAttribute("aria-label",t.done?"علامت به عنوان انجام‌نشده":"علامت به عنوان انجام‌شده");
+        check.innerHTML=checkMark;
+        check.onclick=function(){ toggleTask(t.id); };
+
+        var txt=document.createElement("span");
+        txt.className="txt"; txt.textContent=t.text;
+        txt.title="برای ویرایش دوبار کلیک کنید";
+        txt.ondblclick=function(){ startEdit(li,t,txt); };
+
+        var chip=document.createElement("button");
+        chip.className="chip p"+t.priority;
+        chip.setAttribute("aria-label","اولویت: "+PRI[t.priority].label+" — برای تغییر کلیک کنید");
+        chip.title="تغییر اولویت";
+        chip.innerHTML=flagIcon+(t.priority>0?"<span>"+PRI[t.priority].short+"</span>":"");
+        chip.onclick=function(){ cyclePri(t.id); };
+
+        var pencil=document.createElement("button");
+        pencil.className="icon-btn pencil";
+        pencil.setAttribute("aria-label","ویرایش کار");
+        pencil.innerHTML=pencilIcon;
+        pencil.onclick=function(){ var cur=li.querySelector(".txt"); if(cur) startEdit(li,t,cur); };
+
+        var del=document.createElement("button");
+        del.className="icon-btn del";
+        del.setAttribute("aria-label","حذف کار");
+        del.innerHTML=trashIcon;
+        del.onclick=function(){ removeTask(t.id,li); };
+
+        li.appendChild(check); li.appendChild(txt); li.appendChild(chip);
+        li.appendChild(pencil); li.appendChild(del);
+        list.appendChild(li);
+      });
+    }
+    updateTaskProgress(); updateTaskCounts();
+  }
+
+  function startEdit(li,t,txt){
+    var inp=document.createElement("input");
+    inp.className="txt-edit"; inp.value=t.text;
+    inp.setAttribute("aria-label","ویرایش کار");
+    li.replaceChild(inp,txt);
+    inp.focus(); inp.setSelectionRange(inp.value.length,inp.value.length);
+    var fin=false;
+    function finish(save){ if(fin)return; fin=true; if(save) editTask(t.id,inp.value); else renderTasks(); }
+    inp.addEventListener("keydown",function(ev){
+      if(ev.key==="Enter") finish(true);
+      else if(ev.key==="Escape") finish(false);
+    });
+    inp.addEventListener("blur",function(){ finish(true); });
+  }
+
+  var C=2*Math.PI*38;
+  var fg=document.getElementById("ringFg");
+  fg.style.strokeDasharray=C; fg.style.strokeDashoffset=C;
+
+  function updateTaskProgress(){
+    var total=tasks.length;
+    var done=tasks.filter(function(t){return t.done;}).length;
+    fg.style.strokeDashoffset=C*(1-(total?done/total:0));
+    document.getElementById("ringDone").textContent=fa(done);
+    document.getElementById("ringTotal").textContent="از "+fa(total);
+    document.getElementById("ring").classList.toggle("full",total>0&&done===total);
+    var status=document.getElementById("tStatus");
+    var remaining=total-done;
+    var high=tasks.filter(function(t){return !t.done&&t.priority===3;}).length;
+    status.classList.remove("alldone");
+    if(total===0) status.textContent="برای شروع، یک کار اضافه کنید";
+    else if(remaining===0){ status.textContent="همه کارها انجام شد 🎉"; status.classList.add("alldone"); }
+    else status.textContent=fa(remaining)+" کار باقی مانده"+(high?" · "+fa(high)+" با اولویت بالا":"");
+  }
+
+  function updateTaskCounts(){
+    var all=tasks.length;
+    var done=tasks.filter(function(t){return t.done;}).length;
+    var active=all-done;
+    var high=tasks.filter(function(t){return t.priority===3;}).length;
+    document.querySelector('[data-c="all"]').textContent=all?fa(all):"";
+    document.querySelector('[data-c="active"]').textContent=active?fa(active):"";
+    document.querySelector('[data-c="done"]').textContent=done?fa(done):"";
+    document.querySelector('[data-c="high"]').textContent=high?fa(high):"";
+    if(all===0) tFooter.classList.add("hidden");
+    else{
+      tFooter.classList.remove("hidden");
+      document.getElementById("footText").textContent=fa(active)+" فعال · "+fa(done)+" انجام‌شده";
+      document.getElementById("clearBtn").style.visibility=done?"visible":"hidden";
+    }
+  }
+
+  /* ---- tasks export ---- */
+  function taskExportOrder(){
+    var arr=tasks.slice();
+    arr.sort(function(a,b){
+      if(a.done!==b.done) return a.done?1:-1;
+      if(b.priority!==a.priority) return b.priority-a.priority;
+      return a.created-b.created;
+    });
+    return arr;
+  }
+  function taskStats(){
+    var total=tasks.length, done=tasks.filter(function(t){return t.done;}).length;
+    return {total:total,done:done,active:total-done};
+  }
+  function buildTaskMD(){
+    var s=taskStats(), now=new Date();
+    var out="# کارهای من\n\n> خروجی: "+jalaliDisplay(now)+" · ساعت "+nowTime()+"\n\n";
+    out+="**"+fa(s.total)+"** کار · **"+fa(s.active)+"** فعال · **"+fa(s.done)+"** انجام‌شده\n";
+    var arr=taskExportOrder();
+    var act=arr.filter(function(t){return !t.done;});
+    var don=arr.filter(function(t){return t.done;});
+    if(act.length){
+      out+="\n## فعال\n\n";
+      act.forEach(function(t){
+        var p=PRI[t.priority];
+        out+="- [ ] "+(p.emoji?p.emoji+" ":"")+t.text+(p.word?" — *اولویت "+p.word+"*":"")+"\n";
+      });
+    }
+    if(don.length){
+      out+="\n## انجام‌شده\n\n";
+      don.forEach(function(t){
+        var p=PRI[t.priority];
+        out+="- [x] ~~"+t.text+"~~"+(p.word?" — *اولویت "+p.word+"*":"")+"\n";
+      });
+    }
+    return out;
+  }
+  function buildTaskTXT(){
+    var s=taskStats(), now=new Date();
+    var out="کارهای من\n"+jalaliDisplay(now)+" · ساعت "+nowTime()+"\n";
+    out+=fa(s.total)+" کار · "+fa(s.active)+" فعال · "+fa(s.done)+" انجام‌شده\n";
+    out+="----------------------------------------\n";
+    var arr=taskExportOrder();
+    var act=arr.filter(function(t){return !t.done;});
+    var don=arr.filter(function(t){return t.done;});
+    if(act.length){ out+="\nفعال:\n"; act.forEach(function(t){ var p=PRI[t.priority]; out+="  [ ] "+(p.word?"("+p.word+") ":"")+t.text+"\n"; }); }
+    if(don.length){ out+="\nانجام‌شده:\n"; don.forEach(function(t){ out+="  [x] "+t.text+"\n"; }); }
+    return out;
+  }
+  function csvCell(s){ s=String(s); if(/[",\n\r]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; }
+  function buildTaskCSV(){
+    var rows=["متن,اولویت,وضعیت,تاریخ ایجاد"];
+    taskExportOrder().forEach(function(t){
+      rows.push([csvCell(t.text),csvCell(PRI[t.priority].word||"بدون"),
+        csvCell(t.done?"انجام‌شده":"فعال"),
+        csvCell(jalaliShort(new Date(t.created||Date.now())))].join(","));
+    });
+    return "\uFEFF"+rows.join("\r\n");
+  }
+  function buildTaskJSON(){
+    var s=taskStats();
+    return JSON.stringify({
+      exportedAt:new Date().toISOString(),
+      stats:{total:s.total,active:s.active,done:s.done},
+      tasks:taskExportOrder().map(function(t){
+        return {text:t.text,done:t.done,priority:PRI_EN[t.priority],
+          createdAt:new Date(t.created||Date.now()).toISOString()};
+      })
+    },null,2);
+  }
+  function doTaskExport(kind){
+    if(tasks.length===0){ toast("لیست خالی است — اول چند کار اضافه کنید"); return; }
+    var base="tasks-"+jalaliFile(new Date()), ok;
+    if(kind==="md"){ ok=download(base+".md",buildTaskMD(),"text/markdown"); if(ok)toast("فایل Markdown دانلود شد"); }
+    else if(kind==="csv"){ ok=download(base+".csv",buildTaskCSV(),"text/csv"); if(ok)toast("فایل CSV دانلود شد"); }
+    else if(kind==="json"){ ok=download(base+".json",buildTaskJSON(),"application/json"); if(ok)toast("فایل JSON دانلود شد"); }
+    else if(kind==="txt"){ ok=download(base+".txt",buildTaskTXT(),"text/plain"); if(ok)toast("فایل متنی دانلود شد"); }
+    else if(kind==="copy"){
+      copyText(buildTaskMD()).then(function(){toast("مارک‌داون کپی شد");},function(){toast("کپی ممکن نشد — از دانلود MD استفاده کنید");});
+      return;
+    }
+    if(ok===false) toast("دانلود ممکن نشد — از «کپی مارک‌داون» استفاده کنید");
+  }
+
+  /* ---- tasks events ---- */
+  attachMenu(document.getElementById("exportBtn"),document.getElementById("exportMenu"));
+  document.getElementById("exportMenu").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-x]"); if(!b)return;
+    closeMenus(); doTaskExport(b.dataset.x);
+  });
+  function paintPriBtn(){
+    priBtn.className="pri-btn"+(addPri?" p"+addPri:"");
+    priLabel.textContent=PRI[addPri].short;
+    priBtn.setAttribute("aria-label","اولویت کار جدید: "+PRI[addPri].label);
+  }
+  priBtn.addEventListener("click",function(){ addPri=(addPri+1)%4; paintPriBtn(); });
+  document.getElementById("addBtn").onclick=function(){ addTask(input.value); input.value=""; input.focus(); };
+  input.addEventListener("keydown",function(ev){ if(ev.key==="Enter"){ addTask(input.value); input.value=""; } });
+  document.getElementById("filters").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-f]"); if(!b)return;
+    tFilter=b.dataset.f;
+    document.querySelectorAll("#filters button").forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active"); renderTasks();
+  });
+  document.getElementById("search").addEventListener("input",function(ev){ tQuery=ev.target.value; renderTasks(); });
+  document.getElementById("sort").addEventListener("change",function(ev){ tSort=ev.target.value; persistTPrefs(); renderTasks(); });
+
+  var clearBtn=document.getElementById("clearBtn"), clearArmed=false, clearTimer=null;
+  function disarmClear(){ clearArmed=false; clearBtn.classList.remove("armed"); clearBtn.textContent="پاک کردن انجام‌شده‌ها"; }
+  clearBtn.addEventListener("click",function(){
+    if(!clearArmed){
+      clearArmed=true; clearBtn.classList.add("armed");
+      clearBtn.textContent="مطمئنید؟ دوباره بزنید";
+      clearTimeout(clearTimer); clearTimer=setTimeout(disarmClear,3200);
+    } else {
+      clearTimeout(clearTimer); disarmClear();
+      var n=tasks.filter(function(x){return x.done;}).length;
+      tasks=tasks.filter(function(x){return !x.done;});
+      persistTasks(); renderTasks();
+      toast(fa(n)+" کار انجام‌شده پاک شد");
+    }
+  });
+
+  document.addEventListener("keydown",function(ev){
+    if(ev.key==="Escape") closeMenus();
+    if(ev.key==="/"&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)&&appPrefs.tab==="tasks"){
+      ev.preventDefault(); document.getElementById("search").focus();
+    }
+  });
+
+  /* ============================================================ */
+  /* ========================= FINANCE ========================== */
+  /* ============================================================ */
+  var EX_CATS=["خوراک","حمل‌ونقل","خرید","قبوض","مسکن","سلامت","تفریح","آموزش","بدهی","قسط","سایر"];
+  var IN_CATS=["حقوق","کسب‌وکار","هدیه","سود سرمایه","سایر"];
+  var PALETTE=["#0a84ff","#ff9f0a","#bf5af2","#30d158","#ff375f","#ffd60a","#64d2ff","#ff6961","#5e5ce6","#8e8e93","#40c8a0"];
+  function catColor(cat){
+    var i=EX_CATS.indexOf(cat);
+    if(i<0) i=EX_CATS.length-1;
+    return PALETTE[i%PALETTE.length];
+  }
+
+  var fin={ tx:[], debts:[], insts:[] };
+  var finType="ex", donutMode="month", txFilter="all", openPayId=null;
+  var armedDel=null, armedDelTimer=null;
+  function armDelete(id,onDelete){
+    if(armedDel===id){
+      clearTimeout(armedDelTimer); armedDel=null;
+      onDelete();
+    } else {
+      armedDel=id; clearTimeout(armedDelTimer);
+      armedDelTimer=setTimeout(function(){ armedDel=null; renderObjs(); },3200);
+      renderObjs();
+    }
+  }
+
+  function persistFin(){ store.set(K_FIN,JSON.stringify(fin)); }
+
+  /* fill selects */
+  (function(){
+    var se=document.getElementById("fCatEx");
+    EX_CATS.forEach(function(c){ if(c!=="بدهی"&&c!=="قسط"){ var o=document.createElement("option"); o.value=c; o.textContent=c; se.appendChild(o);} });
+    var si=document.getElementById("fCatIn");
+    IN_CATS.forEach(function(c){ var o=document.createElement("option"); o.value=c; o.textContent=c; si.appendChild(o); });
+  })();
+  bindAmount(document.getElementById("fAmount"));
+  bindAmount(document.getElementById("fDebtPaid"));
+
+  var TYPE_META={
+    ex:{title:"مثلاً: خرید هفتگی",amount:"مبلغ"},
+    in:{title:"مثلاً: حقوق "+MONTHS[jalaliOf(new Date())[1]-1],amount:"مبلغ"},
+    debt:{title:"مثلاً: قرض از علی",amount:"مبلغ کل بدهی"},
+    inst:{title:"مثلاً: قسط خودرو",amount:"مبلغ هر قسط"}
+  };
+  function paintFinForm(){
+    var seg=document.getElementById("finSeg");
+    seg.setAttribute("data-type",finType);
+    seg.querySelectorAll("button[data-t]").forEach(function(b){
+      b.classList.toggle("active",b.dataset.t===finType);
+    });
+    document.getElementById("fTitle").placeholder=TYPE_META[finType].title;
+    document.getElementById("lblAmount").textContent=TYPE_META[finType].amount;
+    document.getElementById("cellCatEx").classList.toggle("hide",finType!=="ex");
+    document.getElementById("cellCatIn").classList.toggle("hide",finType!=="in");
+    document.getElementById("cellDebtPaid").classList.toggle("hide",finType!=="debt");
+    document.getElementById("cellInstCount").classList.toggle("hide",finType!=="inst");
+    document.getElementById("cellInstPaid").classList.toggle("hide",finType!=="inst");
+    moveSegThumb();
+  }
+  document.getElementById("finSeg").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-t]"); if(!b)return;
+    finType=b.dataset.t; paintFinForm();
+  });
+
+  document.getElementById("finAdd").addEventListener("click",function(){
+    var title=document.getElementById("fTitle").value.trim()||"بدون عنوان";
+    var amount=parseAmount(document.getElementById("fAmount").value);
+    if(amount<=0){ toast("مبلغ را وارد کنید"); return; }
+    if(finType==="ex"){
+      fin.tx.unshift({id:genId(),type:"ex",title:title,cat:document.getElementById("fCatEx").value,amount:amount,ts:Date.now()});
+      toast("هزینه ثبت شد");
+    } else if(finType==="in"){
+      fin.tx.unshift({id:genId(),type:"in",title:title,cat:document.getElementById("fCatIn").value,amount:amount,ts:Date.now()});
+      toast("درآمد ثبت شد");
+    } else if(finType==="debt"){
+      var paid0=Math.min(parseAmount(document.getElementById("fDebtPaid").value),amount);
+      fin.debts.unshift({id:genId(),name:title,total:amount,paid:paid0,created:Date.now()});
+      document.getElementById("fDebtPaid").value="";
+      toast("بدهی ثبت شد");
+    } else {
+      var count=parseAmount(document.getElementById("fInstCount").value);
+      if(count<1){ toast("تعداد اقساط را وارد کنید"); return; }
+      var paidC=Math.min(parseAmount(document.getElementById("fInstPaid").value),count);
+      fin.insts.unshift({id:genId(),name:title,per:amount,count:count,paidCount:paidC,created:Date.now()});
+      document.getElementById("fInstCount").value=""; document.getElementById("fInstPaid").value="";
+      toast("قسط ثبت شد");
+    }
+    document.getElementById("fTitle").value="";
+    document.getElementById("fAmount").value="";
+    persistFin(); renderFin();
+  });
+
+  /* ---- computations ---- */
+  function finTotals(){
+    var inc=0,ex=0,mInc=0,mEx=0;
+    var mk=monthKey(new Date());
+    fin.tx.forEach(function(t){
+      if(t.type==="in"){ inc+=t.amount; if(monthKey(new Date(t.ts))===mk) mInc+=t.amount; }
+      else { ex+=t.amount; if(monthKey(new Date(t.ts))===mk) mEx+=t.amount; }
+    });
+    var debtRem=0;
+    fin.debts.forEach(function(d){ debtRem+=Math.max(0,d.total-d.paid); });
+    fin.insts.forEach(function(s){ debtRem+=Math.max(0,(s.count-s.paidCount))*s.per; });
+    return {inc:inc,ex:ex,bal:inc-ex,mInc:mInc,mEx:mEx,debtRem:debtRem};
+  }
+
+  /* ---- summary ---- */
+  function renderSummary(){
+    var t=finTotals();
+    var vb=document.getElementById("vBal");
+    vb.innerHTML=money(t.bal)+"<small>تومان</small>";
+    document.getElementById("sumBal").classList.toggle("neg",t.bal<0);
+    document.getElementById("vInc").innerHTML=money(t.mInc)+"<small>تومان</small>";
+    document.getElementById("vEx").innerHTML=money(t.mEx)+"<small>تومان</small>";
+    document.getElementById("vDebt").innerHTML=money(t.debtRem)+"<small>تومان</small>";
+
+    var st=document.getElementById("fStatus");
+    st.classList.remove("warn");
+    if(fin.tx.length===0 && fin.debts.length===0 && fin.insts.length===0){
+      st.textContent="اولین تراکنش خود را ثبت کنید";
+    } else if(t.mEx>t.mInc){
+      st.textContent="⚠️ هزینه‌های این ماه از درآمد بیشتر است";
+      st.classList.add("warn");
+    } else if(t.mInc>0){
+      st.textContent="پس‌انداز این ماه: "+moneyT(t.mInc-t.mEx);
+    } else {
+      st.textContent="هزینه این ماه: "+moneyT(t.mEx);
+    }
+  }
+
+  /* ---- chart utils ---- */
+  function niceMax(v){
+    if(v<=0) return 4;
+    var p=Math.pow(10,Math.floor(Math.log10(v)));
+    var d=v/p;
+    var m=d<=1?1:d<=2?2:d<=2.5?2.5:d<=4?4:d<=5?5:d<=8?8:10;
+    return m*p;
+  }
+  function smoothPath(pts){
+    if(pts.length<2) return "";
+    var d="M"+r1(pts[0][0])+","+r1(pts[0][1]);
+    for(var i=0;i<pts.length-1;i++){
+      var p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+      var c1x=p1[0]+(p2[0]-p0[0])/6, c1y=p1[1]+(p2[1]-p0[1])/6;
+      var c2x=p2[0]-(p3[0]-p1[0])/6, c2y=p2[1]-(p3[1]-p1[1])/6;
+      d+="C"+r1(c1x)+","+r1(c1y)+" "+r1(c2x)+","+r1(c2y)+" "+r1(p2[0])+","+r1(p2[1]);
+    }
+    return d;
+  }
+
+  /* ---- trend chart (6 months) ---- */
+  function trendData(){
+    var now=new Date(), j=jalaliOf(now);
+    var seq=[], jy=j[0], jm=j[1];
+    for(var i=0;i<6;i++){ seq.unshift({jy:jy,jm:jm,inc:0,ex:0}); jm--; if(jm===0){jm=12;jy--;} }
+    var map={};
+    seq.forEach(function(m,i){ map[m.jy*100+m.jm]=i; });
+    fin.tx.forEach(function(t){
+      var k=monthKey(new Date(t.ts));
+      if(k in map){ if(t.type==="in") seq[map[k]].inc+=t.amount; else seq[map[k]].ex+=t.amount; }
+    });
+    return seq;
+  }
+  function renderTrend(){
+    var box=document.getElementById("trendBox");
+    box.innerHTML="";
+    var data=trendData();
+    var maxV=0;
+    data.forEach(function(m){ maxV=Math.max(maxV,m.inc,m.ex); });
+    var W=640,H=252,x0=52,x1=W-16,y0=18,y1=H-40;
+    var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"نمودار روند درآمد و هزینه"});
+    var defs=svgEl("defs",{});
+    function grad(id,color){
+      var g=svgEl("linearGradient",{id:id,x1:"0",y1:"0",x2:"0",y2:"1"});
+      var s1=svgEl("stop",{offset:"0%","stop-color":color,"stop-opacity":"0.28"});
+      var s2=svgEl("stop",{offset:"100%","stop-color":color,"stop-opacity":"0"});
+      g.appendChild(s1); g.appendChild(s2); return g;
+    }
+    var cInc=cssVar("--inc"), cEx=cssVar("--ex"), cLine=cssVar("--line"), cMut=cssVar("--faint");
+    defs.appendChild(grad("gInc",cInc)); defs.appendChild(grad("gEx",cEx));
+    svg.appendChild(defs);
+
+    var top=niceMax(maxV);
+    for(var g=0; g<=4; g++){
+      var vy=y1-(y1-y0)*g/4;
+      svg.appendChild(svgEl("line",{x1:x0,x2:x1,y1:r1(vy),y2:r1(vy),stroke:cLine,"stroke-width":g===0?1.4:1,"stroke-dasharray":g===0?"none":"3 5"}));
+      var lbl=svgEl("text",{x:x0-8,y:r1(vy+4),"text-anchor":"end","font-size":"10.5","font-weight":"600",fill:cMut,"font-family":"inherit"});
+      lbl.textContent=compact(top*g/4);
+      svg.appendChild(lbl);
+    }
+
+    var n=data.length;
+    function X(i){ return x0+ (x1-x0)*(n===1?0.5:i/(n-1)); }
+    function Y(v){ return y1-(y1-y0)*(top?v/top:0); }
+    var pInc=data.map(function(m,i){ return [X(i),Y(m.inc)]; });
+    var pEx =data.map(function(m,i){ return [X(i),Y(m.ex)]; });
+
+    function area(pts,gid){
+      var d=smoothPath(pts)+" L"+r1(pts[pts.length-1][0])+","+y1+" L"+r1(pts[0][0])+","+y1+" Z";
+      return svgEl("path",{d:d,fill:"url(#"+gid+")",stroke:"none"});
+    }
+    svg.appendChild(area(pInc,"gInc"));
+    svg.appendChild(area(pEx,"gEx"));
+    svg.appendChild(svgEl("path",{d:smoothPath(pEx),fill:"none",stroke:cEx,"stroke-width":2.6,"stroke-linecap":"round"}));
+    svg.appendChild(svgEl("path",{d:smoothPath(pInc),fill:"none",stroke:cInc,"stroke-width":2.6,"stroke-linecap":"round"}));
+
+    data.forEach(function(m,i){
+      var t=svgEl("text",{x:r1(X(i)),y:H-16,"text-anchor":"middle","font-size":"11","font-weight":"700",fill:cMut,"font-family":"inherit"});
+      t.textContent=MONTHS[m.jm-1];
+      svg.appendChild(t);
+    });
+
+    /* hover guide */
+    var guide=svgEl("g",{opacity:"0"});
+    var gl=svgEl("line",{y1:y0,y2:y1,stroke:cMut,"stroke-width":1,"stroke-dasharray":"3 4"});
+    var d1=svgEl("circle",{r:4.4,fill:cInc,stroke:"#fff","stroke-width":1.6});
+    var d2=svgEl("circle",{r:4.4,fill:cEx,stroke:"#fff","stroke-width":1.6});
+    guide.appendChild(gl); guide.appendChild(d1); guide.appendChild(d2);
+    svg.appendChild(guide);
+
+    svg.addEventListener("pointermove",function(e){
+      var rect=svg.getBoundingClientRect();
+      var xi=(e.clientX-rect.left)/rect.width*W;
+      var best=0,bd=1e9;
+      for(var i=0;i<n;i++){ var dd=Math.abs(X(i)-xi); if(dd<bd){bd=dd;best=i;} }
+      var m=data[best];
+      guide.setAttribute("opacity","1");
+      gl.setAttribute("x1",r1(X(best))); gl.setAttribute("x2",r1(X(best)));
+      d1.setAttribute("cx",r1(X(best))); d1.setAttribute("cy",r1(Y(m.inc)));
+      d2.setAttribute("cx",r1(X(best))); d2.setAttribute("cy",r1(Y(m.ex)));
+      tipShow("<b>"+MONTHS[m.jm-1]+" "+fa(m.jy)+"</b><br>"+
+        '<span class="tdot" style="background:'+cInc+'"></span>درآمد: '+moneyT(m.inc)+"<br>"+
+        '<span class="tdot" style="background:'+cEx+'"></span>هزینه: '+moneyT(m.ex),
+        e.clientX,e.clientY);
+    });
+    svg.addEventListener("pointerleave",function(){ guide.setAttribute("opacity","0"); tipHide(); });
+
+    box.appendChild(svg);
+    if(maxV===0){
+      var em=document.createElement("div");
+      em.className="chart-empty";
+      em.innerHTML="هنوز تراکنشی ثبت نشده<br><span style='font-weight:400;font-size:12px'>با ثبت درآمد و هزینه، روند اینجا رسم می‌شود</span>";
+      box.appendChild(em);
+    }
+  }
+
+  /* ---- donut ---- */
+  function donutData(){
+    var mk=monthKey(new Date());
+    var sums={};
+    fin.tx.forEach(function(t){
+      if(t.type!=="ex") return;
+      if(donutMode==="month" && monthKey(new Date(t.ts))!==mk) return;
+      sums[t.cat]=(sums[t.cat]||0)+t.amount;
+    });
+    var arr=Object.keys(sums).map(function(c){ return {label:c,value:sums[c],color:catColor(c)}; });
+    arr.sort(function(a,b){ return b.value-a.value; });
+    if(arr.length>6){
+      var rest=arr.slice(5).reduce(function(s,x){return s+x.value;},0);
+      arr=arr.slice(0,5);
+      arr.push({label:"سایر",value:rest,color:catColor("سایر")});
+    }
+    return arr;
+  }
+  function polar(cx,cy,r,a){ return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  function arcPath(cx,cy,r,a0,a1){
+    var p0=polar(cx,cy,r,a0), p1=polar(cx,cy,r,a1);
+    var large=(a1-a0)>Math.PI?1:0;
+    return "M"+r1(p0[0])+","+r1(p0[1])+" A"+r+","+r+" 0 "+large+" 1 "+r1(p1[0])+","+r1(p1[1]);
+  }
+  function renderDonut(){
+    var box=document.getElementById("donutBox");
+    var leg=document.getElementById("donutLegend");
+    box.innerHTML=""; leg.innerHTML="";
+    var data=donutData();
+    var total=data.reduce(function(s,x){return s+x.value;},0);
+
+    var W=240,H=200,cx=W/2,cy=H/2,r=66;
+    var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"نمودار هزینه‌ها بر اساس دسته"});
+    svg.style.maxWidth="270px"; svg.style.margin="0 auto";
+
+    if(total===0){
+      svg.appendChild(svgEl("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:cssVar("--track"),"stroke-width":24}));
+      box.appendChild(svg);
+      var em=document.createElement("div");
+      em.className="chart-empty";
+      em.textContent=donutMode==="month"?"در این ماه هزینه‌ای ثبت نشده":"هنوز هزینه‌ای ثبت نشده";
+      box.appendChild(em);
+      return;
+    }
+
+    var segs=[];
+    var a=-Math.PI/2;
+    var gap=data.length>1?0.055:0;
+    data.forEach(function(dd,i){
+      var ang=(dd.value/total)*Math.PI*2;
+      var a0=a+gap/2, a1=a+ang-gap/2;
+      if(a1<=a0) a1=a0+0.012;
+      var p=svgEl("path",{d:arcPath(cx,cy,r,a0,a1),fill:"none",stroke:dd.color,
+        "stroke-width":24,"stroke-linecap":data.length>1?"round":"butt"});
+      p.style.transition="opacity .2s";
+      svg.appendChild(p); segs.push(p);
+      a+=ang;
+    });
+
+    var t1=svgEl("text",{x:cx,y:cy-3,"text-anchor":"middle","font-size":"17","font-weight":"800",fill:cssVar("--ink"),"font-family":"inherit"});
+    t1.textContent=compact(total);
+    var t2=svgEl("text",{x:cx,y:cy+16,"text-anchor":"middle","font-size":"10.5","font-weight":"600",fill:cssVar("--faint"),"font-family":"inherit"});
+    t2.textContent="تومان";
+    svg.appendChild(t1); svg.appendChild(t2);
+    box.appendChild(svg);
+
+    function hi(i){ segs.forEach(function(s,j){ s.style.opacity=(j===i)?"1":"0.28"; }); }
+    function lo(){ segs.forEach(function(s){ s.style.opacity="1"; }); }
+
+    data.forEach(function(dd,i){
+      var pct=Math.round(dd.value/total*100);
+      var row=document.createElement("div");
+      row.className="row";
+      row.innerHTML='<span class="dot" style="background:'+dd.color+'"></span>'+
+        '<span class="lbl">'+esc(dd.label)+'</span>'+
+        '<span class="amt">'+moneyT(dd.value)+'</span>'+
+        '<span class="pct">٪'+fa(pct)+'</span>';
+      row.addEventListener("mouseenter",function(){ hi(i); });
+      row.addEventListener("mouseleave",lo);
+      leg.appendChild(row);
+
+      segs[i].addEventListener("pointermove",function(e){
+        hi(i);
+        tipShow("<b>"+esc(dd.label)+"</b><br>"+moneyT(dd.value)+" · ٪"+fa(pct),e.clientX,e.clientY);
+      });
+      segs[i].addEventListener("pointerleave",function(){ lo(); tipHide(); });
+    });
+  }
+  document.getElementById("donutScope").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-s]"); if(!b)return;
+    donutMode=b.dataset.s;
+    document.querySelectorAll("#donutScope button").forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    renderDonut();
+  });
+
+  /* ---- weekly bars ---- */
+  function weekData(){
+    var days=[];
+    var now=new Date();
+    for(var i=6;i>=0;i--){
+      var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
+      days.push({d:d,key:d.getTime(),value:0});
+    }
+    fin.tx.forEach(function(t){
+      if(t.type!=="ex") return;
+      var td=new Date(t.ts);
+      var k=new Date(td.getFullYear(),td.getMonth(),td.getDate()).getTime();
+      for(var i=0;i<7;i++){ if(days[i].key===k){ days[i].value+=t.amount; break; } }
+    });
+    return days;
+  }
+  function renderWeek(){
+    var box=document.getElementById("weekBox");
+    box.innerHTML="";
+    var days=weekData();
+    var maxV=0; days.forEach(function(d){ maxV=Math.max(maxV,d.value); });
+    var W=300,H=210,x0=14,x1=W-14,y0=16,y1=H-34;
+    var top=niceMax(maxV);
+    var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"هزینه هفت روز اخیر"});
+    var cLine=cssVar("--line"), cMut=cssVar("--faint"), cInk=cssVar("--ink");
+    svg.appendChild(svgEl("line",{x1:x0,x2:x1,y1:y1,y2:y1,stroke:cLine,"stroke-width":1.4}));
+
+    var defs=svgEl("defs",{});
+    var lg=svgEl("linearGradient",{id:"gBar",x1:"0",y1:"0",x2:"0",y2:"1"});
+    lg.appendChild(svgEl("stop",{offset:"0%","stop-color":cssVar("--accent"),"stop-opacity":"1"}));
+    lg.appendChild(svgEl("stop",{offset:"100%","stop-color":cssVar("--accent2"),"stop-opacity":"0.55"}));
+    defs.appendChild(lg); svg.appendChild(defs);
+
+    var n=7, slot=(x1-x0)/n, bw=Math.min(26,slot*0.52);
+    days.forEach(function(dd,i){
+      var cx=x0+slot*i+slot/2;
+      var h=top?(y1-y0)*(dd.value/top):0;
+      if(dd.value>0&&h<4) h=4;
+      var isToday=(i===6);
+      var bar=svgEl("rect",{x:r1(cx-bw/2),y:r1(y1-h),width:r1(bw),height:r1(h),rx:7,
+        fill:isToday?"url(#gBar)":cssVar("--faint"),opacity:isToday?"1":"0.5"});
+      bar.style.transition="opacity .15s";
+      svg.appendChild(bar);
+
+      var lbl=svgEl("text",{x:r1(cx),y:H-14,"text-anchor":"middle","font-size":"11.5","font-weight":isToday?"800":"600",
+        fill:isToday?cInk:cMut,"font-family":"inherit"});
+      lbl.textContent=WD_SHORT[dd.d.getDay()];
+      svg.appendChild(lbl);
+
+      var hit=svgEl("rect",{x:r1(x0+slot*i),y:y0,width:r1(slot),height:r1(y1-y0),fill:"transparent"});
+      hit.addEventListener("pointermove",function(e){
+        bar.style.opacity="1";
+        tipShow("<b>"+WDAYS[dd.d.getDay()]+" "+jalaliShortFa(dd.d)+"</b><br>هزینه: "+moneyT(dd.value),e.clientX,e.clientY);
+      });
+      hit.addEventListener("pointerleave",function(){ bar.style.opacity=isToday?"1":"0.5"; tipHide(); });
+      svg.appendChild(hit);
+    });
+    box.appendChild(svg);
+    if(maxV===0){
+      var em=document.createElement("div");
+      em.className="chart-empty";
+      em.textContent="در ۷ روز اخیر هزینه‌ای ثبت نشده";
+      box.appendChild(em);
+    }
+  }
+
+  /* ---- debts & installments ---- */
+  function renderObjs(){
+    var wrap=document.getElementById("objList");
+    wrap.innerHTML="";
+    if(fin.debts.length===0 && fin.insts.length===0){
+      var em=document.createElement("div");
+      em.className="empty"; em.style.padding="26px 10px";
+      em.innerHTML='<p>بدهی یا قسطی ثبت نشده</p><p class="sub">از فرم بالا با انتخاب «بدهی» یا «قسط» اضافه کنید.</p>';
+      wrap.appendChild(em);
+      return;
+    }
+    fin.debts.forEach(function(d){
+      var rem=Math.max(0,d.total-d.paid);
+      var pct=d.total?Math.min(100,Math.round(d.paid/d.total*100)):0;
+      var settled=rem===0;
+      var el=document.createElement("div");
+      el.className="obj"+(settled?" settled":"");
+      el.innerHTML=
+        '<div class="o-top"><span class="o-name">'+esc(d.name)+'</span>'+
+        '<span class="badge debt">بدهی</span>'+(settled?'<span class="badge ok">تسویه شد ✓</span>':'')+'</div>'+
+        '<div class="o-sub">کل: <b>'+moneyT(d.total)+'</b> · پرداخت‌شده: <b>'+moneyT(d.paid)+'</b> · مانده: <b>'+moneyT(rem)+'</b></div>'+
+        '<div class="bar"><i style="width:'+pct+'%"></i></div>';
+      var act=document.createElement("div");
+      act.className="o-actions";
+      if(!settled){
+        var payBtn=document.createElement("button");
+        payBtn.className="mini-btn"; payBtn.textContent="پرداخت";
+        payBtn.onclick=function(){ openPayId=(openPayId===d.id)?null:d.id; renderObjs(); };
+        act.appendChild(payBtn);
+      }
+      var delBtn=document.createElement("button");
+      delBtn.className="mini-btn gray"+(armedDel===d.id?" danger":"");
+      delBtn.textContent=armedDel===d.id?"مطمئنید؟ دوباره بزنید":"حذف";
+      delBtn.onclick=function(){
+        armDelete(d.id,function(){
+          fin.debts=fin.debts.filter(function(x){return x.id!==d.id;});
+          persistFin(); renderFin(); toast("بدهی حذف شد");
+        });
+      };
+      act.appendChild(delBtn);
+      el.appendChild(act);
+
+      if(openPayId===d.id && !settled){
+        var pr=document.createElement("div");
+        pr.className="payrow";
+        var inp=document.createElement("input");
+        inp.className="f-input"; inp.type="text"; inp.setAttribute("inputmode","numeric");
+        inp.value=fa(rem.toLocaleString("en-US")).replace(/,/g,"٬");
+        bindAmount(inp);
+        var ok=document.createElement("button");
+        ok.className="btn"; ok.textContent="ثبت پرداخت";
+        ok.onclick=function(){
+          var amt=Math.min(parseAmount(inp.value),rem);
+          if(amt<=0){ toast("مبلغ معتبر نیست"); return; }
+          d.paid+=amt;
+          fin.tx.unshift({id:genId(),type:"ex",title:"پرداخت بدهی: "+d.name,cat:"بدهی",amount:amt,ts:Date.now()});
+          openPayId=null; persistFin(); renderFin();
+          toast(moneyT(amt)+" از بدهی پرداخت شد");
+        };
+        pr.appendChild(inp); pr.appendChild(ok);
+        el.appendChild(pr);
+        setTimeout(function(){ inp.focus(); },30);
+      }
+      wrap.appendChild(el);
+    });
+
+    fin.insts.forEach(function(s){
+      var remCount=Math.max(0,s.count-s.paidCount);
+      var pct=s.count?Math.min(100,Math.round(s.paidCount/s.count*100)):0;
+      var doneAll=remCount===0;
+      var el=document.createElement("div");
+      el.className="obj"+(doneAll?" settled":"");
+      el.innerHTML=
+        '<div class="o-top"><span class="o-name">'+esc(s.name)+'</span>'+
+        '<span class="badge inst">قسط</span>'+(doneAll?'<span class="badge ok">تکمیل شد ✓</span>':'')+'</div>'+
+        '<div class="o-sub">قسط <b>'+fa(s.paidCount)+'</b> از <b>'+fa(s.count)+'</b> · هر قسط: <b>'+moneyT(s.per)+'</b> · مانده: <b>'+moneyT(remCount*s.per)+'</b></div>'+
+        '<div class="bar"><i style="width:'+pct+'%"></i></div>';
+      var act=document.createElement("div");
+      act.className="o-actions";
+      if(!doneAll){
+        var payBtn=document.createElement("button");
+        payBtn.className="mini-btn"; payBtn.textContent="پرداخت قسط ("+moneyT(s.per)+")";
+        payBtn.onclick=function(){
+          s.paidCount++;
+          fin.tx.unshift({id:genId(),type:"ex",title:"قسط: "+s.name+" ("+fa(s.paidCount)+" از "+fa(s.count)+")",cat:"قسط",amount:s.per,ts:Date.now()});
+          persistFin(); renderFin();
+          toast("قسط "+fa(s.paidCount)+" پرداخت شد");
+        };
+        act.appendChild(payBtn);
+      }
+      var delBtn=document.createElement("button");
+      delBtn.className="mini-btn gray"+(armedDel===s.id?" danger":"");
+      delBtn.textContent=armedDel===s.id?"مطمئنید؟ دوباره بزنید":"حذف";
+      delBtn.onclick=function(){
+        armDelete(s.id,function(){
+          fin.insts=fin.insts.filter(function(x){return x.id!==s.id;});
+          persistFin(); renderFin(); toast("قسط حذف شد");
+        });
+      };
+      act.appendChild(delBtn);
+      el.appendChild(act);
+      wrap.appendChild(el);
+    });
+  }
+
+  /* ---- transactions ---- */
+  var txUpIcon='<svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+  var txDownIcon='<svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+  function renderTx(){
+    var wrap=document.getElementById("txList");
+    wrap.innerHTML="";
+    var arr=fin.tx.filter(function(t){
+      if(txFilter==="in") return t.type==="in";
+      if(txFilter==="ex") return t.type==="ex";
+      return true;
+    }).slice(0,40);
+    if(arr.length===0){
+      var em=document.createElement("div");
+      em.className="empty"; em.style.padding="24px 10px";
+      em.innerHTML='<p>تراکنشی نیست</p><p class="sub">درآمد و هزینه‌ها اینجا فهرست می‌شوند.</p>';
+      wrap.appendChild(em);
+      return;
+    }
+    arr.forEach(function(t){
+      var row=document.createElement("div");
+      row.className="txrow";
+      var isIn=t.type==="in";
+      row.innerHTML=
+        '<span class="t-ic '+(isIn?"in":"ex")+'">'+(isIn?txUpIcon:txDownIcon)+'</span>'+
+        '<div class="t-main"><div class="t-title">'+esc(t.title)+'</div>'+
+        '<div class="t-sub">'+esc(t.cat)+' · '+jalaliShortFa(new Date(t.ts))+'</div></div>'+
+        '<span class="t-amt '+(isIn?"in":"ex")+'">'+(isIn?"+":"−")+money(t.amount)+'</span>';
+      var del=document.createElement("button");
+      del.className="icon-btn del";
+      del.setAttribute("aria-label","حذف تراکنش");
+      del.innerHTML=trashIcon;
+      del.onclick=function(){
+        fin.tx=fin.tx.filter(function(x){return x.id!==t.id;});
+        persistFin(); renderFin(); toast("تراکنش حذف شد");
+      };
+      row.appendChild(del);
+      wrap.appendChild(row);
+    });
+  }
+  document.getElementById("txFilters").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-t]"); if(!b)return;
+    txFilter=b.dataset.t;
+    document.querySelectorAll("#txFilters button").forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    renderTx();
+  });
+
+  /* ---- finance export ---- */
+  function buildFinMD(){
+    var t=finTotals(), now=new Date();
+    var out="# گزارش مالی\n\n> "+jalaliDisplay(now)+" · ساعت "+nowTime()+"\n\n";
+    out+="| شاخص | مبلغ |\n|---|---|\n";
+    out+="| موجودی خالص | "+moneyT(t.bal)+" |\n";
+    out+="| درآمد این ماه | "+moneyT(t.mInc)+" |\n";
+    out+="| هزینه این ماه | "+moneyT(t.mEx)+" |\n";
+    out+="| بدهی باقی‌مانده | "+moneyT(t.debtRem)+" |\n";
+    if(fin.debts.length){
+      out+="\n## بدهی‌ها\n\n| عنوان | کل | پرداخت‌شده | مانده |\n|---|---|---|---|\n";
+      fin.debts.forEach(function(d){
+        out+="| "+d.name+" | "+moneyT(d.total)+" | "+moneyT(d.paid)+" | "+moneyT(Math.max(0,d.total-d.paid))+" |\n";
+      });
+    }
+    if(fin.insts.length){
+      out+="\n## اقساط\n\n| عنوان | هر قسط | پیشرفت | مانده |\n|---|---|---|---|\n";
+      fin.insts.forEach(function(s){
+        out+="| "+s.name+" | "+moneyT(s.per)+" | "+fa(s.paidCount)+" از "+fa(s.count)+" | "+moneyT(Math.max(0,(s.count-s.paidCount))*s.per)+" |\n";
+      });
+    }
+    var arr=fin.tx.slice(0,50);
+    if(arr.length){
+      out+="\n## تراکنش‌های اخیر\n\n| تاریخ | عنوان | دسته | مبلغ |\n|---|---|---|---|\n";
+      arr.forEach(function(x){
+        out+="| "+jalaliShortFa(new Date(x.ts))+" | "+x.title+" | "+x.cat+" | "+(x.type==="in"?"+":"−")+money(x.amount)+" |\n";
+      });
+    }
+    return out;
+  }
+  function buildFinCSV(){
+    var rows=["نوع,عنوان,دسته,مبلغ,تاریخ"];
+    fin.tx.forEach(function(t){
+      rows.push([csvCell(t.type==="in"?"درآمد":"هزینه"),csvCell(t.title),csvCell(t.cat),
+        csvCell(t.amount),csvCell(jalaliShort(new Date(t.ts)))].join(","));
+    });
+    return "\uFEFF"+rows.join("\r\n");
+  }
+  function buildFinJSON(){
+    var t=finTotals();
+    return JSON.stringify({
+      exportedAt:new Date().toISOString(),
+      summary:{balance:t.bal,monthIncome:t.mInc,monthExpense:t.mEx,debtRemaining:t.debtRem},
+      transactions:fin.tx.map(function(x){
+        return {type:x.type==="in"?"income":"expense",title:x.title,category:x.cat,amount:x.amount,at:new Date(x.ts).toISOString()};
+      }),
+      debts:fin.debts.map(function(d){ return {name:d.name,total:d.total,paid:d.paid}; }),
+      installments:fin.insts.map(function(s){ return {name:s.name,perInstallment:s.per,count:s.count,paidCount:s.paidCount}; })
+    },null,2);
+  }
+  attachMenu(document.getElementById("finExportBtn"),document.getElementById("finExportMenu"));
+  document.getElementById("finExportMenu").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-x]"); if(!b)return;
+    closeMenus();
+    var kind=b.dataset.x;
+    var hasData=fin.tx.length||fin.debts.length||fin.insts.length;
+    if(!hasData){ toast("هنوز داده مالی ثبت نشده"); return; }
+    var base="finance-"+jalaliFile(new Date()), ok;
+    if(kind==="md"){ ok=download(base+".md",buildFinMD(),"text/markdown"); if(ok)toast("گزارش Markdown دانلود شد"); }
+    else if(kind==="csv"){ ok=download(base+".csv",buildFinCSV(),"text/csv"); if(ok)toast("فایل CSV دانلود شد"); }
+    else if(kind==="json"){ ok=download(base+".json",buildFinJSON(),"application/json"); if(ok)toast("پشتیبان JSON دانلود شد"); }
+    else if(kind==="copy"){
+      copyText(buildFinMD()).then(function(){toast("گزارش کپی شد");},function(){toast("کپی ممکن نشد — از دانلود MD استفاده کنید");});
+      return;
+    }
+    if(ok===false) toast("دانلود ممکن نشد — از «کپی گزارش» استفاده کنید");
+  });
+
+  /* ---- finance master render ---- */
+  function renderFinCharts(){
+    if(!panelFin.classList.contains("on")) return;
+    renderTrend(); renderDonut(); renderWeek();
+  }
+  function renderFin(){
+    renderSummary(); renderObjs(); renderTx(); renderFinCharts();
+  }
+
+  /* ============================ init ============================ */
+  document.getElementById("tDate").textContent=jalaliDisplay(new Date());
+  document.getElementById("fDate").textContent=jalaliDisplay(new Date());
+  paintPriBtn(); paintFinForm();
+
+  (async function(){
+    /* theme + tab */
+    var ap=await store.get(K_APP);
+    if(ap&&ap.value){ try{ var v=JSON.parse(ap.value); if(v&&typeof v==="object") appPrefs=Object.assign(appPrefs,v); }catch(e){} }
+    if(!appPrefs.theme){
+      appPrefs.theme=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";
+    }
+    if(appPrefs.theme==="dark") document.documentElement.setAttribute("data-theme","dark");
+
+    /* tasks */
+    var r=await store.get(K_TASKS);
+    if(r&&r.value){
+      try{
+        var parsed=JSON.parse(r.value);
+        if(Array.isArray(parsed)){
+          tasks=parsed.map(function(t){
+            return {id:t.id||genId(),text:t.text||"",done:!!t.done,
+              priority:(typeof t.priority==="number"&&t.priority>=0&&t.priority<=3)?t.priority:(t.important?3:0),
+              created:t.created||Date.now()};
+          }).filter(function(t){return t.text;});
+        }
+      }catch(e){}
+    }
+    var p=await store.get(K_TPREFS);
+    if(p&&p.value){
+      try{
+        var prefs=JSON.parse(p.value);
+        if(prefs&&(prefs.sort==="new"||prefs.sort==="pri"||prefs.sort==="abc")){
+          tSort=prefs.sort; document.getElementById("sort").value=tSort;
+        }
+      }catch(e){}
+    }
+
+    /* finance */
+    var f=await store.get(K_FIN);
+    if(f&&f.value){
+      try{
+        var fd=JSON.parse(f.value);
+        if(fd&&typeof fd==="object"){
+          fin.tx=Array.isArray(fd.tx)?fd.tx:[];
+          fin.debts=Array.isArray(fd.debts)?fd.debts:[];
+          fin.insts=Array.isArray(fd.insts)?fd.insts:[];
+        }
+      }catch(e){}
+    }
+
+    renderTasks();
+    setTab(appPrefs.tab==="fin"?"fin":"tasks");
+    if(appPrefs.tab!=="fin") renderFin(); /* warm summary values for first switch */
+  })();
+})();
+</script>
+</body>
+</html>
