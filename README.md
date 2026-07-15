@@ -16,6 +16,21 @@
 - **ذخیره‌سازی دائمی:** هر تغییر بلافاصله در یک فایل JSON نوشته می‌شود
 - حالت تاریک/روشن، فونت وزیرمتن باندل‌شده (بدون نیاز به اینترنت)، بک‌گراند شیشه‌ای متحرک
 
+## دانلود مستقیم
+
+نسخه مناسب سیستم‌عامل خود را مستقیماً دانلود کنید:
+
+| سیستم‌عامل            | فایل دانلود                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| اوبونتو، دبیان و مینت | [دانلود فایل DEB](https://github.com/majidsii/dashboard-shakhsi/releases/download/v1.2.0/dashboard-shakhsi_1.2.0_all.deb)      |
+| فدورا و اوپن‌سوزه     | [دانلود فایل RPM](https://github.com/majidsii/dashboard-shakhsi/releases/download/v1.2.0/dashboard-shakhsi-1.2.0-2.noarch.rpm) |
+| ویندوز                | [دانلود نسخه ویندوز](https://github.com/majidsii/dashboard-shakhsi/releases/latest/download/DashboardShakhsi-windows.exe)      |
+| macOS                 | [دانلود نسخه مک](https://github.com/majidsii/dashboard-shakhsi/releases/latest/download/DashboardShakhsi-macos.zip)            |
+| اندروید               | [دانلود نسخه اندروید](https://github.com/majidsii/dashboard-shakhsi/releases/latest/download/DashboardShakhsi-android.apk)     |
+
+برای مشاهده جزئیات نسخه‌ها و تغییرات، به بخش [Releases](https://github.com/majidsii/dashboard-shakhsi/releases/latest) مراجعه کنید.
+
+
 ## نصب
 
 از بخش [Releases](../../releases) آخرین نسخه را برای سیستم‌عامل خودتان دانلود کنید:
