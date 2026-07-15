@@ -102,33 +102,6 @@ python3 src/main.py
 
 حالت دیباگ (ابزار توسعه‌دهنده‌ی وب‌کیت): `dashboard-shakhsi --devtools`
 
-## تست‌ها
-
-دو تست دودی، ذخیره و بازیابی داده را در یک HOME ایزوله بررسی می‌کنند:
-
-```bash
-sudo apt install python3-gi gir1.2-gtk-3.0 gir1.2-webkit2-4.1 xvfb dbus
-dbus-run-session -- xvfb-run -a sh tests/run.sh
-```
-
-همین تست‌ها در GitHub Actions روی هر push اجرا می‌شوند و با زدن تگ نسخه (مثل `v1.0.1`) فایل `.deb` به‌صورت خودکار ساخته و در Releases منتشر می‌شود.
-
-## ساختار پروژه
-
-```
-src/            اپ — app.html (فونت داخلش جاسازی شده)
-                main.py (نسخه‌ی لینوکس/GTK) و desktop.py (ویندوز/مک، با pywebview)
-packaging/      فایل desktop و قالب control
-assets/         آیکون‌ها و اسکرین‌شات‌ها
-tests/          تست‌های دودی
-build-deb.sh    ساخت پکیج deb
-```
-
-## معماری (خلاصه)
-
-رابط کاربری یک فایل HTML/JS است که داخل WebKitGTK نمایش داده می‌شود. یک لایه‌ی نازک پایتون (GTK3) هنگام شروع، محتوای `data.json` را به صفحه تزریق می‌کند و هر تغییری را از طریق message handler دریافت و به‌صورت اتمیک روی دیسک می‌نویسد. خروجی‌گرفتن فایل‌ها هم از همین مسیر مستقیماً در Downloads ذخیره می‌شود.
-
-
 ## لایسنس
 
 کد تحت لایسنس [MIT](LICENSE). فونت [وزیرمتن](https://github.com/rastikerdar/vazirmatn) تحت [SIL OFL 1.1](src/fonts/OFL.txt).
