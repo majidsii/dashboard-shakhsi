@@ -1,0 +1,11 @@
+داشبورد شخصی — Personal Dashboard
+=================================
+Run: dashboard-shakhsi   (or find "داشبورد شخصی" in the app grid)
+
+Data file (auto-saved on every change):
+  ~/.local/share/dashboard-shakhsi/data.json
+Back up that one file to keep all your tasks and finance records.
+
+Exports (MD/CSV/JSON/TXT) are written to ~/Downloads.
+Debug: dashboard-shakhsi --devtools
+Uninstall: sudo apt remove dashboard-shakhsi  (data file is kept)
