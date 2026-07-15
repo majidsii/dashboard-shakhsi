@@ -18,13 +18,37 @@
 
 ## نصب
 
-از بخش [Releases](../../releases) آخرین فایل `.deb` را دانلود کنید و:
+از بخش [Releases](../../releases) آخرین نسخه را برای سیستم‌عامل خودتان دانلود کنید:
+
+### اوبونتو / دبیان / مینت (فایل `.deb`)
 
 ```bash
 sudo apt install ./dashboard-shakhsi_*.deb
 ```
 
-سپس «داشبورد شخصی» را در منوی برنامه‌ها اجرا کنید، یا در ترمینال:
+### فدورا / اوپن‌سوزه (فایل `.rpm`)
+
+```bash
+sudo dnf install python3-gobject gtk3 webkit2gtk4.1
+sudo rpm -i --nodeps dashboard-shakhsi-*.rpm
+```
+
+### ویندوز (فایل `DashboardShakhsi-windows.exe`)
+
+فایل را دانلود و اجرا کنید — نصب لازم ندارد. به WebView2 نیاز دارد که روی ویندوز ۱۰ و ۱۱ به‌روز از قبل نصب است.
+
+### مک (فایل `DashboardShakhsi-macos.zip`)
+
+فایل را باز کنید و `DashboardShakhsi.app` را به پوشه‌ی Applications بکشید. چون برنامه امضای اپل ندارد، بار اول روی آن راست‌کلیک کنید و **Open** را بزنید.
+
+### سایر توزیع‌های لینوکس
+
+```bash
+sudo pacman -S python-gobject gtk3 webkit2gtk-4.1   # آرچ (نمونه)
+python3 src/main.py
+```
+
+پس از نصب، «داشبورد شخصی» را در منوی برنامه‌ها اجرا کنید، یا در ترمینال:
 
 ```bash
 dashboard-shakhsi
@@ -33,7 +57,9 @@ dashboard-shakhsi
 ## محل ذخیره‌ی داده‌ها
 
 ```
-~/.local/share/dashboard-shakhsi/data.json
+لینوکس:  ~/.local/share/dashboard-shakhsi/data.json
+ویندوز:  %APPDATA%\dashboard-shakhsi\data.json
+مک:      ~/Library/Application Support/dashboard-shakhsi/data.json
 ```
 
 برای پشتیبان‌گیری کافی است همین یک فایل را کپی کنید. با حذف برنامه، داده‌ها پاک نمی‌شوند.
@@ -70,7 +96,8 @@ dbus-run-session -- xvfb-run -a sh tests/run.sh
 ## ساختار پروژه
 
 ```
-src/            اپ (app.html + main.py + فونت)
+src/            اپ — app.html (فونت داخلش جاسازی شده)
+                main.py (نسخه‌ی لینوکس/GTK) و desktop.py (ویندوز/مک، با pywebview)
 packaging/      فایل desktop و قالب control
 assets/         آیکون‌ها و اسکرین‌شات‌ها
 tests/          تست‌های دودی

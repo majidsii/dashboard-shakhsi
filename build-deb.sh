@@ -15,7 +15,7 @@ mkdir -p "$OUT"
 install -d \
   "$ROOT/DEBIAN" \
   "$ROOT/usr/bin" \
-  "$ROOT/usr/share/$NAME/fonts" \
+  "$ROOT/usr/share/$NAME" \
   "$ROOT/usr/share/applications" \
   "$ROOT/usr/share/doc/$NAME" \
   "$ROOT/usr/share/icons/hicolor/scalable/apps"
@@ -26,7 +26,6 @@ done
 # app
 install -m644 src/app.html                        "$ROOT/usr/share/$NAME/"
 install -m755 src/main.py                         "$ROOT/usr/share/$NAME/"
-install -m644 src/fonts/Vazirmatn-Variable.woff2  "$ROOT/usr/share/$NAME/fonts/"
 
 # launcher
 printf '#!/bin/sh\nexec python3 /usr/share/%s/main.py "$@"\n' "$NAME" \
