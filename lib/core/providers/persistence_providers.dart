@@ -1,8 +1,11 @@
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
 import 'package:dashboard_shakhsi/core/date_time/app_clock.dart';
 import 'package:dashboard_shakhsi/core/notifications/drift_notification_schedule_repository.dart';
+import 'package:dashboard_shakhsi/core/notifications/noop_notification_scheduler.dart';
+import 'package:dashboard_shakhsi/core/notifications/notification_coordinator.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_request.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_schedule_repository.dart';
+import 'package:dashboard_shakhsi/core/notifications/notification_scheduler.dart';
 import 'package:dashboard_shakhsi/features/finance/application/finance_report_service.dart';
 import 'package:dashboard_shakhsi/features/finance/data/drift_finance_repository.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/debt.dart';
@@ -66,4 +69,17 @@ final installmentPlansProvider = StreamProvider<List<InstallmentPlan>>((ref) {
 
 final financeReportServiceProvider = Provider<FinanceReportService>((ref) {
   return const FinanceReportService();
+});
+
+final notificationSchedulerProvider = Provider<NotificationScheduler>((ref) {
+  return const NoopNotificationScheduler();
+});
+
+final notificationCoordinatorProvider = Provider<NotificationCoordinator>((
+  ref,
+) {
+  return NotificationCoordinator(
+    repository: ref.watch(notificationScheduleRepositoryProvider),
+    scheduler: ref.watch(notificationSchedulerProvider),
+  );
 });

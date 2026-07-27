@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+from pathlib import Path
+
+root = Path(__file__).resolve().parents[1]
+
+checks = {
+    'test/core/notifications/notification_coordinator_test.dart': [
+        'schedule keeps desired state when platform scheduling fails',
+        'replaceAll persists and reconciles one deduplicated desired set',
+        'reconcileFromPersistence repairs stale platform state',
+    ],
+    'test/core/providers/notification_coordinator_provider_test.dart': [
+        'notificationSchedulerProvider',
+        'notificationCoordinatorProvider',
+        'NoopNotificationScheduler',
+    ],
+    'test/support/memory_notification_schedule_repository.dart': [
+        'final class MemoryNotificationScheduleRepository',
+        'Future<void> replaceAll',
+    ],
+}
+
+for relative, markers in checks.items():
+    path = root / relative
+    if not path.is_file():
+        raise SystemExit(f'Missing RED file: {relative}')
+    source = path.read_text(encoding='utf-8')
+    for marker in markers:
+        if marker not in source:
+            raise SystemExit(f'Missing RED marker {marker!r} in {relative}')
+
+print('Phase 1 Task 3 RED contract verified.')
