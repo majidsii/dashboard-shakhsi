@@ -1,0 +1,218 @@
+import 'dart:io';
+
+import 'package:dashboard_shakhsi/core/database/app_database.dart';
+import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
+import 'package:dashboard_shakhsi/core/money/money.dart';
+import 'package:dashboard_shakhsi/features/finance/data/drift_finance_repository.dart';
+import 'package:dashboard_shakhsi/features/finance/domain/debt.dart';
+import 'package:dashboard_shakhsi/features/finance/domain/finance_transaction.dart';
+import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('tasks and exact finance data survive closing and reopening', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'dashboard-shakhsi-restart-',
+    );
+    final file = File('${directory.path}/restart.sqlite');
+
+    try {
+      final first = AppDatabase(NativeDatabase(file));
+      final firstTasks = DriftTaskRepository(first);
+      final firstFinance = DriftFinanceRepository(
+        first,
+        idGenerator: SequenceIdGenerator(prefix: 'restart'),
+      );
+
+      final createdAt = DateTime.utc(2026, 7, 26, 8);
+      final changedAt = DateTime.utc(2026, 7, 26, 9);
+      final paymentAt = DateTime.utc(2026, 7, 26, 10);
+
+      await firstTasks.create(
+        TaskItem(
+          id: 'task-a',
+          title: 'عنوان اولیه',
+          priority: 1,
+          isDone: false,
+          sortOrder: 0,
+          createdAtUtc: createdAt,
+          updatedAtUtc: createdAt,
+        ),
+      );
+      await firstTasks.create(
+        TaskItem(
+          id: 'task-b',
+          title: 'کار انجام‌شده',
+          priority: 3,
+          isDone: false,
+          sortOrder: 1,
+          createdAtUtc: createdAt,
+          updatedAtUtc: createdAt,
+        ),
+      );
+      await firstTasks.create(
+        TaskItem(
+          id: 'task-deleted',
+          title: 'کار حذف‌شدنی',
+          priority: 0,
+          isDone: false,
+          sortOrder: 2,
+          createdAtUtc: createdAt,
+          updatedAtUtc: createdAt,
+        ),
+      );
+
+      await firstTasks.update(
+        TaskItem(
+          id: 'task-a',
+          title: 'کار ماندگار و ویرایش‌شده',
+          priority: 2,
+          isDone: false,
+          sortOrder: 0,
+          createdAtUtc: createdAt,
+          updatedAtUtc: changedAt,
+        ),
+      );
+      await firstTasks.setDone('task-b', true, changedAt);
+      await firstTasks.delete('task-deleted');
+      await firstTasks.reorder(const <String>['task-b', 'task-a']);
+
+      await firstFinance.addTransaction(
+        FinanceTransaction.create(
+          id: 'transaction-exact',
+          type: FinanceTransactionType.income,
+          title: 'درآمد دقیق',
+          category: 'حقوق',
+          amount: _money('1234567.12345678'),
+          occurredAtUtc: createdAt,
+          createdAtUtc: createdAt,
+        ),
+      );
+
+      await firstFinance.addDebt(
+        Debt(
+          id: 'debt-restart',
+          title: 'بدهی ماندگار',
+          total: _money('10000000'),
+          paid: _money('2500000.00000001'),
+          createdAtUtc: createdAt,
+          updatedAtUtc: changedAt,
+        ),
+      );
+      await firstFinance.recordDebtPayment(
+        debtId: 'debt-restart',
+        amount: _money('1000000.00000001'),
+        paidAt: paymentAt,
+      );
+
+      await firstFinance.addInstallmentPlan(
+        InstallmentPlan(
+          id: 'plan-restart',
+          title: 'اقساط ماندگار',
+          perInstallment: _money('3000000.12345678'),
+          installmentCount: 12,
+          paidCount: 1,
+          createdAtUtc: createdAt,
+          updatedAtUtc: changedAt,
+        ),
+      );
+      await firstFinance.payNextInstallment(
+        planId: 'plan-restart',
+        paidAt: paymentAt,
+      );
+
+      expect(first.schemaVersion, 1);
+      await first.close();
+
+      final second = AppDatabase(NativeDatabase(file));
+      try {
+        final reopenedTasks = await DriftTaskRepository(
+          second,
+        ).watchAll().first;
+        final reopenedFinance = DriftFinanceRepository(
+          second,
+          idGenerator: SequenceIdGenerator(prefix: 'reopened'),
+        );
+        final reopenedTransactions = await reopenedFinance
+            .watchTransactions()
+            .first;
+        final reopenedDebts = await reopenedFinance.watchDebts().first;
+        final reopenedPlans = await reopenedFinance
+            .watchInstallmentPlans()
+            .first;
+
+        expect(reopenedTasks.map((task) => task.id).toList(), const <String>[
+          'task-b',
+          'task-a',
+        ]);
+        expect(reopenedTasks.first.isDone, isTrue);
+        expect(reopenedTasks.first.completedAtUtc, changedAt);
+        expect(reopenedTasks.last.title, 'کار ماندگار و ویرایش‌شده');
+        expect(reopenedTasks.last.priority, 2);
+
+        expect(reopenedTransactions, hasLength(1));
+        expect(reopenedTransactions.single.amount.minorUnits, 123456712345678);
+        expect(reopenedTransactions.single.amount.scale, Money.financeScale);
+        expect(
+          reopenedTransactions.single.amount.currencyCode,
+          Money.tomanCurrencyCode,
+        );
+
+        expect(reopenedDebts, hasLength(1));
+        expect(reopenedDebts.single.total.minorUnits, 1000000000000000);
+        expect(reopenedDebts.single.paid.minorUnits, 350000000000002);
+        expect(reopenedDebts.single.remaining.minorUnits, 649999999999998);
+
+        expect(reopenedPlans, hasLength(1));
+        expect(reopenedPlans.single.installmentCount, 12);
+        expect(reopenedPlans.single.paidCount, 2);
+        expect(reopenedPlans.single.perInstallment.minorUnits, 300000012345678);
+      } finally {
+        await second.close();
+      }
+    } finally {
+      if (await directory.exists()) {
+        await directory.delete(recursive: true);
+      }
+    }
+  });
+
+  test('file-backed database keeps schema version one', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'dashboard-shakhsi-schema-',
+    );
+    final file = File('${directory.path}/schema.sqlite');
+
+    try {
+      final first = AppDatabase(NativeDatabase(file));
+      expect(first.schemaVersion, 1);
+      await first.close();
+
+      final reopened = AppDatabase(NativeDatabase(file));
+      try {
+        expect(reopened.schemaVersion, 1);
+        final versionRows = await reopened
+            .customSelect('PRAGMA user_version')
+            .get();
+        expect(versionRows.single.read<int>('user_version'), 1);
+      } finally {
+        await reopened.close();
+      }
+    } finally {
+      if (await directory.exists()) {
+        await directory.delete(recursive: true);
+      }
+    }
+  });
+}
+
+Money _money(String value) {
+  return Money.parseMajorUnits(
+    value,
+    currencyCode: Money.tomanCurrencyCode,
+    scale: Money.financeScale,
+  );
+}

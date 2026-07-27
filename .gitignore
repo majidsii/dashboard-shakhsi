@@ -1,11 +1,52 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+.pub/
+.pub-cache/
 build/
-dist/
-__pycache__/
-*.pyc
-/*.deb
-*.tmp
-android-signing/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Generated docs
+doc/api/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android
 android/.gradle/
 android/local.properties
-android/**/build/
-android/app/src/main/assets/
+android/captures/
+android/app/debug/
+android/app/profile/
+android/app/release/
+**/*.jks
+**/*.keystore
+key.properties
+
+# Linux
+linux/flutter/ephemeral/
+
+# Windows
+windows/flutter/ephemeral/
+
+# macOS
+macos/Flutter/ephemeral/
+macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Python cache
+__pycache__/
+*.py[cod]

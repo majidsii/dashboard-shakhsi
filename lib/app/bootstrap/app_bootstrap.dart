@@ -1,0 +1,44 @@
+import 'dart:ui';
+
+import 'package:dashboard_shakhsi/app/router/app_router.dart';
+import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
+import 'package:dashboard_shakhsi/app/theme/theme_mode_controller.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+Future<void> bootstrapApp() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterError.onError = FlutterError.presentError;
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    FlutterError.reportError(
+      FlutterErrorDetails(exception: error, stack: stackTrace),
+    );
+    return true;
+  };
+
+  runApp(const ProviderScope(child: DashboardShakhsiApp()));
+}
+
+final class DashboardShakhsiApp extends ConsumerWidget {
+  const DashboardShakhsiApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('fa', 'IR'),
+      supportedLocales: const <Locale>[Locale('fa', 'IR'), Locale('en', 'US')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      onGenerateTitle: (context) => 'داشبورد شخصی',
+      theme: OriginalTheme.light(),
+      darkTheme: OriginalTheme.dark(),
+      themeMode: ref.watch(dashboardThemeModeProvider),
+      themeAnimationDuration: const Duration(milliseconds: 400),
+      themeAnimationCurve: Curves.easeOutCubic,
+      routerConfig: ref.watch(appRouterProvider),
+    );
+  }
+}
