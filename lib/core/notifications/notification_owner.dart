@@ -23,25 +23,17 @@ final class NotificationOwner {
       );
     }
 
-    return NotificationOwner._(
-      type: type,
-      id: normalizedId,
-    );
+    return NotificationOwner._(type: type, id: normalizedId);
   }
 
-  const NotificationOwner._({
-    required this.type,
-    required this.id,
-  });
+  const NotificationOwner._({required this.type, required this.id});
 
   final NotificationOwnerType type;
   final String id;
 
   @override
   bool operator ==(Object other) {
-    return other is NotificationOwner &&
-        other.type == type &&
-        other.id == id;
+    return other is NotificationOwner && other.type == type && other.id == id;
   }
 
   @override

@@ -1,10 +1,7 @@
 import 'local_date.dart';
 
 final class LocalDayBoundary {
-  factory LocalDayBoundary({
-    required int startHour,
-    int startMinute = 0,
-  }) {
+  factory LocalDayBoundary({required int startHour, int startMinute = 0}) {
     if (startHour < 0 || startHour > 23) {
       throw ArgumentError.value(
         startHour,
@@ -20,10 +17,7 @@ final class LocalDayBoundary {
       );
     }
 
-    return LocalDayBoundary._(
-      startHour: startHour,
-      startMinute: startMinute,
-    );
+    return LocalDayBoundary._(startHour: startHour, startMinute: startMinute);
   }
 
   const LocalDayBoundary._({
@@ -45,11 +39,7 @@ final class LocalDayBoundary {
 
     if (localInstant.isBefore(boundary)) {
       return LocalDate.fromDateTime(
-        DateTime(
-          localInstant.year,
-          localInstant.month,
-          localInstant.day - 1,
-        ),
+        DateTime(localInstant.year, localInstant.month, localInstant.day - 1),
       );
     }
 

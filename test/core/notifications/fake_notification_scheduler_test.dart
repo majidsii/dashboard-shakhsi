@@ -14,30 +14,33 @@ void main() {
     id: 'habit-1',
   );
 
-  test('schedule replaces an existing request with the same schedule id', () async {
-    final scheduler = FakeNotificationScheduler();
+  test(
+    'schedule replaces an existing request with the same schedule id',
+    () async {
+      final scheduler = FakeNotificationScheduler();
 
-    await scheduler.schedule(
-      _request(
-        scheduleId: 'same-id',
-        owner: taskOwner,
-        title: 'قدیمی',
-        hour: 8,
-      ),
-    );
-    await scheduler.schedule(
-      _request(
-        scheduleId: 'same-id',
-        owner: taskOwner,
-        title: 'جدید',
-        hour: 9,
-      ),
-    );
+      await scheduler.schedule(
+        _request(
+          scheduleId: 'same-id',
+          owner: taskOwner,
+          title: 'قدیمی',
+          hour: 8,
+        ),
+      );
+      await scheduler.schedule(
+        _request(
+          scheduleId: 'same-id',
+          owner: taskOwner,
+          title: 'جدید',
+          hour: 9,
+        ),
+      );
 
-    expect(scheduler.scheduledRequests, hasLength(1));
-    expect(scheduler.scheduledRequests.single.title, 'جدید');
-    expect(scheduler.scheduledRequests.single.scheduledAtUtc.hour, 9);
-  });
+      expect(scheduler.scheduledRequests, hasLength(1));
+      expect(scheduler.scheduledRequests.single.title, 'جدید');
+      expect(scheduler.scheduledRequests.single.scheduledAtUtc.hour, 9);
+    },
+  );
 
   test('cancel removes only the matching schedule id', () async {
     final scheduler = FakeNotificationScheduler();
@@ -82,12 +85,7 @@ void main() {
       _request(scheduleId: 'stale', owner: taskOwner, hour: 7),
     );
     await scheduler.schedule(
-      _request(
-        scheduleId: 'kept',
-        owner: taskOwner,
-        title: 'قدیمی',
-        hour: 8,
-      ),
+      _request(scheduleId: 'kept', owner: taskOwner, title: 'قدیمی', hour: 8),
     );
 
     final expected = <NotificationRequest>[

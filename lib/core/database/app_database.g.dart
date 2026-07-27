@@ -3102,6 +3102,646 @@ class InstallmentPaymentRowsCompanion
   }
 }
 
+class $NotificationScheduleRowsTable extends NotificationScheduleRows
+    with TableInfo<$NotificationScheduleRowsTable, NotificationScheduleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationScheduleRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _scheduleIdMeta = const VerificationMeta(
+    'scheduleId',
+  );
+  @override
+  late final GeneratedColumn<String> scheduleId = GeneratedColumn<String>(
+    'schedule_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ownerTypeMeta = const VerificationMeta(
+    'ownerType',
+  );
+  @override
+  late final GeneratedColumn<String> ownerType = GeneratedColumn<String>(
+    'owner_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
+    'ownerId',
+  );
+  @override
+  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
+    'owner_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scheduledAtUtcMeta = const VerificationMeta(
+    'scheduledAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> scheduledAtUtc =
+      GeneratedColumn<DateTime>(
+        'scheduled_at_utc',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _privacyModeMeta = const VerificationMeta(
+    'privacyMode',
+  );
+  @override
+  late final GeneratedColumn<String> privacyMode = GeneratedColumn<String>(
+    'privacy_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('full'),
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    scheduleId,
+    ownerType,
+    ownerId,
+    title,
+    body,
+    scheduledAtUtc,
+    payloadJson,
+    privacyMode,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_schedules';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationScheduleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('schedule_id')) {
+      context.handle(
+        _scheduleIdMeta,
+        scheduleId.isAcceptableOrUnknown(data['schedule_id']!, _scheduleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scheduleIdMeta);
+    }
+    if (data.containsKey('owner_type')) {
+      context.handle(
+        _ownerTypeMeta,
+        ownerType.isAcceptableOrUnknown(data['owner_type']!, _ownerTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerTypeMeta);
+    }
+    if (data.containsKey('owner_id')) {
+      context.handle(
+        _ownerIdMeta,
+        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('scheduled_at_utc')) {
+      context.handle(
+        _scheduledAtUtcMeta,
+        scheduledAtUtc.isAcceptableOrUnknown(
+          data['scheduled_at_utc']!,
+          _scheduledAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_scheduledAtUtcMeta);
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('privacy_mode')) {
+      context.handle(
+        _privacyModeMeta,
+        privacyMode.isAcceptableOrUnknown(
+          data['privacy_mode']!,
+          _privacyModeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {scheduleId};
+  @override
+  NotificationScheduleRow map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationScheduleRow(
+      scheduleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}schedule_id'],
+      )!,
+      ownerType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_type'],
+      )!,
+      ownerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      scheduledAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}scheduled_at_utc'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      privacyMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}privacy_mode'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $NotificationScheduleRowsTable createAlias(String alias) {
+    return $NotificationScheduleRowsTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationScheduleRow extends DataClass
+    implements Insertable<NotificationScheduleRow> {
+  final String scheduleId;
+  final String ownerType;
+  final String ownerId;
+  final String title;
+  final String body;
+  final DateTime scheduledAtUtc;
+  final String payloadJson;
+  final String privacyMode;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const NotificationScheduleRow({
+    required this.scheduleId,
+    required this.ownerType,
+    required this.ownerId,
+    required this.title,
+    required this.body,
+    required this.scheduledAtUtc,
+    required this.payloadJson,
+    required this.privacyMode,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['schedule_id'] = Variable<String>(scheduleId);
+    map['owner_type'] = Variable<String>(ownerType);
+    map['owner_id'] = Variable<String>(ownerId);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['scheduled_at_utc'] = Variable<DateTime>(scheduledAtUtc);
+    map['payload_json'] = Variable<String>(payloadJson);
+    map['privacy_mode'] = Variable<String>(privacyMode);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  NotificationScheduleRowsCompanion toCompanion(bool nullToAbsent) {
+    return NotificationScheduleRowsCompanion(
+      scheduleId: Value(scheduleId),
+      ownerType: Value(ownerType),
+      ownerId: Value(ownerId),
+      title: Value(title),
+      body: Value(body),
+      scheduledAtUtc: Value(scheduledAtUtc),
+      payloadJson: Value(payloadJson),
+      privacyMode: Value(privacyMode),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory NotificationScheduleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationScheduleRow(
+      scheduleId: serializer.fromJson<String>(json['scheduleId']),
+      ownerType: serializer.fromJson<String>(json['ownerType']),
+      ownerId: serializer.fromJson<String>(json['ownerId']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      scheduledAtUtc: serializer.fromJson<DateTime>(json['scheduledAtUtc']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      privacyMode: serializer.fromJson<String>(json['privacyMode']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'scheduleId': serializer.toJson<String>(scheduleId),
+      'ownerType': serializer.toJson<String>(ownerType),
+      'ownerId': serializer.toJson<String>(ownerId),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'scheduledAtUtc': serializer.toJson<DateTime>(scheduledAtUtc),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+      'privacyMode': serializer.toJson<String>(privacyMode),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  NotificationScheduleRow copyWith({
+    String? scheduleId,
+    String? ownerType,
+    String? ownerId,
+    String? title,
+    String? body,
+    DateTime? scheduledAtUtc,
+    String? payloadJson,
+    String? privacyMode,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => NotificationScheduleRow(
+    scheduleId: scheduleId ?? this.scheduleId,
+    ownerType: ownerType ?? this.ownerType,
+    ownerId: ownerId ?? this.ownerId,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    scheduledAtUtc: scheduledAtUtc ?? this.scheduledAtUtc,
+    payloadJson: payloadJson ?? this.payloadJson,
+    privacyMode: privacyMode ?? this.privacyMode,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  NotificationScheduleRow copyWithCompanion(
+    NotificationScheduleRowsCompanion data,
+  ) {
+    return NotificationScheduleRow(
+      scheduleId: data.scheduleId.present
+          ? data.scheduleId.value
+          : this.scheduleId,
+      ownerType: data.ownerType.present ? data.ownerType.value : this.ownerType,
+      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      scheduledAtUtc: data.scheduledAtUtc.present
+          ? data.scheduledAtUtc.value
+          : this.scheduledAtUtc,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+      privacyMode: data.privacyMode.present
+          ? data.privacyMode.value
+          : this.privacyMode,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationScheduleRow(')
+          ..write('scheduleId: $scheduleId, ')
+          ..write('ownerType: $ownerType, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('scheduledAtUtc: $scheduledAtUtc, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('privacyMode: $privacyMode, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    scheduleId,
+    ownerType,
+    ownerId,
+    title,
+    body,
+    scheduledAtUtc,
+    payloadJson,
+    privacyMode,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationScheduleRow &&
+          other.scheduleId == this.scheduleId &&
+          other.ownerType == this.ownerType &&
+          other.ownerId == this.ownerId &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.scheduledAtUtc == this.scheduledAtUtc &&
+          other.payloadJson == this.payloadJson &&
+          other.privacyMode == this.privacyMode &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class NotificationScheduleRowsCompanion
+    extends UpdateCompanion<NotificationScheduleRow> {
+  final Value<String> scheduleId;
+  final Value<String> ownerType;
+  final Value<String> ownerId;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<DateTime> scheduledAtUtc;
+  final Value<String> payloadJson;
+  final Value<String> privacyMode;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const NotificationScheduleRowsCompanion({
+    this.scheduleId = const Value.absent(),
+    this.ownerType = const Value.absent(),
+    this.ownerId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.scheduledAtUtc = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+    this.privacyMode = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotificationScheduleRowsCompanion.insert({
+    required String scheduleId,
+    required String ownerType,
+    required String ownerId,
+    required String title,
+    required String body,
+    required DateTime scheduledAtUtc,
+    this.payloadJson = const Value.absent(),
+    this.privacyMode = const Value.absent(),
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : scheduleId = Value(scheduleId),
+       ownerType = Value(ownerType),
+       ownerId = Value(ownerId),
+       title = Value(title),
+       body = Value(body),
+       scheduledAtUtc = Value(scheduledAtUtc),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<NotificationScheduleRow> custom({
+    Expression<String>? scheduleId,
+    Expression<String>? ownerType,
+    Expression<String>? ownerId,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<DateTime>? scheduledAtUtc,
+    Expression<String>? payloadJson,
+    Expression<String>? privacyMode,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (scheduleId != null) 'schedule_id': scheduleId,
+      if (ownerType != null) 'owner_type': ownerType,
+      if (ownerId != null) 'owner_id': ownerId,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (scheduledAtUtc != null) 'scheduled_at_utc': scheduledAtUtc,
+      if (payloadJson != null) 'payload_json': payloadJson,
+      if (privacyMode != null) 'privacy_mode': privacyMode,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotificationScheduleRowsCompanion copyWith({
+    Value<String>? scheduleId,
+    Value<String>? ownerType,
+    Value<String>? ownerId,
+    Value<String>? title,
+    Value<String>? body,
+    Value<DateTime>? scheduledAtUtc,
+    Value<String>? payloadJson,
+    Value<String>? privacyMode,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return NotificationScheduleRowsCompanion(
+      scheduleId: scheduleId ?? this.scheduleId,
+      ownerType: ownerType ?? this.ownerType,
+      ownerId: ownerId ?? this.ownerId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      scheduledAtUtc: scheduledAtUtc ?? this.scheduledAtUtc,
+      payloadJson: payloadJson ?? this.payloadJson,
+      privacyMode: privacyMode ?? this.privacyMode,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (scheduleId.present) {
+      map['schedule_id'] = Variable<String>(scheduleId.value);
+    }
+    if (ownerType.present) {
+      map['owner_type'] = Variable<String>(ownerType.value);
+    }
+    if (ownerId.present) {
+      map['owner_id'] = Variable<String>(ownerId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (scheduledAtUtc.present) {
+      map['scheduled_at_utc'] = Variable<DateTime>(scheduledAtUtc.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (privacyMode.present) {
+      map['privacy_mode'] = Variable<String>(privacyMode.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationScheduleRowsCompanion(')
+          ..write('scheduleId: $scheduleId, ')
+          ..write('ownerType: $ownerType, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('scheduledAtUtc: $scheduledAtUtc, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('privacyMode: $privacyMode, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3116,6 +3756,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $InstallmentPlanRowsTable(this);
   late final $InstallmentPaymentRowsTable installmentPaymentRows =
       $InstallmentPaymentRowsTable(this);
+  late final $NotificationScheduleRowsTable notificationScheduleRows =
+      $NotificationScheduleRowsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3127,6 +3769,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     debtPaymentRows,
     installmentPlanRows,
     installmentPaymentRows,
+    notificationScheduleRows,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -5213,6 +5856,332 @@ typedef $$InstallmentPaymentRowsTableProcessedTableManager =
       InstallmentPaymentRow,
       PrefetchHooks Function({bool planId})
     >;
+typedef $$NotificationScheduleRowsTableCreateCompanionBuilder =
+    NotificationScheduleRowsCompanion Function({
+      required String scheduleId,
+      required String ownerType,
+      required String ownerId,
+      required String title,
+      required String body,
+      required DateTime scheduledAtUtc,
+      Value<String> payloadJson,
+      Value<String> privacyMode,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$NotificationScheduleRowsTableUpdateCompanionBuilder =
+    NotificationScheduleRowsCompanion Function({
+      Value<String> scheduleId,
+      Value<String> ownerType,
+      Value<String> ownerId,
+      Value<String> title,
+      Value<String> body,
+      Value<DateTime> scheduledAtUtc,
+      Value<String> payloadJson,
+      Value<String> privacyMode,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+class $$NotificationScheduleRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationScheduleRowsTable> {
+  $$NotificationScheduleRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get scheduleId => $composableBuilder(
+    column: $table.scheduleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerType => $composableBuilder(
+    column: $table.ownerType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get scheduledAtUtc => $composableBuilder(
+    column: $table.scheduledAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get privacyMode => $composableBuilder(
+    column: $table.privacyMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationScheduleRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationScheduleRowsTable> {
+  $$NotificationScheduleRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get scheduleId => $composableBuilder(
+    column: $table.scheduleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerType => $composableBuilder(
+    column: $table.ownerType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get scheduledAtUtc => $composableBuilder(
+    column: $table.scheduledAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get privacyMode => $composableBuilder(
+    column: $table.privacyMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationScheduleRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationScheduleRowsTable> {
+  $$NotificationScheduleRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get scheduleId => $composableBuilder(
+    column: $table.scheduleId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get ownerType =>
+      $composableBuilder(column: $table.ownerType, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerId =>
+      $composableBuilder(column: $table.ownerId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get scheduledAtUtc => $composableBuilder(
+    column: $table.scheduledAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get privacyMode => $composableBuilder(
+    column: $table.privacyMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+}
+
+class $$NotificationScheduleRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationScheduleRowsTable,
+          NotificationScheduleRow,
+          $$NotificationScheduleRowsTableFilterComposer,
+          $$NotificationScheduleRowsTableOrderingComposer,
+          $$NotificationScheduleRowsTableAnnotationComposer,
+          $$NotificationScheduleRowsTableCreateCompanionBuilder,
+          $$NotificationScheduleRowsTableUpdateCompanionBuilder,
+          (
+            NotificationScheduleRow,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationScheduleRowsTable,
+              NotificationScheduleRow
+            >,
+          ),
+          NotificationScheduleRow,
+          PrefetchHooks Function()
+        > {
+  $$NotificationScheduleRowsTableTableManager(
+    _$AppDatabase db,
+    $NotificationScheduleRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationScheduleRowsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$NotificationScheduleRowsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$NotificationScheduleRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> scheduleId = const Value.absent(),
+                Value<String> ownerType = const Value.absent(),
+                Value<String> ownerId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> scheduledAtUtc = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+                Value<String> privacyMode = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationScheduleRowsCompanion(
+                scheduleId: scheduleId,
+                ownerType: ownerType,
+                ownerId: ownerId,
+                title: title,
+                body: body,
+                scheduledAtUtc: scheduledAtUtc,
+                payloadJson: payloadJson,
+                privacyMode: privacyMode,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String scheduleId,
+                required String ownerType,
+                required String ownerId,
+                required String title,
+                required String body,
+                required DateTime scheduledAtUtc,
+                Value<String> payloadJson = const Value.absent(),
+                Value<String> privacyMode = const Value.absent(),
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationScheduleRowsCompanion.insert(
+                scheduleId: scheduleId,
+                ownerType: ownerType,
+                ownerId: ownerId,
+                title: title,
+                body: body,
+                scheduledAtUtc: scheduledAtUtc,
+                payloadJson: payloadJson,
+                privacyMode: privacyMode,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationScheduleRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationScheduleRowsTable,
+      NotificationScheduleRow,
+      $$NotificationScheduleRowsTableFilterComposer,
+      $$NotificationScheduleRowsTableOrderingComposer,
+      $$NotificationScheduleRowsTableAnnotationComposer,
+      $$NotificationScheduleRowsTableCreateCompanionBuilder,
+      $$NotificationScheduleRowsTableUpdateCompanionBuilder,
+      (
+        NotificationScheduleRow,
+        BaseReferences<
+          _$AppDatabase,
+          $NotificationScheduleRowsTable,
+          NotificationScheduleRow
+        >,
+      ),
+      NotificationScheduleRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5234,5 +6203,10 @@ class $AppDatabaseManager {
       $$InstallmentPaymentRowsTableTableManager(
         _db,
         _db.installmentPaymentRows,
+      );
+  $$NotificationScheduleRowsTableTableManager get notificationScheduleRows =>
+      $$NotificationScheduleRowsTableTableManager(
+        _db,
+        _db.notificationScheduleRows,
       );
 }

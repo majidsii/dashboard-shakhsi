@@ -1,9 +1,6 @@
 import 'notification_owner.dart';
 
-enum NotificationPrivacyMode {
-  full,
-  private,
-}
+enum NotificationPrivacyMode { full, private }
 
 final class NotificationRequest {
   NotificationRequest({

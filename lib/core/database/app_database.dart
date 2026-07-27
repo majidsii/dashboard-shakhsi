@@ -128,6 +128,34 @@ class InstallmentPaymentRows extends Table {
   ];
 }
 
+class NotificationScheduleRows extends Table {
+  @override
+  String get tableName => 'notification_schedules';
+
+  TextColumn get scheduleId => text()();
+  TextColumn get ownerType => text()();
+  TextColumn get ownerId => text()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get scheduledAtUtc => dateTime()();
+  TextColumn get payloadJson => text().withDefault(const Constant('{}'))();
+  TextColumn get privacyMode => text().withDefault(const Constant('full'))();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    "CHECK (owner_type IN ("
+        "'task', 'habit', 'routine', 'challenge', "
+        "'installment', 'debt', 'recurringTransaction', 'dailySummary'"
+        "))",
+    "CHECK (privacy_mode IN ('full', 'private'))",
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{scheduleId};
+}
+
 @DriftDatabase(
   tables: <Type>[
     TaskRows,
@@ -136,6 +164,7 @@ class InstallmentPaymentRows extends Table {
     DebtPaymentRows,
     InstallmentPlanRows,
     InstallmentPaymentRows,
+    NotificationScheduleRows,
   ],
 )
 final class AppDatabase extends _$AppDatabase {
@@ -143,12 +172,17 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator migrator) async {
       await migrator.createAll();
+    },
+    onUpgrade: (Migrator migrator, int from, int to) async {
+      if (from < 2) {
+        await migrator.createTable(notificationScheduleRows);
+      }
     },
     beforeOpen: (OpeningDetails details) async {
       await customStatement('PRAGMA foreign_keys = ON');

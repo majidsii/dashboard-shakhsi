@@ -7,10 +7,7 @@ void main() {
     final sourcePayload = <String, String>{'route': '/tasks/task-1'};
     final request = NotificationRequest(
       scheduleId: 'task-1-reminder-0',
-      owner: NotificationOwner(
-        type: NotificationOwnerType.task,
-        id: 'task-1',
-      ),
+      owner: NotificationOwner(type: NotificationOwnerType.task, id: 'task-1'),
       title: 'ارسال گزارش',
       body: 'زمان انجام تسک رسیده است.',
       scheduledAtUtc: DateTime.utc(2026, 7, 27, 14, 30),
@@ -23,10 +20,7 @@ void main() {
     expect(request.owner.id, 'task-1');
     expect(request.scheduledAtUtc.isUtc, isTrue);
     expect(request.payload, const <String, String>{'route': '/tasks/task-1'});
-    expect(
-      () => request.payload['new'] = 'value',
-      throwsUnsupportedError,
-    );
+    expect(() => request.payload['new'] = 'value', throwsUnsupportedError);
   });
 
   test('notification request rejects a non-UTC instant', () {
@@ -61,10 +55,7 @@ void main() {
     );
 
     expect(
-      () => NotificationOwner(
-        type: NotificationOwnerType.habit,
-        id: '   ',
-      ),
+      () => NotificationOwner(type: NotificationOwnerType.habit, id: '   '),
       throwsArgumentError,
     );
 

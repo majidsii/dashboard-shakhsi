@@ -32,10 +32,7 @@ void main() {
     });
 
     test('rejects an invalid local start time', () {
-      expect(
-        () => LocalDayBoundary(startHour: 24),
-        throwsArgumentError,
-      );
+      expect(() => LocalDayBoundary(startHour: 24), throwsArgumentError);
       expect(
         () => LocalDayBoundary(startHour: 4, startMinute: 60),
         throwsArgumentError,
