@@ -1,172 +1,268 @@
 import 'dart:convert';
 
-import 'notification_owner.dart';
-import 'notification_payload_codec.dart';
 import 'notification_route_intent.dart';
 
+/// Converts a versioned notification payload into an allow-listed typed intent.
+///
+/// Invalid JSON, unsupported versions, unknown routes, and unsafe identifiers
+/// are intentionally ignored by returning `null`.
 final class NotificationRouteParser {
   const NotificationRouteParser();
 
-  static const int _supportedPayloadVersion = 1;
+  static const int supportedPayloadVersion = 1;
 
-  static final RegExp _identifier = RegExp(r'^[A-Za-z0-9_-]{1,128}$');
-  static final RegExp _task = RegExp(r'^/tasks/([A-Za-z0-9_-]{1,128})$');
-  static final RegExp _habit = RegExp(r'^/habits/([A-Za-z0-9_-]{1,128})$');
-  static final RegExp _challenge = RegExp(
+  static final RegExp _taskRoutePattern = RegExp(
+    r'^/tasks/([A-Za-z0-9_-]{1,128})$',
+  );
+  static final RegExp _habitRoutePattern = RegExp(
+    r'^/habits/([A-Za-z0-9_-]{1,128})$',
+  );
+  static final RegExp _challengeRoutePattern = RegExp(
     r'^/challenges/([A-Za-z0-9_-]{1,128})$',
   );
-  static final RegExp _goal = RegExp(r'^/goals/([A-Za-z0-9_-]{1,128})$');
-  static final RegExp _debt = RegExp(
+  static final RegExp _goalRoutePattern = RegExp(
+    r'^/goals/([A-Za-z0-9_-]{1,128})$',
+  );
+  static final RegExp _debtRoutePattern = RegExp(
     r'^/finance/debts/([A-Za-z0-9_-]{1,128})$',
   );
-  static final RegExp _installment = RegExp(
+  static final RegExp _installmentRoutePattern = RegExp(
     r'^/finance/installments/([A-Za-z0-9_-]{1,128})$',
   );
-  static final RegExp _transaction = RegExp(
+  static final RegExp _transactionRoutePattern = RegExp(
     r'^/finance/transactions/([A-Za-z0-9_-]{1,128})$',
   );
+  static final RegExp _safeEntityIdPattern = RegExp(r'^[A-Za-z0-9_-]{1,128}$');
 
-  NotificationRouteParseResult parse(String encoded) {
-    final versionCheck = _validatePayloadVersion(encoded);
-    if (versionCheck != null) {
-      return versionCheck;
+  NotificationRouteIntent? parse(String? rawPayload) {
+    if (rawPayload == null || rawPayload.trim().isEmpty) {
+      return null;
     }
 
-    final NotificationPayload payload;
     try {
-      payload = NotificationPayloadCodec.decode(encoded);
+      final decoded = jsonDecode(rawPayload);
+      if (decoded is! Map) {
+        return null;
+      }
+
+      final payload = Map<String, Object?>.from(decoded);
+      if (_readVersion(payload) != supportedPayloadVersion) {
+        return null;
+      }
+
+      final routeRead = _readRoute(payload);
+      if (!routeRead.isValid) {
+        return null;
+      }
+
+      if (routeRead.isPresent) {
+        final route = routeRead.value;
+        if (route == null) {
+          return _intentFromOwner(payload);
+        }
+
+        // An explicit but invalid route must not silently fall back to owner.
+        return _intentFromRoute(route);
+      }
+
+      return _intentFromOwner(payload);
     } on FormatException {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.malformedPayload,
-      );
+      return null;
+    } on TypeError {
+      return null;
+    } on ArgumentError {
+      return null;
     }
-
-    final rawRoute = payload.values['route']?.trim();
-    if (rawRoute == null || rawRoute.isEmpty) {
-      return _fromOwner(payload.owner);
-    }
-
-    return _fromAllowListedRoute(rawRoute);
   }
 
-  NotificationRouteParseIgnored? _validatePayloadVersion(String encoded) {
-    final Object? decoded;
-    try {
-      decoded = jsonDecode(encoded);
-    } on FormatException {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.malformedPayload,
-      );
-    } catch (_) {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.malformedPayload,
-      );
+  int? _readVersion(Map<String, Object?> payload) {
+    final hasLong = payload.containsKey('version');
+    final hasShort = payload.containsKey('v');
+
+    if (!hasLong && !hasShort) {
+      return null;
     }
 
-    if (decoded is! Map<String, dynamic>) {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.malformedPayload,
-      );
+    final longValue = payload['version'];
+    final shortValue = payload['v'];
+
+    if (hasLong && hasShort && longValue != shortValue) {
+      return null;
     }
 
-    final version = decoded['version'];
-    if (version != _supportedPayloadVersion) {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.unsupportedPayload,
-      );
+    final value = hasLong ? longValue : shortValue;
+    return value is int ? value : null;
+  }
+
+  _AliasedStringRead _readRoute(Map<String, Object?> payload) {
+    final hasLong = payload.containsKey('route');
+    final hasShort = payload.containsKey('r');
+
+    if (!hasLong && !hasShort) {
+      return const _AliasedStringRead.absent();
+    }
+
+    final longValue = payload['route'];
+    final shortValue = payload['r'];
+
+    if (hasLong && hasShort && longValue != shortValue) {
+      return const _AliasedStringRead.invalid();
+    }
+
+    final value = hasLong ? longValue : shortValue;
+    if (value == null) {
+      return const _AliasedStringRead.present(null);
+    }
+    if (value is! String || value.isEmpty) {
+      return const _AliasedStringRead.invalid();
+    }
+
+    return _AliasedStringRead.present(value);
+  }
+
+  NotificationRouteIntent? _intentFromRoute(String route) {
+    switch (route) {
+      case '/tasks':
+        return const NotificationSectionRouteIntent(NotificationSection.tasks);
+      case '/finance':
+        return const NotificationSectionRouteIntent(
+          NotificationSection.finance,
+        );
+      case '/settings':
+        return const NotificationSectionRouteIntent(
+          NotificationSection.settings,
+        );
+    }
+
+    final taskId = _capture(_taskRoutePattern, route);
+    if (taskId != null) {
+      return NotificationTaskRouteIntent(taskId);
+    }
+
+    final habitId = _capture(_habitRoutePattern, route);
+    if (habitId != null) {
+      return NotificationHabitRouteIntent(habitId);
+    }
+
+    final challengeId = _capture(_challengeRoutePattern, route);
+    if (challengeId != null) {
+      return NotificationChallengeRouteIntent(challengeId);
+    }
+
+    final goalId = _capture(_goalRoutePattern, route);
+    if (goalId != null) {
+      return NotificationGoalRouteIntent(goalId);
+    }
+
+    final debtId = _capture(_debtRoutePattern, route);
+    if (debtId != null) {
+      return NotificationDebtRouteIntent(debtId);
+    }
+
+    final installmentId = _capture(_installmentRoutePattern, route);
+    if (installmentId != null) {
+      return NotificationInstallmentRouteIntent(installmentId);
+    }
+
+    final transactionId = _capture(_transactionRoutePattern, route);
+    if (transactionId != null) {
+      return NotificationTransactionRouteIntent(transactionId);
     }
 
     return null;
   }
 
-  NotificationRouteParseResult _fromAllowListedRoute(String route) {
-    final section = switch (route) {
-      '/tasks' => NotificationRouteSection.tasks,
-      '/finance' => NotificationRouteSection.finance,
-      '/habits' => NotificationRouteSection.habits,
-      '/challenges' => NotificationRouteSection.challenges,
-      '/goals' => NotificationRouteSection.goals,
-      '/settings' => NotificationRouteSection.settings,
-      _ => null,
-    };
-
-    if (section != null) {
-      return NotificationRouteParseSuccess(
-        NotificationSectionRouteIntent(section),
-      );
-    }
-
-    final matchers = <(RegExp, NotificationRouteIntent Function(String))>[
-      (_task, NotificationTaskRouteIntent.new),
-      (_habit, NotificationHabitRouteIntent.new),
-      (_challenge, NotificationChallengeRouteIntent.new),
-      (_goal, NotificationGoalRouteIntent.new),
-      (_debt, NotificationDebtRouteIntent.new),
-      (_installment, NotificationInstallmentRouteIntent.new),
-      (_transaction, NotificationTransactionRouteIntent.new),
-    ];
-
-    for (final matcher in matchers) {
-      final match = matcher.$1.firstMatch(route);
-      if (match != null) {
-        return NotificationRouteParseSuccess(matcher.$2(match.group(1)!));
-      }
-    }
-
-    if (_looksLikeKnownRouteWithMissingIdentifier(route)) {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.invalidIdentifier,
-      );
-    }
-
-    return const NotificationRouteParseIgnored(
-      NotificationRouteIgnoreReason.unsupportedDestination,
-    );
-  }
-
-  NotificationRouteParseResult _fromOwner(NotificationOwner owner) {
-    if (!_identifier.hasMatch(owner.id)) {
-      return const NotificationRouteParseIgnored(
-        NotificationRouteIgnoreReason.invalidIdentifier,
-      );
+  NotificationRouteIntent? _intentFromOwner(Map<String, Object?> payload) {
+    final owner = _readOwner(payload);
+    if (owner == null || !_safeEntityIdPattern.hasMatch(owner.id)) {
+      return null;
     }
 
     return switch (owner.type) {
-      NotificationOwnerType.task => NotificationRouteParseSuccess(
-        NotificationTaskRouteIntent(owner.id),
-      ),
-      NotificationOwnerType.habit => NotificationRouteParseSuccess(
-        NotificationHabitRouteIntent(owner.id),
-      ),
-      NotificationOwnerType.routine => const NotificationRouteParseSuccess(
-        NotificationSectionRouteIntent(NotificationRouteSection.habits),
-      ),
-      NotificationOwnerType.challenge => NotificationRouteParseSuccess(
-        NotificationChallengeRouteIntent(owner.id),
-      ),
-      NotificationOwnerType.installment => NotificationRouteParseSuccess(
-        NotificationInstallmentRouteIntent(owner.id),
-      ),
-      NotificationOwnerType.debt => NotificationRouteParseSuccess(
-        NotificationDebtRouteIntent(owner.id),
-      ),
-      NotificationOwnerType.recurringTransaction =>
-        NotificationRouteParseSuccess(
-          NotificationTransactionRouteIntent(owner.id),
-        ),
-      NotificationOwnerType.dailySummary => const NotificationRouteParseSuccess(
-        NotificationSectionRouteIntent(NotificationRouteSection.tasks),
-      ),
+      'task' => NotificationTaskRouteIntent(owner.id),
+      'habit' => NotificationHabitRouteIntent(owner.id),
+      'challenge' => NotificationChallengeRouteIntent(owner.id),
+      'goal' => NotificationGoalRouteIntent(owner.id),
+      'debt' => NotificationDebtRouteIntent(owner.id),
+      'installment' => NotificationInstallmentRouteIntent(owner.id),
+      'transaction' => NotificationTransactionRouteIntent(owner.id),
+      _ => null,
     };
   }
 
-  bool _looksLikeKnownRouteWithMissingIdentifier(String route) {
-    return route == '/tasks/' ||
-        route == '/habits/' ||
-        route == '/challenges/' ||
-        route == '/goals/' ||
-        route == '/finance/debts/' ||
-        route == '/finance/installments/' ||
-        route == '/finance/transactions/';
+  _NotificationOwnerData? _readOwner(Map<String, Object?> payload) {
+    final flatType = payload['ownerType'];
+    final flatId = payload['ownerId'];
+    final hasFlatOwner =
+        payload.containsKey('ownerType') || payload.containsKey('ownerId');
+
+    String? nestedType;
+    String? nestedId;
+    final rawNestedOwner = payload['owner'];
+    final hasNestedOwner = payload.containsKey('owner');
+
+    if (hasNestedOwner) {
+      if (rawNestedOwner is! Map) {
+        return null;
+      }
+
+      final nestedOwner = Map<String, Object?>.from(rawNestedOwner);
+      final rawType = nestedOwner['type'];
+      final rawId = nestedOwner['id'];
+      if (rawType is! String || rawId is! String) {
+        return null;
+      }
+      nestedType = rawType;
+      nestedId = rawId;
+    }
+
+    if (hasFlatOwner && (flatType is! String || flatId is! String)) {
+      return null;
+    }
+
+    if (hasFlatOwner && hasNestedOwner) {
+      if (flatType != nestedType || flatId != nestedId) {
+        return null;
+      }
+    }
+
+    final type = hasFlatOwner ? flatType as String : nestedType;
+    final id = hasFlatOwner ? flatId as String : nestedId;
+    if (type == null || id == null) {
+      return null;
+    }
+
+    return _NotificationOwnerData(type: type, id: id);
   }
+
+  String? _capture(RegExp pattern, String route) {
+    return pattern.firstMatch(route)?.group(1);
+  }
+}
+
+final class _NotificationOwnerData {
+  const _NotificationOwnerData({required this.type, required this.id});
+
+  final String type;
+  final String id;
+}
+
+final class _AliasedStringRead {
+  const _AliasedStringRead.absent()
+    : isPresent = false,
+      isValid = true,
+      value = null;
+
+  const _AliasedStringRead.present(this.value)
+    : isPresent = true,
+      isValid = true;
+
+  const _AliasedStringRead.invalid()
+    : isPresent = false,
+      isValid = false,
+      value = null;
+
+  final bool isPresent;
+  final bool isValid;
+  final String? value;
 }
