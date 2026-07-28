@@ -4,18 +4,25 @@ import 'package:timezone/timezone.dart' as timezone;
 import 'local_notification_plugin_config.dart';
 import 'local_notifications_driver.dart';
 import 'native_notification_gateway.dart';
+import 'notification_permission.dart';
+import 'notification_platform_capabilities.dart';
 
 typedef NotificationPayloadHandler = void Function(String payload);
 
 final class FlutterLocalNotificationsDriver
-    implements LocalNotificationsDriver, NativeNotificationGateway {
+    implements
+        LocalNotificationsDriver,
+        NativeNotificationGateway,
+        NotificationPermissionGateway {
   factory FlutterLocalNotificationsDriver({
     required LocalNotificationPluginConfig config,
+    required NotificationHostPlatform hostPlatform,
     FlutterLocalNotificationsPlugin? plugin,
     NotificationPayloadHandler? onPayload,
   }) {
     return FlutterLocalNotificationsDriver._(
       config,
+      hostPlatform,
       plugin ?? FlutterLocalNotificationsPlugin(),
       onPayload,
     );
@@ -23,11 +30,13 @@ final class FlutterLocalNotificationsDriver
 
   FlutterLocalNotificationsDriver._(
     this._config,
+    this._hostPlatform,
     this._plugin,
     this._onPayload,
   );
 
   final LocalNotificationPluginConfig _config;
+  final NotificationHostPlatform _hostPlatform;
   final FlutterLocalNotificationsPlugin _plugin;
   final NotificationPayloadHandler? _onPayload;
 
@@ -134,5 +143,65 @@ final class FlutterLocalNotificationsDriver
               NativePendingNotification(id: item.id, payload: item.payload),
         )
         .toList(growable: false);
+  }
+
+  @override
+  Future<NotificationPermissionStatus> status() async {
+    return switch (_hostPlatform) {
+      NotificationHostPlatform.android =>
+        notificationPermissionStatusFromNullableBool(
+          await _plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.areNotificationsEnabled(),
+        ),
+      NotificationHostPlatform.macos => _macOSPermissionStatus(),
+      NotificationHostPlatform.linux || NotificationHostPlatform.windows =>
+        NotificationPermissionStatus.notRequired,
+      NotificationHostPlatform.unsupported =>
+        NotificationPermissionStatus.unavailable,
+    };
+  }
+
+  @override
+  Future<NotificationPermissionStatus> request() async {
+    return switch (_hostPlatform) {
+      NotificationHostPlatform.android =>
+        notificationPermissionStatusFromNullableBool(
+          await _plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.requestNotificationsPermission(),
+        ),
+      NotificationHostPlatform.macos =>
+        notificationPermissionStatusFromNullableBool(
+          await _plugin
+              .resolvePlatformSpecificImplementation<
+                MacOSFlutterLocalNotificationsPlugin
+              >()
+              ?.requestPermissions(alert: true, badge: true, sound: true),
+        ),
+      NotificationHostPlatform.linux || NotificationHostPlatform.windows =>
+        NotificationPermissionStatus.notRequired,
+      NotificationHostPlatform.unsupported =>
+        NotificationPermissionStatus.unavailable,
+    };
+  }
+
+  Future<NotificationPermissionStatus> _macOSPermissionStatus() async {
+    final options = await _plugin
+        .resolvePlatformSpecificImplementation<
+          MacOSFlutterLocalNotificationsPlugin
+        >()
+        ?.checkPermissions();
+
+    if (options == null) {
+      return NotificationPermissionStatus.unavailable;
+    }
+    return options.isEnabled
+        ? NotificationPermissionStatus.granted
+        : NotificationPermissionStatus.denied;
   }
 }

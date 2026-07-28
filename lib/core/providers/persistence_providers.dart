@@ -10,6 +10,8 @@ import 'package:dashboard_shakhsi/core/notifications/native_notification_gateway
 import 'package:dashboard_shakhsi/core/notifications/noop_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_coordinator.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_host_platform.dart';
+import 'package:dashboard_shakhsi/core/notifications/notification_permission.dart';
+import 'package:dashboard_shakhsi/core/notifications/notification_permission_service.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_platform_capabilities.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_request.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_schedule_repository.dart';
@@ -141,6 +143,7 @@ final flutterLocalNotificationsDriverProvider =
     Provider<FlutterLocalNotificationsDriver>((ref) {
       return FlutterLocalNotificationsDriver(
         config: ref.watch(localNotificationPluginConfigProvider),
+        hostPlatform: ref.watch(notificationHostPlatformProvider),
       );
     });
 
@@ -184,3 +187,21 @@ final notificationStartupProvider = Provider<NotificationStartup>((ref) {
     coordinator: ref.watch(notificationCoordinatorProvider),
   );
 });
+
+final notificationPermissionGatewayProvider =
+    Provider<NotificationPermissionGateway>((ref) {
+      return ref.watch(flutterLocalNotificationsDriverProvider);
+    });
+
+final notificationPermissionServiceProvider =
+    Provider<NotificationPermissionService>((ref) {
+      return NotificationPermissionService(
+        permissionGateway: ref.watch(notificationPermissionGatewayProvider),
+        notificationGateway: ref.watch(nativeNotificationGatewayProvider),
+      );
+    });
+
+final notificationPermissionHealthProvider =
+    FutureProvider<NotificationPermissionHealth>((ref) {
+      return ref.watch(notificationPermissionServiceProvider).health();
+    });
