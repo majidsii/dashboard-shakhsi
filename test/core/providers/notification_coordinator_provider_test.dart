@@ -1,5 +1,6 @@
 import 'package:dashboard_shakhsi/core/notifications/noop_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_owner.dart';
+import 'package:dashboard_shakhsi/core/notifications/notification_platform_capabilities.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_request.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +10,14 @@ import '../../support/fake_notification_scheduler.dart';
 import '../../support/memory_notification_schedule_repository.dart';
 
 void main() {
-  test('default scheduler provider is safe before platform integration', () {
-    final container = ProviderContainer();
+  test('unsupported platform uses the safe noop scheduler', () {
+    final container = ProviderContainer(
+      overrides: <Override>[
+        notificationHostPlatformProvider.overrideWithValue(
+          NotificationHostPlatform.unsupported,
+        ),
+      ],
+    );
     addTearDown(container.dispose);
 
     expect(

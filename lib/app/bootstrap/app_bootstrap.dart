@@ -1,8 +1,8 @@
 import 'dart:ui';
-
 import 'package:dashboard_shakhsi/app/router/app_router.dart';
 import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
 import 'package:dashboard_shakhsi/app/theme/theme_mode_controller.dart';
+import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -19,7 +19,32 @@ Future<void> bootstrapApp() async {
     return true;
   };
 
-  runApp(const ProviderScope(child: DashboardShakhsiApp()));
+  final container = ProviderContainer();
+
+  try {
+    await initializeNotificationsForApp(container);
+  } catch (error, stackTrace) {
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'dashboard_shakhsi',
+        context: ErrorDescription('while initializing local notifications'),
+      ),
+    );
+  }
+
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: const DashboardShakhsiApp(),
+    ),
+  );
+}
+
+@visibleForTesting
+Future<void> initializeNotificationsForApp(ProviderContainer container) {
+  return container.read(notificationStartupProvider).initialize();
 }
 
 final class DashboardShakhsiApp extends ConsumerWidget {
