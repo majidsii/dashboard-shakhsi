@@ -1,29 +1,6 @@
-# داشبورد شخصی — نسخه ۲
+# Phase 1 — Task 10.2 Implementation Plan
 
-نسخه دوم داشبورد شخصی، بازنویسی‌شده با Flutter.
+Apply this package, run the verifier, review the plan, and commit it before
+starting implementation.
 
-## وضعیت فعلی
-
-- رابط فارسی و RTL
-- تم روشن و تاریک
-- طراحی Liquid Glass
-- مدیریت تسک‌ها
-- مدیریت درآمد و هزینه
-- مدیریت بدهی و اقساط
-- ذخیره‌سازی محلی با Drift/SQLite
-- محاسبات مالی دقیق
-- پشتیبانی از Android، Linux، Windows و macOS
-- بدون پشتیبانی iOS
-
-## توسعه
-
-```bash
-flutter pub get
-dart run build_runner build --delete-conflicting-outputs
-flutter analyze
-flutter test
-flutter run
-```
-## نسخه
-
-`2.0.0`
+The plan contains seven independent reviewer gates and preserves strict TDD.
