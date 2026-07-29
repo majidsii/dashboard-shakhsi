@@ -50,7 +50,7 @@
 - Create `lib/core/notifications/linux_process_request.dart`
   - immutable executable, arguments, environment, timeout, grace period, and limits
 - Create `lib/core/notifications/linux_bounded_output.dart`
-  - bounded byte capture and UTF-8 metadata
+  - immutable bounded-output value model in Task 1; streaming collector added in Task 2
 - Create `lib/core/notifications/linux_process_result.dart`
   - immutable completed-process result
 - Create `lib/core/notifications/linux_cancellation_token.dart`
@@ -111,6 +111,7 @@
 
 **Files:**
 - Create: `lib/core/notifications/linux_process_request.dart`
+- Create: `lib/core/notifications/linux_bounded_output.dart`
 - Create: `lib/core/notifications/linux_process_result.dart`
 - Create: `lib/core/notifications/linux_cancellation_token.dart`
 - Create: `lib/core/notifications/linux_process_exception.dart`
@@ -138,6 +139,17 @@ final class LinuxProcessRequest {
     int stdoutLimitBytes = 256 * 1024,
     int stderrLimitBytes = 256 * 1024,
     bool includeParentEnvironment = true,
+  });
+}
+
+final class LinuxBoundedOutput {
+  const LinuxBoundedOutput({
+    required String text,
+    required int totalBytes,
+    required int retainedBytes,
+    required int droppedBytes,
+    required bool truncated,
+    required bool malformedUtf8,
   });
 }
 
@@ -175,6 +187,8 @@ test('uses production-safe defaults', () {
 });
 ```
 
+Test immutable process results and bounded-output metadata snapshots.
+
 Test one-shot cancellation:
 
 ```dart
@@ -198,7 +212,9 @@ Expected: compile failure because all Task 1 production files are absent.
 
 - [ ] **Step 3: Implement minimal immutable models**
 
-Use `List.unmodifiable` and `Map.unmodifiable`. Reject executable strings containing whitespace, control characters, separators that imply multiple command fragments, or NUL.
+Use `List.unmodifiable` and `Map.unmodifiable`. Reject executable strings containing whitespace, control characters, shell operators, or NUL while allowing a single absolute executable path.
+
+Create the immutable `LinuxBoundedOutput` value model needed by `LinuxProcessResult`; defer only the streaming collector algorithm to Task 2.
 
 Create typed runner exceptions with immutable diagnostics but no inherited environment map.
 
@@ -207,6 +223,7 @@ Create typed runner exceptions with immutable diagnostics but no inherited envir
 ```bash
 dart format \
   lib/core/notifications/linux_process_request.dart \
+  lib/core/notifications/linux_bounded_output.dart \
   lib/core/notifications/linux_process_result.dart \
   lib/core/notifications/linux_cancellation_token.dart \
   lib/core/notifications/linux_process_exception.dart \
@@ -222,6 +239,7 @@ flutter analyze
 ```bash
 git add \
   lib/core/notifications/linux_process_request.dart \
+  lib/core/notifications/linux_bounded_output.dart \
   lib/core/notifications/linux_process_result.dart \
   lib/core/notifications/linux_cancellation_token.dart \
   lib/core/notifications/linux_process_exception.dart \
@@ -236,22 +254,14 @@ git commit -m "feat: add Linux process execution models"
 ### Task 2: Bounded Byte Capture and UTF-8 Diagnostics
 
 **Files:**
-- Create: `lib/core/notifications/linux_bounded_output.dart`
+- Modify: `lib/core/notifications/linux_bounded_output.dart`
 - Test: `test/core/notifications/linux_bounded_output_test.dart`
 
 **Interfaces:**
+- Consumes the immutable `LinuxBoundedOutput` model created in Task 1.
 - Produces:
 
 ```dart
-final class LinuxBoundedOutput {
-  final String text;
-  final int totalBytes;
-  final int retainedBytes;
-  final int droppedBytes;
-  final bool truncated;
-  final bool malformedUtf8;
-}
-
 final class LinuxBoundedOutputCollector {
   LinuxBoundedOutputCollector({required int limitBytes});
   void add(List<int> bytes);
