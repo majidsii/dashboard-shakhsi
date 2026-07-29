@@ -130,6 +130,26 @@ void main() {
       expect(await Directory(path).exists(), isTrue);
     });
 
+    test('readMode returns exact POSIX permission bits', () async {
+      final path = '${root.path}/unit.service';
+      await File(path).writeAsString('unit');
+      await fileSystem.chmod(path, 0x180);
+
+      expect(await fileSystem.readMode(path), 0x180);
+    });
+
+    test('readMode rejects a symbolic link', () async {
+      final target = '${root.path}/target.service';
+      final link = '${root.path}/link.service';
+      await File(target).writeAsString('target');
+      await Link(link).create(target);
+
+      await expectLater(
+        fileSystem.readMode(link),
+        throwsA(isA<LinuxSystemdUnsafeEntryException>()),
+      );
+    });
+
     test('chmod applies exact 0644 permissions', () async {
       final path = '${root.path}/unit.service';
       await File(path).writeAsString('unit');

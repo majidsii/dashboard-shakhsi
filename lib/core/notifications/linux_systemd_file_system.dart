@@ -34,6 +34,8 @@ abstract interface class LinuxSystemdFileSystem {
 
   Future<List<int>> readBytes(String path);
 
+  Future<int> readMode(String path);
+
   Future<void> writeBytes(String path, List<int> bytes);
 
   Future<void> rename(String sourcePath, String destinationPath);

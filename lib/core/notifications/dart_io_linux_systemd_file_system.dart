@@ -32,6 +32,21 @@ final class DartIoLinuxSystemdFileSystem implements LinuxSystemdFileSystem {
   }
 
   @override
+  Future<int> readMode(String path) async {
+    final entryType = await typeOf(path);
+    if (entryType != LinuxSystemdEntryType.regularFile) {
+      throw LinuxSystemdUnsafeEntryException(
+        path: path,
+        entryType: entryType,
+        operation: 'read mode from',
+      );
+    }
+
+    final stat = await FileStat.stat(path);
+    return stat.mode & 0x1FF;
+  }
+
+  @override
   Future<void> writeBytes(String path, List<int> bytes) async {
     await File(path).writeAsBytes(bytes, flush: true);
   }

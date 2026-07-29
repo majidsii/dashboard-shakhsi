@@ -131,6 +131,18 @@ final class FakeLinuxSystemdFileSystem implements LinuxSystemdFileSystem {
   }
 
   @override
+  Future<int> readMode(String path) async {
+    _recordAndMaybeFail('readMode:$path');
+    final mode = _requireFile(path, operation: 'read mode from').mode;
+
+    if (mode == null) {
+      throw StateError('Regular file has no stored mode: $path');
+    }
+
+    return mode;
+  }
+
+  @override
   Future<void> writeBytes(String path, List<int> bytes) async {
     _recordAndMaybeFail('write:$path');
     _entries[path] = FakeLinuxSystemdEntry.file(
