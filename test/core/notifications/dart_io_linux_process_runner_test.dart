@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dashboard_shakhsi/core/notifications/dart_io_linux_process_runner.dart';
+import 'package:dashboard_shakhsi/core/notifications/linux_cancellation_token.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_process_exception.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_process_request.dart';
+import 'package:dashboard_shakhsi/core/notifications/linux_started_process.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fake_linux_started_process.dart';
@@ -276,11 +279,420 @@ void main() {
       expect(process.signals, isEmpty);
     });
   });
+
+  group('DartIoLinuxProcessRunner termination', () {
+    test('cancellation before spawn prevents process execution', () async {
+      final starter = FakeLinuxProcessStarter();
+      final process = ControllableLinuxStartedProcess(pid: 20);
+      final runner = DartIoLinuxProcessRunner(processStarter: starter);
+      final source = LinuxCancellationSource();
+
+      starter.enqueueProcess(process);
+      expect(source.cancel(), isTrue);
+
+      await expectLater(
+        runner.run(_terminationRequest(), cancellationToken: source.token),
+        throwsA(
+          isA<LinuxProcessCancellationException>()
+              .having((error) => error.pid, 'pid', isNull)
+              .having(
+                (error) => error.sigtermAttempted,
+                'sigtermAttempted',
+                isFalse,
+              )
+              .having(
+                (error) => error.sigkillAttempted,
+                'sigkillAttempted',
+                isFalse,
+              ),
+        ),
+      );
+
+      expect(starter.requests, isEmpty);
+      expect(starter.pendingOutcomeCount, 1);
+      expect(process.signals, isEmpty);
+    });
+
+    test(
+      'timeout sends SIGTERM and skips SIGKILL when the process exits',
+      () async {
+        final starter = FakeLinuxProcessStarter();
+        final process = ControllableLinuxStartedProcess(pid: 21);
+        final runner = DartIoLinuxProcessRunner(processStarter: starter);
+
+        process.killHandler = (signal) {
+          if (signal == LinuxProcessSignal.sigterm) {
+            unawaited(process.finish(exitCode: 143));
+          }
+        };
+        starter.enqueueProcess(process);
+
+        final fallback = _fallbackFinish(process);
+        try {
+          await expectLater(
+            runner.run(_terminationRequest()),
+            throwsA(
+              isA<LinuxProcessTimeoutException>()
+                  .having((error) => error.pid, 'pid', 21)
+                  .having(
+                    (error) => error.sigtermAttempted,
+                    'sigtermAttempted',
+                    isTrue,
+                  )
+                  .having(
+                    (error) => error.sigtermDelivered,
+                    'sigtermDelivered',
+                    isTrue,
+                  )
+                  .having(
+                    (error) => error.sigkillAttempted,
+                    'sigkillAttempted',
+                    isFalse,
+                  )
+                  .having(
+                    (error) => error.timeout,
+                    'timeout',
+                    _terminationTimeout,
+                  ),
+            ),
+          );
+        } finally {
+          fallback.cancel();
+          await process.finish(exitCode: 255);
+        }
+
+        expect(
+          process.signals,
+          orderedEquals(<LinuxProcessSignal>[LinuxProcessSignal.sigterm]),
+        );
+      },
+    );
+
+    test('timeout escalates to SIGKILL after the grace period', () async {
+      final starter = FakeLinuxProcessStarter();
+      final process = ControllableLinuxStartedProcess(pid: 22);
+      final runner = DartIoLinuxProcessRunner(processStarter: starter);
+
+      process.killHandler = (signal) {
+        if (signal == LinuxProcessSignal.sigkill) {
+          unawaited(process.finish(exitCode: 137));
+        }
+      };
+      starter.enqueueProcess(process);
+
+      final fallback = _fallbackFinish(process);
+      try {
+        await expectLater(
+          runner.run(_terminationRequest()),
+          throwsA(
+            isA<LinuxProcessTimeoutException>()
+                .having(
+                  (error) => error.sigtermAttempted,
+                  'sigtermAttempted',
+                  isTrue,
+                )
+                .having(
+                  (error) => error.sigkillAttempted,
+                  'sigkillAttempted',
+                  isTrue,
+                )
+                .having(
+                  (error) => error.sigkillDelivered,
+                  'sigkillDelivered',
+                  isTrue,
+                )
+                .having(
+                  (error) => error.terminationGracePeriod,
+                  'terminationGracePeriod',
+                  _terminationGrace,
+                ),
+          ),
+        );
+      } finally {
+        fallback.cancel();
+        await process.finish(exitCode: 255);
+      }
+
+      expect(
+        process.signals,
+        orderedEquals(<LinuxProcessSignal>[
+          LinuxProcessSignal.sigterm,
+          LinuxProcessSignal.sigkill,
+        ]),
+      );
+    });
+
+    test(
+      'cancellation after spawn uses the same escalation sequence',
+      () async {
+        final starter = FakeLinuxProcessStarter();
+        final process = ControllableLinuxStartedProcess(pid: 23);
+        final runner = DartIoLinuxProcessRunner(processStarter: starter);
+        final source = LinuxCancellationSource();
+
+        process.killHandler = (signal) {
+          if (signal == LinuxProcessSignal.sigkill) {
+            unawaited(process.finish(exitCode: 137));
+          }
+        };
+        starter.enqueueProcess(process);
+
+        final future = runner.run(
+          _terminationRequest(),
+          cancellationToken: source.token,
+        );
+        final expectation = expectLater(
+          future,
+          throwsA(
+            isA<LinuxProcessCancellationException>()
+                .having((error) => error.pid, 'pid', 23)
+                .having(
+                  (error) => error.sigtermAttempted,
+                  'sigtermAttempted',
+                  isTrue,
+                )
+                .having(
+                  (error) => error.sigkillAttempted,
+                  'sigkillAttempted',
+                  isTrue,
+                ),
+          ),
+        );
+        final fallback = _fallbackFinish(process);
+
+        try {
+          await Future.wait<void>(<Future<void>>[
+            process.stdoutListened,
+            process.stderrListened,
+          ]);
+          expect(source.cancel(), isTrue);
+          await expectation;
+        } finally {
+          fallback.cancel();
+          await process.finish(exitCode: 255);
+        }
+
+        expect(
+          process.signals,
+          orderedEquals(<LinuxProcessSignal>[
+            LinuxProcessSignal.sigterm,
+            LinuxProcessSignal.sigkill,
+          ]),
+        );
+      },
+    );
+
+    test(
+      'timeout remains the terminal reason when cancellation races later',
+      () async {
+        final starter = FakeLinuxProcessStarter();
+        final process = ControllableLinuxStartedProcess(pid: 24);
+        final runner = DartIoLinuxProcessRunner(processStarter: starter);
+        final source = LinuxCancellationSource();
+
+        process.killHandler = (signal) {
+          if (signal == LinuxProcessSignal.sigterm) {
+            source.cancel();
+            unawaited(process.finish(exitCode: 143));
+          }
+        };
+        starter.enqueueProcess(process);
+
+        final fallback = _fallbackFinish(process);
+        try {
+          await expectLater(
+            runner.run(_terminationRequest(), cancellationToken: source.token),
+            throwsA(isA<LinuxProcessTimeoutException>()),
+          );
+        } finally {
+          fallback.cancel();
+          await process.finish(exitCode: 255);
+        }
+
+        expect(source.token.isCancelled, isTrue);
+        expect(
+          process.signals,
+          orderedEquals(<LinuxProcessSignal>[LinuxProcessSignal.sigterm]),
+        );
+      },
+    );
+
+    test(
+      'cancellation wins once and a later timeout sends no more signals',
+      () async {
+        final starter = FakeLinuxProcessStarter();
+        final process = ControllableLinuxStartedProcess(pid: 25);
+        final runner = DartIoLinuxProcessRunner(processStarter: starter);
+        final source = LinuxCancellationSource();
+
+        process.killHandler = (signal) {
+          if (signal == LinuxProcessSignal.sigterm) {
+            unawaited(process.finish(exitCode: 143));
+          }
+        };
+        starter.enqueueProcess(process);
+
+        final future = runner.run(
+          _terminationRequest(),
+          cancellationToken: source.token,
+        );
+        final expectation = expectLater(
+          future,
+          throwsA(isA<LinuxProcessCancellationException>()),
+        );
+        final fallback = _fallbackFinish(process);
+
+        try {
+          await Future.wait<void>(<Future<void>>[
+            process.stdoutListened,
+            process.stderrListened,
+          ]);
+          expect(source.cancel(), isTrue);
+          await expectation;
+          await Future<void>.delayed(_terminationTimeout + _terminationGrace);
+        } finally {
+          fallback.cancel();
+          await process.finish(exitCode: 255);
+        }
+
+        expect(
+          process.signals,
+          orderedEquals(<LinuxProcessSignal>[LinuxProcessSignal.sigterm]),
+        );
+      },
+    );
+
+    test('repeated cancellation never repeats the signal sequence', () async {
+      final starter = FakeLinuxProcessStarter();
+      final process = ControllableLinuxStartedProcess(pid: 26);
+      final runner = DartIoLinuxProcessRunner(processStarter: starter);
+      final source = LinuxCancellationSource();
+
+      process.killHandler = (signal) {
+        if (signal == LinuxProcessSignal.sigterm) {
+          unawaited(process.finish(exitCode: 143));
+        }
+      };
+      starter.enqueueProcess(process);
+
+      final future = runner.run(
+        _terminationRequest(),
+        cancellationToken: source.token,
+      );
+      final expectation = expectLater(
+        future,
+        throwsA(isA<LinuxProcessCancellationException>()),
+      );
+      final fallback = _fallbackFinish(process);
+
+      try {
+        await Future.wait<void>(<Future<void>>[
+          process.stdoutListened,
+          process.stderrListened,
+        ]);
+        expect(source.cancel(), isTrue);
+        expect(source.cancel(), isFalse);
+        await expectation;
+      } finally {
+        fallback.cancel();
+        await process.finish(exitCode: 255);
+      }
+
+      expect(
+        process.signals,
+        orderedEquals(<LinuxProcessSignal>[LinuxProcessSignal.sigterm]),
+      );
+    });
+
+    test('forced termination drains and bounds both output streams', () async {
+      final starter = FakeLinuxProcessStarter();
+      final process = ControllableLinuxStartedProcess(pid: 27);
+      final runner = DartIoLinuxProcessRunner(processStarter: starter);
+      final source = LinuxCancellationSource();
+
+      process.killHandler = (signal) {
+        if (signal == LinuxProcessSignal.sigkill) {
+          process.addStdout(utf8.encode('TAIL'));
+          process.addStderr(utf8.encode('TAIL'));
+          unawaited(process.finish(exitCode: 137));
+        }
+      };
+      starter.enqueueProcess(process);
+
+      final future = runner.run(
+        _terminationRequest(),
+        cancellationToken: source.token,
+      );
+      final expectation = expectLater(
+        future,
+        throwsA(
+          isA<LinuxProcessCancellationException>()
+              .having(
+                (error) => error.stdout?.totalBytes,
+                'stdout totalBytes',
+                2054,
+              )
+              .having(
+                (error) => error.stdout?.retainedBytes,
+                'stdout retainedBytes',
+                2048,
+              )
+              .having(
+                (error) => error.stdout?.truncated,
+                'stdout truncated',
+                isTrue,
+              )
+              .having(
+                (error) => error.stdout?.text.endsWith('TAIL'),
+                'stdout suffix',
+                isTrue,
+              )
+              .having(
+                (error) => error.stderr?.totalBytes,
+                'stderr totalBytes',
+                2054,
+              )
+              .having(
+                (error) => error.stderr?.text.endsWith('TAIL'),
+                'stderr suffix',
+                isTrue,
+              ),
+        ),
+      );
+      final fallback = _fallbackFinish(process);
+
+      try {
+        await Future.wait<void>(<Future<void>>[
+          process.stdoutListened,
+          process.stderrListened,
+        ]);
+
+        process.addStdout(List<int>.filled(2050, 65, growable: false));
+        process.addStderr(List<int>.filled(2050, 66, growable: false));
+
+        expect(source.cancel(), isTrue);
+        await expectation;
+      } finally {
+        fallback.cancel();
+        await process.finish(exitCode: 255);
+      }
+
+      expect(
+        process.signals,
+        orderedEquals(<LinuxProcessSignal>[
+          LinuxProcessSignal.sigterm,
+          LinuxProcessSignal.sigkill,
+        ]),
+      );
+    });
+  });
 }
 
 LinuxProcessRequest _request({
   int stdoutLimitBytes = 4096,
   int stderrLimitBytes = 4096,
+  Duration timeout = const Duration(seconds: 15),
+  Duration terminationGracePeriod = const Duration(seconds: 2),
 }) {
   return LinuxProcessRequest(
     executable: 'systemctl',
@@ -289,10 +701,29 @@ LinuxProcessRequest _request({
       'LC_ALL': 'C',
       'TOP_SECRET': 'must-not-leak',
     },
-    timeout: const Duration(seconds: 15),
-    terminationGracePeriod: const Duration(seconds: 2),
+    timeout: timeout,
+    terminationGracePeriod: terminationGracePeriod,
     stdoutLimitBytes: stdoutLimitBytes,
     stderrLimitBytes: stderrLimitBytes,
     includeParentEnvironment: false,
   );
+}
+
+const Duration _terminationTimeout = Duration(milliseconds: 80);
+const Duration _terminationGrace = Duration(milliseconds: 40);
+const Duration _fallbackDelay = Duration(milliseconds: 500);
+
+LinuxProcessRequest _terminationRequest() {
+  return _request(
+    stdoutLimitBytes: 2048,
+    stderrLimitBytes: 2048,
+    timeout: _terminationTimeout,
+    terminationGracePeriod: _terminationGrace,
+  );
+}
+
+Timer _fallbackFinish(ControllableLinuxStartedProcess process) {
+  return Timer(_fallbackDelay, () {
+    unawaited(process.finish(exitCode: 255));
+  });
 }

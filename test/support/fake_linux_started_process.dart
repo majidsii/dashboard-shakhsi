@@ -38,7 +38,11 @@ final class FakeLinuxProcessStarter implements LinuxProcessStarter {
 }
 
 final class ControllableLinuxStartedProcess implements LinuxStartedProcess {
-  ControllableLinuxStartedProcess({required this.pid}) {
+  ControllableLinuxStartedProcess({
+    required this.pid,
+    this.sigtermDeliveryResult = true,
+    this.sigkillDeliveryResult = true,
+  }) {
     _stdoutController = StreamController<List<int>>(
       sync: true,
       onListen: () {
@@ -60,15 +64,28 @@ final class ControllableLinuxStartedProcess implements LinuxStartedProcess {
   @override
   final int pid;
 
+  final bool sigtermDeliveryResult;
+  final bool sigkillDeliveryResult;
+
+  void Function(LinuxProcessSignal signal)? killHandler;
+
   late final StreamController<List<int>> _stdoutController;
   late final StreamController<List<int>> _stderrController;
   final Completer<int> _exitCodeCompleter = Completer<int>.sync();
   final Completer<void> _stdoutListenedCompleter = Completer<void>.sync();
   final Completer<void> _stderrListenedCompleter = Completer<void>.sync();
+  final Completer<void> _sigtermObservedCompleter = Completer<void>.sync();
+  final Completer<void> _sigkillObservedCompleter = Completer<void>.sync();
   final List<LinuxProcessSignal> _signals = <LinuxProcessSignal>[];
+
+  bool _stdoutClosed = false;
+  bool _stderrClosed = false;
+  Future<void>? _finishFuture;
 
   Future<void> get stdoutListened => _stdoutListenedCompleter.future;
   Future<void> get stderrListened => _stderrListenedCompleter.future;
+  Future<void> get sigtermObserved => _sigtermObservedCompleter.future;
+  Future<void> get sigkillObserved => _sigkillObservedCompleter.future;
 
   List<LinuxProcessSignal> get signals =>
       List<LinuxProcessSignal>.unmodifiable(_signals);
@@ -98,9 +115,23 @@ final class ControllableLinuxStartedProcess implements LinuxStartedProcess {
     _stderrController.addError(error, stackTrace);
   }
 
-  Future<void> closeStdout() => _stdoutController.close();
+  Future<void> closeStdout() {
+    if (_stdoutClosed) {
+      return _stdoutController.done;
+    }
 
-  Future<void> closeStderr() => _stderrController.close();
+    _stdoutClosed = true;
+    return _stdoutController.close();
+  }
+
+  Future<void> closeStderr() {
+    if (_stderrClosed) {
+      return _stderrController.done;
+    }
+
+    _stderrClosed = true;
+    return _stderrController.close();
+  }
 
   bool completeExit(int code) {
     if (_exitCodeCompleter.isCompleted) {
@@ -111,10 +142,39 @@ final class ControllableLinuxStartedProcess implements LinuxStartedProcess {
     return true;
   }
 
+  Future<void> finish({int exitCode = 0}) {
+    return _finishFuture ??= _finish(exitCode);
+  }
+
+  Future<void> _finish(int exitCode) async {
+    completeExit(exitCode);
+
+    await Future.wait<void>(<Future<void>>[closeStdout(), closeStderr()]);
+  }
+
   @override
   bool kill(LinuxProcessSignal signal) {
     _signals.add(signal);
-    return true;
+
+    switch (signal) {
+      case LinuxProcessSignal.sigterm:
+        if (!_sigtermObservedCompleter.isCompleted) {
+          _sigtermObservedCompleter.complete();
+        }
+        break;
+      case LinuxProcessSignal.sigkill:
+        if (!_sigkillObservedCompleter.isCompleted) {
+          _sigkillObservedCompleter.complete();
+        }
+        break;
+    }
+
+    killHandler?.call(signal);
+
+    return switch (signal) {
+      LinuxProcessSignal.sigterm => sigtermDeliveryResult,
+      LinuxProcessSignal.sigkill => sigkillDeliveryResult,
+    };
   }
 }
 
