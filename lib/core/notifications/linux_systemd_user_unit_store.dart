@@ -151,8 +151,33 @@ final class LinuxSystemdUserUnitStore {
     }
   }
 
-  Future<void> remove(LinuxSystemdUnitNames names) {
-    throw UnsupportedError('Unit removal is implemented by Task 10.2.6.');
+  Future<void> remove(LinuxSystemdUnitNames names) async {
+    try {
+      _validateUnitNamePair(names.serviceFileName, names.timerFileName);
+
+      final directory = _pathResolver.resolve();
+      final servicePath = '$directory/${names.serviceFileName}';
+      final timerPath = '$directory/${names.timerFileName}';
+
+      final timerType = await _validateRemovalPath(timerPath);
+      final serviceType = await _validateRemovalPath(servicePath);
+
+      if (timerType == LinuxSystemdEntryType.regularFile) {
+        await _fileSystem.deleteFile(timerPath);
+      }
+
+      if (serviceType == LinuxSystemdEntryType.regularFile) {
+        await _fileSystem.deleteFile(servicePath);
+      }
+    } catch (error, stackTrace) {
+      throw LinuxSystemdUserUnitStoreException(
+        operation: LinuxSystemdUserUnitStoreOperation.remove,
+        serviceFileName: names.serviceFileName,
+        timerFileName: names.timerFileName,
+        cause: error,
+        causeStackTrace: stackTrace,
+      );
+    }
   }
 
   Future<_ExistingUnitSnapshot?> _snapshotExisting(
@@ -338,8 +363,12 @@ final class LinuxSystemdUserUnitStore {
   }
 
   void _validateUnitNames(LinuxSystemdRenderedUnits units) {
-    final serviceMatch = _serviceNamePattern.firstMatch(units.serviceFileName);
-    final timerMatch = _timerNamePattern.firstMatch(units.timerFileName);
+    _validateUnitNamePair(units.serviceFileName, units.timerFileName);
+  }
+
+  void _validateUnitNamePair(String serviceFileName, String timerFileName) {
+    final serviceMatch = _serviceNamePattern.firstMatch(serviceFileName);
+    final timerMatch = _timerNamePattern.firstMatch(timerFileName);
 
     if (serviceMatch == null || timerMatch == null) {
       throw ArgumentError(
@@ -352,6 +381,21 @@ final class LinuxSystemdUserUnitStore {
         'The service and timer must share the same unit base name.',
       );
     }
+  }
+
+  Future<LinuxSystemdEntryType> _validateRemovalPath(String path) async {
+    final type = await _fileSystem.typeOf(path);
+
+    if (type == LinuxSystemdEntryType.missing ||
+        type == LinuxSystemdEntryType.regularFile) {
+      return type;
+    }
+
+    throw LinuxSystemdUnsafeEntryException(
+      path: path,
+      entryType: type,
+      operation: 'remove',
+    );
   }
 
   void _validateTransactionId(String transactionId) {
