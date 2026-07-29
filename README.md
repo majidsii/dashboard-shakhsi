@@ -1,6 +1,11 @@
-# Task 10.2.3 dart:io Import Hotfix
+# Task 10.2.4 Initializing Formals Hotfix
 
-The fake filesystem throws `FileSystemException`, which is declared in
-`dart:io`. The original GREEN file omitted that import.
+The public constructor keeps these named parameters:
 
-This patch only adds the missing import.
+- `pathResolver`
+- `fileSystem`
+- `transactionIdFactory`
+
+A private positional constructor initializes the private fields directly, so
+`prefer_initializing_formals` passes without changing callers or suppressing
+the lint.
