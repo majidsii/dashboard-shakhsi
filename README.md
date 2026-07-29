@@ -1,6 +1,6 @@
-# Phase 1 — Task 10.2 Implementation Plan
+# Task 10.2.3 dart:io Import Hotfix
 
-Apply this package, run the verifier, review the plan, and commit it before
-starting implementation.
+The fake filesystem throws `FileSystemException`, which is declared in
+`dart:io`. The original GREEN file omitted that import.
 
-The plan contains seven independent reviewer gates and preserves strict TDD.
+This patch only adds the missing import.
