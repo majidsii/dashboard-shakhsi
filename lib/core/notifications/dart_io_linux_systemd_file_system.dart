@@ -27,6 +27,51 @@ final class DartIoLinuxSystemdFileSystem implements LinuxSystemdFileSystem {
   }
 
   @override
+  Future<int> fileLength(String path) async {
+    final entryType = await typeOf(path);
+    if (entryType != LinuxSystemdEntryType.regularFile) {
+      throw LinuxSystemdUnsafeEntryException(
+        path: path,
+        entryType: entryType,
+        operation: 'read length from',
+      );
+    }
+
+    return File(path).length();
+  }
+
+  @override
+  Future<List<String>> listNames(String directoryPath) async {
+    final entryType = await typeOf(directoryPath);
+
+    switch (entryType) {
+      case LinuxSystemdEntryType.missing:
+        return const <String>[];
+      case LinuxSystemdEntryType.directory:
+        break;
+      case LinuxSystemdEntryType.regularFile:
+      case LinuxSystemdEntryType.symbolicLink:
+      case LinuxSystemdEntryType.other:
+        throw LinuxSystemdUnsafeEntryException(
+          path: directoryPath,
+          entryType: entryType,
+          operation: 'list',
+        );
+    }
+
+    final names = <String>{};
+
+    await for (final entity in Directory(
+      directoryPath,
+    ).list(recursive: false, followLinks: false)) {
+      names.add(_baseName(entity.path));
+    }
+
+    final sorted = names.toList()..sort();
+    return List<String>.unmodifiable(sorted);
+  }
+
+  @override
   Future<List<int>> readBytes(String path) {
     return File(path).readAsBytes();
   }
@@ -93,5 +138,10 @@ final class DartIoLinuxSystemdFileSystem implements LinuxSystemdFileSystem {
     }
 
     posix.chmodWithMode(path, mode);
+  }
+
+  static String _baseName(String path) {
+    final index = path.lastIndexOf('/');
+    return index < 0 ? path : path.substring(index + 1);
   }
 }

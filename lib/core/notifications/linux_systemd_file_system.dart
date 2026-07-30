@@ -32,6 +32,10 @@ abstract interface class LinuxSystemdFileSystem {
 
   Future<LinuxSystemdEntryType> typeOf(String path);
 
+  Future<int> fileLength(String path);
+
+  Future<List<String>> listNames(String directoryPath);
+
   Future<List<int>> readBytes(String path);
 
   Future<int> readMode(String path);

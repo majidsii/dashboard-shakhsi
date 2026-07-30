@@ -92,7 +92,9 @@ final class FakeLinuxSystemdFileSystem implements LinuxSystemdFileSystem {
 
   int? modeOf(String path) => _entries[path]?.mode;
 
-  String? linkTargetOf(String path) => _entries[path]?.linkTarget;
+  String? linkTargetOf(String path) {
+    return _entries[path]?.linkTarget;
+  }
 
   List<String> pathsWhere(bool Function(String path) predicate) {
     return _entries.keys.where(predicate).toList(growable: false);
@@ -122,6 +124,69 @@ final class FakeLinuxSystemdFileSystem implements LinuxSystemdFileSystem {
   Future<LinuxSystemdEntryType> typeOf(String path) async {
     _recordAndMaybeFail('typeOf:$path');
     return _entries[path]?.type ?? LinuxSystemdEntryType.missing;
+  }
+
+  @override
+  Future<int> fileLength(String path) async {
+    _recordAndMaybeFail('fileLength:$path');
+
+    final entry = _entries[path];
+    if (entry == null) {
+      throw LinuxSystemdUnsafeEntryException(
+        path: path,
+        entryType: LinuxSystemdEntryType.missing,
+        operation: 'read length from',
+      );
+    }
+
+    if (entry.type != LinuxSystemdEntryType.regularFile) {
+      throw LinuxSystemdUnsafeEntryException(
+        path: path,
+        entryType: entry.type,
+        operation: 'read length from',
+      );
+    }
+
+    return entry.bytes.length;
+  }
+
+  @override
+  Future<List<String>> listNames(String directoryPath) async {
+    _recordAndMaybeFail('listNames:$directoryPath');
+
+    final entry = _entries[directoryPath];
+    if (entry == null) {
+      return const <String>[];
+    }
+
+    if (entry.type != LinuxSystemdEntryType.directory) {
+      throw LinuxSystemdUnsafeEntryException(
+        path: directoryPath,
+        entryType: entry.type,
+        operation: 'list',
+      );
+    }
+
+    final prefix = directoryPath.endsWith('/')
+        ? directoryPath
+        : '$directoryPath/';
+    final names = <String>{};
+
+    for (final path in _entries.keys) {
+      if (!path.startsWith(prefix)) {
+        continue;
+      }
+
+      final remainder = path.substring(prefix.length);
+      if (remainder.isEmpty || remainder.contains('/')) {
+        continue;
+      }
+
+      names.add(remainder);
+    }
+
+    final sorted = names.toList()..sort();
+    return List<String>.unmodifiable(sorted);
   }
 
   @override
