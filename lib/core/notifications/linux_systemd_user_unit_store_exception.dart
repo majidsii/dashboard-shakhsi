@@ -1,5 +1,19 @@
 /// High-level operation performed by the systemd user-unit store.
-enum LinuxSystemdUserUnitStoreOperation { install, remove }
+enum LinuxSystemdUserUnitStoreOperation {
+  install,
+  remove,
+  beginInstall,
+  beginRemove,
+  applyInstall,
+  finalizeInstall,
+  rollbackInstall,
+  applyRemove,
+  finalizeRemove,
+  rollbackRemove,
+}
+
+/// Safe category for a retained transaction lifecycle failure.
+enum LinuxSystemdUserUnitTransactionFailure { invalidState, filesystemFailure }
 
 /// One failure encountered while attempting rollback or cleanup.
 final class LinuxSystemdRollbackFailure {
@@ -18,6 +32,7 @@ final class LinuxSystemdRollbackFailure {
 final class LinuxSystemdUserUnitStoreException implements Exception {
   factory LinuxSystemdUserUnitStoreException({
     required LinuxSystemdUserUnitStoreOperation operation,
+    LinuxSystemdUserUnitTransactionFailure? transactionFailure,
     required String serviceFileName,
     required String timerFileName,
     required Object cause,
@@ -27,6 +42,7 @@ final class LinuxSystemdUserUnitStoreException implements Exception {
   }) {
     return LinuxSystemdUserUnitStoreException._(
       operation: operation,
+      transactionFailure: transactionFailure,
       serviceFileName: serviceFileName,
       timerFileName: timerFileName,
       cause: cause,
@@ -39,6 +55,7 @@ final class LinuxSystemdUserUnitStoreException implements Exception {
 
   const LinuxSystemdUserUnitStoreException._({
     required this.operation,
+    required this.transactionFailure,
     required this.serviceFileName,
     required this.timerFileName,
     required this.cause,
@@ -47,6 +64,7 @@ final class LinuxSystemdUserUnitStoreException implements Exception {
   });
 
   final LinuxSystemdUserUnitStoreOperation operation;
+  final LinuxSystemdUserUnitTransactionFailure? transactionFailure;
   final String serviceFileName;
   final String timerFileName;
   final Object cause;
@@ -57,9 +75,9 @@ final class LinuxSystemdUserUnitStoreException implements Exception {
   String toString() {
     return 'LinuxSystemdUserUnitStoreException('
         'operation: ${operation.name}, '
+        'transactionFailure: ${transactionFailure?.name ?? 'none'}, '
         'service: $serviceFileName, '
         'timer: $timerFileName, '
-        'cause: $cause, '
         'rollbackFailures: ${rollbackFailures.length}'
         ')';
   }
