@@ -3,16 +3,16 @@ import 'dart:convert';
 import 'linux_systemd_file_system.dart';
 import 'linux_systemd_notification_unit.dart';
 import 'linux_systemd_unit_renderer.dart';
+import 'linux_systemd_unit_transaction.dart';
 import 'linux_systemd_user_unit_path_resolver.dart';
 import 'linux_systemd_user_unit_store_exception.dart';
 
 typedef LinuxSystemdTransactionIdFactory = String Function();
 
-/// Installs matching systemd user service and timer files atomically.
+/// Persists matching systemd user service and timer files.
 ///
-/// The transaction snapshots old bytes and modes, prepares both new files,
-/// commits through same-directory renames, and performs full in-process
-/// rollback while preserving the original failure as the primary cause.
+/// Gate 10.5.2 adds retained install transactions. The retained remove
+/// transaction is added separately in Gate 10.5.3.
 final class LinuxSystemdUserUnitStore {
   factory LinuxSystemdUserUnitStore({
     required LinuxSystemdUserUnitPathResolver pathResolver,
@@ -46,25 +46,21 @@ final class LinuxSystemdUserUnitStore {
   final LinuxSystemdFileSystem _fileSystem;
   final LinuxSystemdTransactionIdFactory _transactionIdFactory;
 
-  Future<void> install(LinuxSystemdRenderedUnits units) async {
-    _InstallPaths? paths;
-    final state = _InstallTransactionState();
-
+  Future<LinuxSystemdUnitInstallTransaction> beginInstall(
+    LinuxSystemdRenderedUnits units,
+  ) async {
     try {
-      _validateUnitNames(units);
-
+      final names = _validatedNames(units.serviceFileName, units.timerFileName);
       final transactionId = _transactionIdFactory();
       _validateTransactionId(transactionId);
 
       final directory = _pathResolver.resolve();
-      paths = _InstallPaths(
+      final paths = _InstallPaths(
         directory: directory,
         serviceFileName: units.serviceFileName,
         timerFileName: units.timerFileName,
         transactionId: transactionId,
       );
-
-      await _fileSystem.createDirectory(directory);
 
       final serviceType = await _validateFinalPath(paths.service.finalPath);
       final timerType = await _validateFinalPath(paths.timer.finalPath);
@@ -74,86 +70,96 @@ final class LinuxSystemdUserUnitStore {
       await _requireMissing(paths.service.backupPath);
       await _requireMissing(paths.timer.backupPath);
 
-      state.service.previous = await _snapshotExisting(
-        paths.service.finalPath,
-        serviceType,
+      final state = _InstallMutationState(
+        service: _UnitMutationState(
+          previous: await _snapshotExisting(
+            paths.service.finalPath,
+            serviceType,
+          ),
+        ),
+        timer: _UnitMutationState(
+          previous: await _snapshotExisting(paths.timer.finalPath, timerType),
+        ),
       );
-      state.timer.previous = await _snapshotExisting(
-        paths.timer.finalPath,
-        timerType,
+
+      return _RetainedInstallTransaction(
+        fileSystem: _fileSystem,
+        names: names,
+        units: units,
+        paths: paths,
+        mutationState: state,
       );
-
-      await _fileSystem.writeBytes(
-        paths.service.tempPath,
-        utf8.encode(units.serviceContents),
+    } catch (error, stackTrace) {
+      throw _exception(
+        operation: LinuxSystemdUserUnitStoreOperation.beginInstall,
+        failure: error is ArgumentError
+            ? LinuxSystemdUserUnitTransactionFailure.invalidState
+            : LinuxSystemdUserUnitTransactionFailure.filesystemFailure,
+        serviceFileName: units.serviceFileName,
+        timerFileName: units.timerFileName,
+        error: error,
+        stackTrace: stackTrace,
       );
-      state.service.tempExists = true;
+    }
+  }
 
-      await _fileSystem.writeBytes(
-        paths.timer.tempPath,
-        utf8.encode(units.timerContents),
-      );
-      state.timer.tempExists = true;
+  Future<void> install(LinuxSystemdRenderedUnits units) async {
+    LinuxSystemdUnitInstallTransaction? transaction;
 
-      await _fileSystem.chmod(paths.service.tempPath, _unitFileMode);
-      await _fileSystem.chmod(paths.timer.tempPath, _unitFileMode);
-
-      if (state.service.previous != null) {
-        await _fileSystem.rename(
-          paths.service.finalPath,
-          paths.service.backupPath,
-        );
-        state.service.backupExists = true;
-      }
-
-      if (state.timer.previous != null) {
-        await _fileSystem.rename(paths.timer.finalPath, paths.timer.backupPath);
-        state.timer.backupExists = true;
-      }
-
-      await _fileSystem.rename(paths.service.tempPath, paths.service.finalPath);
-      state.service
-        ..tempExists = false
-        ..installed = true;
-
-      await _fileSystem.rename(paths.timer.tempPath, paths.timer.finalPath);
-      state.timer
-        ..tempExists = false
-        ..installed = true;
-
-      await _fileSystem.chmod(paths.service.finalPath, _unitFileMode);
-      await _fileSystem.chmod(paths.timer.finalPath, _unitFileMode);
-
-      if (state.service.backupExists) {
-        await _fileSystem.deleteFile(paths.service.backupPath);
-        state.service.backupExists = false;
-      }
-
-      if (state.timer.backupExists) {
-        await _fileSystem.deleteFile(paths.timer.backupPath);
-        state.timer.backupExists = false;
-      }
+    try {
+      transaction = await beginInstall(units);
+      await transaction.apply();
+      await transaction.finalize();
     } catch (error, stackTrace) {
       final rollbackFailures = <LinuxSystemdRollbackFailure>[];
 
-      if (paths != null) {
-        await _rollback(paths, state, rollbackFailures);
+      if (transaction != null &&
+          transaction.state != LinuxSystemdUnitTransactionState.finalized &&
+          transaction.state != LinuxSystemdUnitTransactionState.rolledBack) {
+        try {
+          await transaction.rollback();
+        } on LinuxSystemdUserUnitStoreException catch (rollbackError) {
+          if (rollbackError.rollbackFailures.isNotEmpty) {
+            rollbackFailures.addAll(rollbackError.rollbackFailures);
+          } else {
+            rollbackFailures.add(
+              LinuxSystemdRollbackFailure(
+                step: 'install-wrapper-rollback',
+                error: rollbackError.cause,
+                stackTrace: rollbackError.causeStackTrace,
+              ),
+            );
+          }
+        } catch (rollbackError, rollbackStackTrace) {
+          rollbackFailures.add(
+            LinuxSystemdRollbackFailure(
+              step: 'install-wrapper-rollback',
+              error: rollbackError,
+              stackTrace: rollbackStackTrace,
+            ),
+          );
+        }
       }
+
+      final primary = _primaryFailure(error, stackTrace);
 
       throw LinuxSystemdUserUnitStoreException(
         operation: LinuxSystemdUserUnitStoreOperation.install,
         serviceFileName: units.serviceFileName,
         timerFileName: units.timerFileName,
-        cause: error,
-        causeStackTrace: stackTrace,
-        rollbackFailures: rollbackFailures,
+        cause: primary.error,
+        causeStackTrace: primary.stackTrace,
+        rollbackFailures: <LinuxSystemdRollbackFailure>[
+          ...primary.rollbackFailures,
+          ...rollbackFailures,
+        ],
       );
     }
   }
 
   Future<void> remove(LinuxSystemdUnitNames names) async {
     try {
-      _validateUnitNamePair(names.serviceFileName, names.timerFileName);
+      _validatedNames(names.serviceFileName, names.timerFileName);
 
       final directory = _pathResolver.resolve();
       final servicePath = '$directory/${names.serviceFileName}';
@@ -194,179 +200,10 @@ final class LinuxSystemdUserUnitStore {
     );
   }
 
-  Future<void> _rollback(
-    _InstallPaths paths,
-    _InstallTransactionState state,
-    List<LinuxSystemdRollbackFailure> failures,
-  ) async {
-    await _deleteInstalledUnit(
-      label: 'timer',
-      paths: paths.timer,
-      state: state.timer,
-      failures: failures,
-    );
-    await _deleteInstalledUnit(
-      label: 'service',
-      paths: paths.service,
-      state: state.service,
-      failures: failures,
-    );
-
-    await _restorePreviousUnit(
-      label: 'service',
-      paths: paths.service,
-      state: state.service,
-      failures: failures,
-    );
-    await _restorePreviousUnit(
-      label: 'timer',
-      paths: paths.timer,
-      state: state.timer,
-      failures: failures,
-    );
-
-    await _deleteTempUnit(
-      label: 'service',
-      paths: paths.service,
-      state: state.service,
-      failures: failures,
-    );
-    await _deleteTempUnit(
-      label: 'timer',
-      paths: paths.timer,
-      state: state.timer,
-      failures: failures,
-    );
-  }
-
-  Future<void> _deleteInstalledUnit({
-    required String label,
-    required _UnitPaths paths,
-    required _UnitTransactionState state,
-    required List<LinuxSystemdRollbackFailure> failures,
-  }) async {
-    if (!state.installed) {
-      return;
-    }
-
-    final deleted = await _attemptRollback(
-      step: 'delete-new-$label',
-      action: () => _fileSystem.deleteFile(paths.finalPath),
-      failures: failures,
-    );
-
-    if (deleted) {
-      state.installed = false;
-    }
-  }
-
-  Future<void> _restorePreviousUnit({
-    required String label,
-    required _UnitPaths paths,
-    required _UnitTransactionState state,
-    required List<LinuxSystemdRollbackFailure> failures,
-  }) async {
-    final previous = state.previous;
-    if (previous == null) {
-      return;
-    }
-
-    var restored = false;
-
-    if (state.backupExists) {
-      restored = await _attemptRollback(
-        step: 'restore-$label-backup',
-        action: () => _fileSystem.rename(paths.backupPath, paths.finalPath),
-        failures: failures,
-      );
-
-      if (restored) {
-        state
-          ..backupExists = false
-          ..installed = false;
-      }
-    }
-
-    if (!restored) {
-      final bytesRestored = await _attemptRollback(
-        step: 'restore-$label-snapshot-write',
-        action: () => _fileSystem.writeBytes(paths.finalPath, previous.bytes),
-        failures: failures,
-      );
-
-      if (bytesRestored) {
-        final modeRestored = await _attemptRollback(
-          step: 'restore-$label-snapshot-mode',
-          action: () => _fileSystem.chmod(paths.finalPath, previous.mode),
-          failures: failures,
-        );
-
-        if (modeRestored) {
-          restored = true;
-          state.installed = false;
-        }
-      }
-    }
-
-    if (restored && state.backupExists) {
-      final deleted = await _attemptRollback(
-        step: 'delete-$label-backup-after-restore',
-        action: () => _fileSystem.deleteFile(paths.backupPath),
-        failures: failures,
-      );
-
-      if (deleted) {
-        state.backupExists = false;
-      }
-    }
-  }
-
-  Future<void> _deleteTempUnit({
-    required String label,
-    required _UnitPaths paths,
-    required _UnitTransactionState state,
-    required List<LinuxSystemdRollbackFailure> failures,
-  }) async {
-    if (!state.tempExists) {
-      return;
-    }
-
-    final deleted = await _attemptRollback(
-      step: 'delete-$label-temp',
-      action: () => _fileSystem.deleteFile(paths.tempPath),
-      failures: failures,
-    );
-
-    if (deleted) {
-      state.tempExists = false;
-    }
-  }
-
-  Future<bool> _attemptRollback({
-    required String step,
-    required Future<void> Function() action,
-    required List<LinuxSystemdRollbackFailure> failures,
-  }) async {
-    try {
-      await action();
-      return true;
-    } catch (error, stackTrace) {
-      failures.add(
-        LinuxSystemdRollbackFailure(
-          step: step,
-          error: error,
-          stackTrace: stackTrace,
-        ),
-      );
-      return false;
-    }
-  }
-
-  void _validateUnitNames(LinuxSystemdRenderedUnits units) {
-    _validateUnitNamePair(units.serviceFileName, units.timerFileName);
-  }
-
-  void _validateUnitNamePair(String serviceFileName, String timerFileName) {
+  LinuxSystemdUnitNames _validatedNames(
+    String serviceFileName,
+    String timerFileName,
+  ) {
     final serviceMatch = _serviceNamePattern.firstMatch(serviceFileName);
     final timerMatch = _timerNamePattern.firstMatch(timerFileName);
 
@@ -376,11 +213,14 @@ final class LinuxSystemdUserUnitStore {
       );
     }
 
-    if (serviceMatch.group(1) != timerMatch.group(1)) {
+    final serviceBaseName = serviceMatch.group(1)!;
+    if (serviceBaseName != timerMatch.group(1)) {
       throw ArgumentError(
         'The service and timer must share the same unit base name.',
       );
     }
+
+    return LinuxSystemdUnitNames.parseBaseName(serviceBaseName);
   }
 
   Future<LinuxSystemdEntryType> _validateRemovalPath(String path) async {
@@ -437,6 +277,416 @@ final class LinuxSystemdUserUnitStore {
   }
 }
 
+final class _RetainedInstallTransaction
+    implements LinuxSystemdUnitInstallTransaction {
+  _RetainedInstallTransaction({
+    required LinuxSystemdFileSystem fileSystem,
+    required this.names,
+    required this.units,
+    required _InstallPaths paths,
+    required _InstallMutationState mutationState,
+  }) : _fileSystem = fileSystem,
+       _paths = paths,
+       _mutationState = mutationState;
+
+  final LinuxSystemdFileSystem _fileSystem;
+  final LinuxSystemdRenderedUnits units;
+  final _InstallPaths _paths;
+  final _InstallMutationState _mutationState;
+
+  bool _applyAttempted = false;
+  bool _finalizeAttempted = false;
+
+  @override
+  final LinuxSystemdUnitNames names;
+
+  @override
+  LinuxSystemdUnitTransactionState state =
+      LinuxSystemdUnitTransactionState.pending;
+
+  @override
+  Future<void> apply() async {
+    if (state == LinuxSystemdUnitTransactionState.applied) {
+      return;
+    }
+
+    if (state != LinuxSystemdUnitTransactionState.pending || _applyAttempted) {
+      throw _invalidState(LinuxSystemdUserUnitStoreOperation.applyInstall);
+    }
+
+    _applyAttempted = true;
+
+    try {
+      await _fileSystem.createDirectory(_paths.directory);
+
+      await _fileSystem.writeBytes(
+        _paths.service.tempPath,
+        utf8.encode(units.serviceContents),
+      );
+      _mutationState.service.tempExists = true;
+
+      await _fileSystem.writeBytes(
+        _paths.timer.tempPath,
+        utf8.encode(units.timerContents),
+      );
+      _mutationState.timer.tempExists = true;
+
+      await _fileSystem.chmod(
+        _paths.service.tempPath,
+        LinuxSystemdUserUnitStore._unitFileMode,
+      );
+      await _fileSystem.chmod(
+        _paths.timer.tempPath,
+        LinuxSystemdUserUnitStore._unitFileMode,
+      );
+
+      if (_mutationState.service.previous != null) {
+        await _fileSystem.rename(
+          _paths.service.finalPath,
+          _paths.service.backupPath,
+        );
+        _mutationState.service.backupExists = true;
+      }
+
+      if (_mutationState.timer.previous != null) {
+        await _fileSystem.rename(
+          _paths.timer.finalPath,
+          _paths.timer.backupPath,
+        );
+        _mutationState.timer.backupExists = true;
+      }
+
+      await _fileSystem.rename(
+        _paths.service.tempPath,
+        _paths.service.finalPath,
+      );
+      _mutationState.service
+        ..tempExists = false
+        ..installed = true;
+
+      await _fileSystem.rename(_paths.timer.tempPath, _paths.timer.finalPath);
+      _mutationState.timer
+        ..tempExists = false
+        ..installed = true;
+
+      await _fileSystem.chmod(
+        _paths.service.finalPath,
+        LinuxSystemdUserUnitStore._unitFileMode,
+      );
+      await _fileSystem.chmod(
+        _paths.timer.finalPath,
+        LinuxSystemdUserUnitStore._unitFileMode,
+      );
+
+      state = LinuxSystemdUnitTransactionState.applied;
+    } catch (error, stackTrace) {
+      throw _exception(
+        operation: LinuxSystemdUserUnitStoreOperation.applyInstall,
+        failure: LinuxSystemdUserUnitTransactionFailure.filesystemFailure,
+        serviceFileName: names.serviceFileName,
+        timerFileName: names.timerFileName,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  @override
+  Future<void> finalize() async {
+    if (state == LinuxSystemdUnitTransactionState.finalized) {
+      return;
+    }
+
+    if (state != LinuxSystemdUnitTransactionState.applied ||
+        _finalizeAttempted) {
+      throw _invalidState(LinuxSystemdUserUnitStoreOperation.finalizeInstall);
+    }
+
+    _finalizeAttempted = true;
+
+    try {
+      if (_mutationState.service.backupExists) {
+        await _fileSystem.deleteFile(_paths.service.backupPath);
+        _mutationState.service.backupExists = false;
+      }
+
+      if (_mutationState.timer.backupExists) {
+        await _fileSystem.deleteFile(_paths.timer.backupPath);
+        _mutationState.timer.backupExists = false;
+      }
+
+      state = LinuxSystemdUnitTransactionState.finalized;
+    } catch (error, stackTrace) {
+      throw _exception(
+        operation: LinuxSystemdUserUnitStoreOperation.finalizeInstall,
+        failure: LinuxSystemdUserUnitTransactionFailure.filesystemFailure,
+        serviceFileName: names.serviceFileName,
+        timerFileName: names.timerFileName,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  @override
+  Future<void> rollback() async {
+    if (state == LinuxSystemdUnitTransactionState.rolledBack) {
+      return;
+    }
+
+    if (state == LinuxSystemdUnitTransactionState.finalized) {
+      throw _invalidState(LinuxSystemdUserUnitStoreOperation.rollbackInstall);
+    }
+
+    if (state == LinuxSystemdUnitTransactionState.pending && !_applyAttempted) {
+      state = LinuxSystemdUnitTransactionState.rolledBack;
+      return;
+    }
+
+    final failures = <LinuxSystemdRollbackFailure>[];
+
+    await _deleteInstalledUnit(
+      label: 'timer',
+      paths: _paths.timer,
+      unitState: _mutationState.timer,
+      failures: failures,
+    );
+    await _deleteInstalledUnit(
+      label: 'service',
+      paths: _paths.service,
+      unitState: _mutationState.service,
+      failures: failures,
+    );
+
+    await _restorePreviousUnit(
+      label: 'service',
+      paths: _paths.service,
+      unitState: _mutationState.service,
+      failures: failures,
+    );
+    await _restorePreviousUnit(
+      label: 'timer',
+      paths: _paths.timer,
+      unitState: _mutationState.timer,
+      failures: failures,
+    );
+
+    await _deleteTempUnit(
+      label: 'service',
+      paths: _paths.service,
+      unitState: _mutationState.service,
+      failures: failures,
+    );
+    await _deleteTempUnit(
+      label: 'timer',
+      paths: _paths.timer,
+      unitState: _mutationState.timer,
+      failures: failures,
+    );
+
+    if (failures.isNotEmpty) {
+      final first = failures.first;
+      throw LinuxSystemdUserUnitStoreException(
+        operation: LinuxSystemdUserUnitStoreOperation.rollbackInstall,
+        transactionFailure:
+            LinuxSystemdUserUnitTransactionFailure.filesystemFailure,
+        serviceFileName: names.serviceFileName,
+        timerFileName: names.timerFileName,
+        cause: first.error,
+        causeStackTrace: first.stackTrace,
+        rollbackFailures: failures,
+      );
+    }
+
+    state = LinuxSystemdUnitTransactionState.rolledBack;
+  }
+
+  Future<void> _deleteInstalledUnit({
+    required String label,
+    required _UnitPaths paths,
+    required _UnitMutationState unitState,
+    required List<LinuxSystemdRollbackFailure> failures,
+  }) async {
+    if (!unitState.installed) {
+      return;
+    }
+
+    final succeeded = await _attempt(
+      step: 'delete-new-$label',
+      action: () => _fileSystem.deleteFile(paths.finalPath),
+      failures: failures,
+    );
+
+    if (succeeded) {
+      unitState.installed = false;
+    }
+  }
+
+  Future<void> _restorePreviousUnit({
+    required String label,
+    required _UnitPaths paths,
+    required _UnitMutationState unitState,
+    required List<LinuxSystemdRollbackFailure> failures,
+  }) async {
+    final previous = unitState.previous;
+    if (previous == null) {
+      return;
+    }
+
+    var restored = false;
+
+    if (unitState.backupExists) {
+      restored = await _attempt(
+        step: 'restore-$label-backup',
+        action: () => _fileSystem.rename(paths.backupPath, paths.finalPath),
+        failures: failures,
+      );
+
+      if (restored) {
+        unitState
+          ..backupExists = false
+          ..installed = false;
+      }
+    }
+
+    if (!restored) {
+      final bytesRestored = await _attempt(
+        step: 'restore-$label-snapshot-write',
+        action: () => _fileSystem.writeBytes(paths.finalPath, previous.bytes),
+        failures: failures,
+      );
+
+      if (bytesRestored) {
+        final modeRestored = await _attempt(
+          step: 'restore-$label-snapshot-mode',
+          action: () => _fileSystem.chmod(paths.finalPath, previous.mode),
+          failures: failures,
+        );
+
+        if (modeRestored) {
+          restored = true;
+          unitState.installed = false;
+        }
+      }
+    }
+
+    if (restored && unitState.backupExists) {
+      final deleted = await _attempt(
+        step: 'delete-$label-backup-after-restore',
+        action: () => _fileSystem.deleteFile(paths.backupPath),
+        failures: failures,
+      );
+
+      if (deleted) {
+        unitState.backupExists = false;
+      }
+    }
+  }
+
+  Future<void> _deleteTempUnit({
+    required String label,
+    required _UnitPaths paths,
+    required _UnitMutationState unitState,
+    required List<LinuxSystemdRollbackFailure> failures,
+  }) async {
+    if (!unitState.tempExists) {
+      return;
+    }
+
+    final deleted = await _attempt(
+      step: 'delete-$label-temp',
+      action: () => _fileSystem.deleteFile(paths.tempPath),
+      failures: failures,
+    );
+
+    if (deleted) {
+      unitState.tempExists = false;
+    }
+  }
+
+  Future<bool> _attempt({
+    required String step,
+    required Future<void> Function() action,
+    required List<LinuxSystemdRollbackFailure> failures,
+  }) async {
+    try {
+      await action();
+      return true;
+    } catch (error, stackTrace) {
+      failures.add(
+        LinuxSystemdRollbackFailure(
+          step: step,
+          error: error,
+          stackTrace: stackTrace,
+        ),
+      );
+      return false;
+    }
+  }
+
+  LinuxSystemdUserUnitStoreException _invalidState(
+    LinuxSystemdUserUnitStoreOperation operation,
+  ) {
+    return LinuxSystemdUserUnitStoreException(
+      operation: operation,
+      transactionFailure: LinuxSystemdUserUnitTransactionFailure.invalidState,
+      serviceFileName: names.serviceFileName,
+      timerFileName: names.timerFileName,
+      cause: StateError('Invalid retained install transaction state.'),
+      causeStackTrace: StackTrace.current,
+    );
+  }
+}
+
+LinuxSystemdUserUnitStoreException _exception({
+  required LinuxSystemdUserUnitStoreOperation operation,
+  required LinuxSystemdUserUnitTransactionFailure failure,
+  required String serviceFileName,
+  required String timerFileName,
+  required Object error,
+  required StackTrace stackTrace,
+  List<LinuxSystemdRollbackFailure> rollbackFailures =
+      const <LinuxSystemdRollbackFailure>[],
+}) {
+  return LinuxSystemdUserUnitStoreException(
+    operation: operation,
+    transactionFailure: failure,
+    serviceFileName: serviceFileName,
+    timerFileName: timerFileName,
+    cause: error,
+    causeStackTrace: stackTrace,
+    rollbackFailures: rollbackFailures,
+  );
+}
+
+_PrimaryFailure _primaryFailure(Object error, StackTrace stackTrace) {
+  if (error is LinuxSystemdUserUnitStoreException) {
+    return _PrimaryFailure(
+      error: error.cause,
+      stackTrace: error.causeStackTrace,
+      rollbackFailures: error.rollbackFailures,
+    );
+  }
+
+  return _PrimaryFailure(
+    error: error,
+    stackTrace: stackTrace,
+    rollbackFailures: const <LinuxSystemdRollbackFailure>[],
+  );
+}
+
+final class _PrimaryFailure {
+  const _PrimaryFailure({
+    required this.error,
+    required this.stackTrace,
+    required this.rollbackFailures,
+  });
+
+  final Object error;
+  final StackTrace stackTrace;
+  final List<LinuxSystemdRollbackFailure> rollbackFailures;
+}
+
 final class _ExistingUnitSnapshot {
   _ExistingUnitSnapshot({required List<int> bytes, required this.mode})
     : bytes = List<int>.unmodifiable(bytes);
@@ -445,16 +695,20 @@ final class _ExistingUnitSnapshot {
   final int mode;
 }
 
-final class _UnitTransactionState {
-  _ExistingUnitSnapshot? previous;
+final class _UnitMutationState {
+  _UnitMutationState({required this.previous});
+
+  final _ExistingUnitSnapshot? previous;
   bool tempExists = false;
   bool backupExists = false;
   bool installed = false;
 }
 
-final class _InstallTransactionState {
-  final _UnitTransactionState service = _UnitTransactionState();
-  final _UnitTransactionState timer = _UnitTransactionState();
+final class _InstallMutationState {
+  const _InstallMutationState({required this.service, required this.timer});
+
+  final _UnitMutationState service;
+  final _UnitMutationState timer;
 }
 
 final class _UnitPaths {
@@ -471,7 +725,7 @@ final class _UnitPaths {
 
 final class _InstallPaths {
   _InstallPaths({
-    required String directory,
+    required this.directory,
     required String serviceFileName,
     required String timerFileName,
     required String transactionId,
@@ -486,6 +740,7 @@ final class _InstallPaths {
          backupPath: '$directory/.$timerFileName.$transactionId.bak',
        );
 
+  final String directory;
   final _UnitPaths service;
   final _UnitPaths timer;
 }
