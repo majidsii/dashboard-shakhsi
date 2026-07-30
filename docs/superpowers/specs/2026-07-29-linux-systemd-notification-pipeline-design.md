@@ -3,7 +3,14 @@
 Date: 2026-07-29  
 Phase: 1  
 Tasks: 10.4, 10.5, 10.6  
-Status: Approved architecture; ready for implementation planning
+Status: Approved architecture; Task 10.4 implemented; Tasks 10.5 and 10.6 pending
+
+## Implementation status
+
+- Task 10.4 — Persistent Linux Schedule Registry: **Implemented**
+- Task 10.5 — Linux systemd Notification Scheduler: **Pending**
+- Task 10.6 — Delivery Entrypoint and Platform Wiring: **Pending**
+
 
 ## Objective
 
@@ -116,6 +123,8 @@ Only exact app-owned names may be listed, replaced, quarantined, or removed.
 ---
 
 # Task 10.4 — Persistent Linux Schedule Registry
+
+Status: **Implemented**
 
 ## Scope
 
@@ -366,6 +375,8 @@ Required coverage:
 ---
 
 # Task 10.5 — Linux systemd Notification Scheduler
+
+Status: **Pending**
 
 ## Scope
 
@@ -699,6 +710,8 @@ Required coverage:
 ---
 
 # Task 10.6 — Delivery Entrypoint and Platform Wiring
+
+Status: **Pending**
 
 ## Scope
 
