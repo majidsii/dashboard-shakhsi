@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'linux_systemd_schedule_registry_exception.dart';
+
 /// Immutable input for one Linux systemd user-timer notification delivery.
 ///
 /// The executable is invoked directly by systemd without a shell.
@@ -110,6 +112,24 @@ final class LinuxSystemdUnitNames {
 
     return LinuxSystemdUnitNames._('dashboard-shakhsi-notification-$hex');
   }
+
+  factory LinuxSystemdUnitNames.parseBaseName(String baseName) {
+    final match = _baseNamePattern.firstMatch(baseName);
+
+    if (match == null || match.start != 0 || match.end != baseName.length) {
+      throw LinuxSystemdScheduleRegistryException(
+        operation: LinuxSystemdScheduleRegistryOperation.validate,
+        failure: LinuxSystemdScheduleRegistryFailure.invalidUnitIdentity,
+        field: 'baseName',
+      );
+    }
+
+    return LinuxSystemdUnitNames._(baseName);
+  }
+
+  static final RegExp _baseNamePattern = RegExp(
+    r'^dashboard-shakhsi-notification-[0-9a-f]{16}$',
+  );
 
   final String baseName;
 
