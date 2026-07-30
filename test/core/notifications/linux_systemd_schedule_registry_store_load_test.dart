@@ -7,7 +7,6 @@ import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_regi
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry_codec.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry_exception.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry_file_store.dart';
-import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry_store.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_timer_name.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_user_unit_path_resolver.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_owner.dart';
