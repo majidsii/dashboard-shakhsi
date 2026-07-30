@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'linux_systemd_file_system.dart';
+import 'linux_systemd_notification_unit.dart';
 import 'linux_systemd_schedule_registry.dart';
 import 'linux_systemd_schedule_registry_codec.dart';
 import 'linux_systemd_schedule_registry_exception.dart';
@@ -20,6 +23,12 @@ final class LinuxSystemdScheduleRegistryFileStore
   static const int registryFileMode = 0x180;
 
   static final RegExp _transactionIdPattern = RegExp(r'^[A-Za-z0-9_-]{1,64}$');
+  static final RegExp _servicePattern = RegExp(
+    r'^(dashboard-shakhsi-notification-[0-9a-f]{16})\.service$',
+  );
+  static final RegExp _timerPattern = RegExp(
+    r'^(dashboard-shakhsi-notification-[0-9a-f]{16})\.timer$',
+  );
 
   final LinuxSystemdUserUnitPathResolver pathResolver;
   final LinuxSystemdFileSystem fileSystem;
@@ -58,7 +67,10 @@ final class LinuxSystemdScheduleRegistryFileStore
     }
 
     final nextBytes = _encodeForReplace(next, registryPath: registryPath);
-    final transactionId = _createTransactionId(registryPath: registryPath);
+    final transactionId = _createTransactionId(
+      operation: operation,
+      registryPath: registryPath,
+    );
     final tempPath =
         '$directory/.dashboard-shakhsi-notification-registry.'
         '$transactionId.tmp';
@@ -127,6 +139,129 @@ final class LinuxSystemdScheduleRegistryFileStore
         stackTrace,
       );
     }
+  }
+
+  @override
+  Future<void> quarantineCorruptRegistry() async {
+    final operation = LinuxSystemdScheduleRegistryOperation.quarantine;
+    final directory = _resolveDirectory(operation);
+    final registryPath = '$directory/$registryFileName';
+    final entryType = await _filesystemStep(
+      operation,
+      registryPath,
+      () => fileSystem.typeOf(registryPath),
+    );
+
+    switch (entryType) {
+      case LinuxSystemdEntryType.missing:
+        return;
+      case LinuxSystemdEntryType.regularFile:
+        break;
+      case LinuxSystemdEntryType.directory:
+      case LinuxSystemdEntryType.symbolicLink:
+      case LinuxSystemdEntryType.other:
+        throw LinuxSystemdScheduleRegistryException(
+          operation: operation,
+          failure: LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath,
+          path: registryPath,
+        );
+    }
+
+    final transactionId = _createTransactionId(
+      operation: operation,
+      registryPath: registryPath,
+    );
+    final quarantinePath =
+        '$directory/.dashboard-shakhsi-notification-registry.'
+        '$transactionId.corrupt';
+    final quarantineType = await _filesystemStep(
+      operation,
+      quarantinePath,
+      () => fileSystem.typeOf(quarantinePath),
+    );
+
+    if (quarantineType != LinuxSystemdEntryType.missing) {
+      throw LinuxSystemdScheduleRegistryException(
+        operation: operation,
+        failure: LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath,
+        path: quarantinePath,
+      );
+    }
+
+    await _filesystemStep(
+      operation,
+      registryPath,
+      () => fileSystem.rename(registryPath, quarantinePath),
+    );
+  }
+
+  @override
+  Future<LinuxSystemdUnitDiscovery> discoverAppUnitPairs() async {
+    final operation = LinuxSystemdScheduleRegistryOperation.discover;
+    final directory = _resolveDirectory(operation);
+    final names = await _filesystemStep(
+      operation,
+      directory,
+      () => fileSystem.listNames(directory),
+    );
+    final grouped = SplayTreeMap<String, _DiscoveredUnitParts>();
+
+    for (final name in names) {
+      final serviceMatch = _servicePattern.firstMatch(name);
+      final timerMatch = _timerPattern.firstMatch(name);
+
+      if (serviceMatch == null && timerMatch == null) {
+        continue;
+      }
+
+      final baseName = (serviceMatch ?? timerMatch)!.group(1)!;
+      final path = '$directory/$name';
+      final entryType = await _filesystemStep(
+        operation,
+        path,
+        () => fileSystem.typeOf(path),
+      );
+
+      if (entryType != LinuxSystemdEntryType.regularFile) {
+        throw LinuxSystemdScheduleRegistryException(
+          operation: operation,
+          failure: LinuxSystemdScheduleRegistryFailure.unsafeAppUnitPath,
+          path: path,
+        );
+      }
+
+      final parts = grouped.putIfAbsent(baseName, _DiscoveredUnitParts.new);
+
+      if (serviceMatch != null) {
+        parts.hasService = true;
+      } else {
+        parts.hasTimer = true;
+      }
+    }
+
+    final complete = <LinuxSystemdUnitNames>[];
+    final partial = <LinuxSystemdPartialUnitPair>[];
+
+    for (final entry in grouped.entries) {
+      final parts = entry.value;
+
+      if (parts.hasService && parts.hasTimer) {
+        complete.add(LinuxSystemdUnitNames.parseBaseName(entry.key));
+      } else {
+        partial.add(
+          LinuxSystemdPartialUnitPair(
+            baseName: entry.key,
+            hasService: parts.hasService,
+            hasTimer: parts.hasTimer,
+          ),
+        );
+      }
+    }
+
+    return LinuxSystemdUnitDiscovery(
+      completePairs: complete,
+      partialPairs: partial,
+    );
   }
 
   Future<_RegistrySnapshot> _loadSnapshot(
@@ -231,15 +366,18 @@ final class LinuxSystemdScheduleRegistryFileStore
     }
   }
 
-  String _createTransactionId({required String registryPath}) {
+  String _createTransactionId({
+    required LinuxSystemdScheduleRegistryOperation operation,
+    required String registryPath,
+  }) {
     late final String transactionId;
 
     try {
       transactionId = transactionIdFactory();
     } catch (error, stackTrace) {
       throw LinuxSystemdScheduleRegistryException(
-        operation: LinuxSystemdScheduleRegistryOperation.replace,
-        failure: LinuxSystemdScheduleRegistryFailure.atomicReplacementFailed,
+        operation: operation,
+        failure: _failureForOperation(operation),
         path: registryPath,
         field: 'transactionId',
         cause: error,
@@ -249,7 +387,7 @@ final class LinuxSystemdScheduleRegistryFileStore
 
     if (!_transactionIdPattern.hasMatch(transactionId)) {
       throw LinuxSystemdScheduleRegistryException(
-        operation: LinuxSystemdScheduleRegistryOperation.replace,
+        operation: operation,
         failure: LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath,
         path: registryPath,
         field: 'transactionId',
@@ -403,9 +541,7 @@ final class LinuxSystemdScheduleRegistryFileStore
     } catch (error, stackTrace) {
       throw LinuxSystemdScheduleRegistryException(
         operation: operation,
-        failure: operation == LinuxSystemdScheduleRegistryOperation.load
-            ? LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath
-            : LinuxSystemdScheduleRegistryFailure.atomicReplacementFailed,
+        failure: _failureForOperation(operation),
         cause: error,
         causeStackTrace: stackTrace,
       );
@@ -414,7 +550,7 @@ final class LinuxSystemdScheduleRegistryFileStore
 
   Future<T> _filesystemStep<T>(
     LinuxSystemdScheduleRegistryOperation operation,
-    String registryPath,
+    String path,
     Future<T> Function() action,
   ) async {
     try {
@@ -422,14 +558,31 @@ final class LinuxSystemdScheduleRegistryFileStore
     } catch (error, stackTrace) {
       throw LinuxSystemdScheduleRegistryException(
         operation: operation,
-        failure: operation == LinuxSystemdScheduleRegistryOperation.load
-            ? LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath
-            : LinuxSystemdScheduleRegistryFailure.atomicReplacementFailed,
-        path: registryPath,
+        failure: _failureForOperation(operation),
+        path: path,
         cause: error,
         causeStackTrace: stackTrace,
       );
     }
+  }
+
+  LinuxSystemdScheduleRegistryFailure _failureForOperation(
+    LinuxSystemdScheduleRegistryOperation operation,
+  ) {
+    return switch (operation) {
+      LinuxSystemdScheduleRegistryOperation.load =>
+        LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath,
+      LinuxSystemdScheduleRegistryOperation.replace =>
+        LinuxSystemdScheduleRegistryFailure.atomicReplacementFailed,
+      LinuxSystemdScheduleRegistryOperation.quarantine =>
+        LinuxSystemdScheduleRegistryFailure.quarantineFailed,
+      LinuxSystemdScheduleRegistryOperation.discover =>
+        LinuxSystemdScheduleRegistryFailure.discoveryFailed,
+      LinuxSystemdScheduleRegistryOperation.validate =>
+        LinuxSystemdScheduleRegistryFailure.unsafeRegistryPath,
+      LinuxSystemdScheduleRegistryOperation.decode =>
+        LinuxSystemdScheduleRegistryFailure.malformedJson,
+    };
   }
 }
 
@@ -473,4 +626,9 @@ final class _RegistryReplaceState {
   bool tempExists = false;
   bool backupExists = false;
   bool newFinalExists = false;
+}
+
+final class _DiscoveredUnitParts {
+  bool hasService = false;
+  bool hasTimer = false;
 }
