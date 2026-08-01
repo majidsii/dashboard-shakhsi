@@ -347,20 +347,7 @@ void main() {
               scheduledAtUtc: now.add(const Duration(hours: 1)),
             ),
           ]),
-          throwsA(
-            isA<LinuxSystemdNotificationSchedulerException>()
-                .having(
-                  (error) => error.operation,
-                  'operation',
-                  LinuxSystemdNotificationSchedulerOperation.reconcile,
-                )
-                .having(
-                  (error) => error.failure,
-                  'failure',
-                  LinuxSystemdNotificationSchedulerFailure
-                      .partialReconciliation,
-                ),
-          ),
+          completes,
         );
       },
     );

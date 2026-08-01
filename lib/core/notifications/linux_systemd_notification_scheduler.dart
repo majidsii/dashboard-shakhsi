@@ -12,6 +12,7 @@ import 'linux_process_exception.dart';
 import 'linux_systemd_notification_scheduler_exception.dart';
 import 'linux_systemd_notification_unit.dart';
 import 'linux_systemd_schedule_registry.dart';
+import 'linux_systemd_schedule_registry_exception.dart';
 import 'linux_systemd_schedule_registry_store.dart';
 import 'linux_systemd_timer_name.dart';
 import 'linux_systemd_timer_status.dart';
@@ -158,16 +159,323 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
 
   @override
   Future<void> reconcile(List<NotificationRequest> expected) {
-    return _globalLock.runWrite(() async {
-      if (expected.isEmpty) {
-        return;
+    return _globalLock.runWrite(() => _reconcileInventoryUnlocked(expected));
+  }
+
+  Future<void> _reconcileInventoryUnlocked(
+    List<NotificationRequest> expected,
+  ) async {
+    final operation = LinuxSystemdNotificationSchedulerOperation.reconcile;
+    final nowUtc = _clock.nowUtc().toUtc();
+    final desiredById = <String, NotificationRequest>{};
+
+    for (final request in expected) {
+      desiredById[request.scheduleId] = request;
+    }
+
+    final desired =
+        desiredById.values
+            .where((request) => request.scheduledAtUtc.isAfter(nowUtc))
+            .toList(growable: false)
+          ..sort((left, right) => left.scheduleId.compareTo(right.scheduleId));
+    final desiredIds = desired.map((request) => request.scheduleId).toSet();
+    final desiredBaseNames = desired
+        .map(
+          (request) =>
+              LinuxSystemdUnitNames.forScheduleKey(request.scheduleId).baseName,
+        )
+        .toSet();
+
+    var recoveredFromCorruption = false;
+    late LinuxSystemdScheduleRegistry registry;
+
+    try {
+      registry = await _registryStore.load();
+    } on LinuxSystemdScheduleRegistryException {
+      await _step<void>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+        action: _registryStore.quarantineCorruptRegistry,
+      );
+      registry = LinuxSystemdScheduleRegistry.empty();
+      recoveredFromCorruption = true;
+    } catch (error, stackTrace) {
+      throw LinuxSystemdNotificationSchedulerException(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+        cause: error,
+        causeStackTrace: stackTrace,
+      );
+    }
+
+    final discovery = await _step<LinuxSystemdUnitDiscovery>(
+      operation: operation,
+      failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+      action: _registryStore.discoverAppUnitPairs,
+    );
+    final candidatesByBaseName = <String, _ReconciliationCleanupCandidate>{};
+
+    void addCandidate(
+      LinuxSystemdUnitNames names, {
+      String? scheduleId,
+      LinuxSystemdScheduleRegistryEntry? previousEntry,
+    }) {
+      final current = candidatesByBaseName[names.baseName];
+      if (current == null ||
+          (current.previousEntry == null && previousEntry != null)) {
+        candidatesByBaseName[names.baseName] = _ReconciliationCleanupCandidate(
+          names: names,
+          scheduleId: scheduleId ?? current?.scheduleId,
+          previousEntry: previousEntry ?? current?.previousEntry,
+        );
+      }
+    }
+
+    final retainedEntries = <LinuxSystemdScheduleRegistryEntry>[];
+    final registryBaseNames = <String>{};
+
+    if (!recoveredFromCorruption) {
+      for (final entry in registry.entries) {
+        final canonical = LinuxSystemdUnitNames.forScheduleKey(
+          entry.scheduleId,
+        );
+        registryBaseNames.add(canonical.baseName);
+        final namesMatch =
+            entry.timerName.value == canonical.timerFileName &&
+            entry.serviceFileName == canonical.serviceFileName;
+        final shouldRetain =
+            desiredIds.contains(entry.scheduleId) && namesMatch;
+
+        if (shouldRetain) {
+          retainedEntries.add(entry);
+        } else {
+          addCandidate(
+            canonical,
+            scheduleId: entry.scheduleId,
+            previousEntry: entry,
+          );
+        }
+      }
+    }
+
+    for (final names in discovery.completePairs) {
+      if (recoveredFromCorruption ||
+          (!registryBaseNames.contains(names.baseName) &&
+              !desiredBaseNames.contains(names.baseName))) {
+        addCandidate(names);
+      }
+    }
+
+    for (final partial in discovery.partialPairs) {
+      addCandidate(LinuxSystemdUnitNames.parseBaseName(partial.baseName));
+    }
+
+    final candidates = candidatesByBaseName.values.toList()
+      ..sort((left, right) => left.sortKey.compareTo(right.sortKey));
+    final registryChanged =
+        recoveredFromCorruption ||
+        !_sameRegistryEntries(registry.entries, retainedEntries);
+    final nextRegistry = LinuxSystemdScheduleRegistry(
+      schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+      generation: registry.generation + 1,
+      entries: retainedEntries,
+    );
+    final removals = <_ReconciliationAppliedRemoval>[];
+    var registryReplaceAttempted = false;
+
+    try {
+      for (final candidate in candidates) {
+        final transaction = await _step<LinuxSystemdUnitRemoveTransaction>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: candidate.scheduleId,
+          owner: candidate.previousEntry?.owner,
+          names: candidate.names,
+          action: () => _unitStore.beginRemove(candidate.names),
+        );
+
+        if (transaction.names != candidate.names) {
+          throw LinuxSystemdNotificationSchedulerException(
+            operation: operation,
+            failure:
+                LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+            scheduleId: candidate.scheduleId,
+            owner: candidate.previousEntry?.owner,
+            names: candidate.names,
+            cause: StateError(
+              'Remove transaction identity does not match '
+              'reconciliation cleanup identity.',
+            ),
+            causeStackTrace: StackTrace.current,
+          );
+        }
+
+        final applied = _ReconciliationAppliedRemoval(
+          candidate: candidate,
+          transaction: transaction,
+        );
+        removals.add(applied);
+
+        await _step<LinuxSystemdTimerStatus>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.mutationFailed,
+          scheduleId: candidate.scheduleId,
+          owner: candidate.previousEntry?.owner,
+          names: candidate.names,
+          action: () => _driver.disableAndStop(
+            LinuxSystemdTimerName.parse(candidate.names.timerFileName),
+          ),
+        );
+        await _step<void>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: candidate.scheduleId,
+          owner: candidate.previousEntry?.owner,
+          names: candidate.names,
+          action: transaction.apply,
+        );
+      }
+
+      if (removals.isNotEmpty) {
+        await _step<void>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.daemonReloadFailed,
+          action: _driver.reloadDaemon,
+        );
+      }
+
+      if (registryChanged) {
+        registryReplaceAttempted = true;
+        await _step<void>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+          action: () => _registryStore.replace(nextRegistry),
+        );
+      }
+
+      for (final removal in removals) {
+        await _step<void>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: removal.candidate.scheduleId,
+          owner: removal.candidate.previousEntry?.owner,
+          names: removal.candidate.names,
+          action: removal.transaction.finalize,
+        );
+      }
+    } catch (error, stackTrace) {
+      final rollbackFailures = await _rollbackReconciliationCleanup(
+        removals: removals,
+        previousRegistry: registry,
+        registryReplaceAttempted: registryReplaceAttempted,
+      );
+
+      if (rollbackFailures.isEmpty) {
+        Error.throwWithStackTrace(error, stackTrace);
       }
 
       throw LinuxSystemdNotificationSchedulerException(
-        operation: LinuxSystemdNotificationSchedulerOperation.reconcile,
-        failure: LinuxSystemdNotificationSchedulerFailure.partialReconciliation,
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.rollbackFailed,
+        cause: error,
+        causeStackTrace: stackTrace,
+        rollbackFailures: rollbackFailures,
       );
-    });
+    }
+  }
+
+  Future<List<LinuxSystemdSchedulerRollbackFailure>>
+  _rollbackReconciliationCleanup({
+    required List<_ReconciliationAppliedRemoval> removals,
+    required LinuxSystemdScheduleRegistry previousRegistry,
+    required bool registryReplaceAttempted,
+  }) async {
+    final failures = <LinuxSystemdSchedulerRollbackFailure>[];
+
+    for (final removal in removals.reversed) {
+      await _captureRollbackFailure(
+        step: 'rollback-reconcile-remove/${removal.candidate.names.baseName}',
+        action: removal.transaction.rollback,
+        failures: failures,
+        expandUnitStoreFailures: true,
+      );
+    }
+
+    if (removals.isNotEmpty) {
+      await _captureRollbackFailure(
+        step: 'reload-after-reconcile-cleanup-restore',
+        action: _driver.reloadDaemon,
+        failures: failures,
+      );
+    }
+
+    if (registryReplaceAttempted) {
+      LinuxSystemdScheduleRegistry? currentRegistry;
+      try {
+        currentRegistry = await _registryStore.load();
+      } catch (error, stackTrace) {
+        failures.add(
+          LinuxSystemdSchedulerRollbackFailure(
+            step: 'load-registry-for-reconcile-restore',
+            error: error,
+            stackTrace: stackTrace,
+          ),
+        );
+      }
+
+      if (currentRegistry != null) {
+        final currentGeneration = currentRegistry.generation;
+        final previousGeneration = previousRegistry.generation;
+        final baseGeneration = currentGeneration > previousGeneration
+            ? currentGeneration
+            : previousGeneration;
+        final restored = LinuxSystemdScheduleRegistry(
+          schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+          generation: baseGeneration + 1,
+          entries: previousRegistry.entries,
+        );
+        await _captureRollbackFailure(
+          step: 'restore-registry-after-reconcile-cleanup',
+          action: () => _registryStore.replace(restored),
+          failures: failures,
+        );
+      }
+    }
+
+    for (final removal in removals) {
+      if (removal.candidate.previousEntry == null) {
+        continue;
+      }
+      await _captureRollbackFailure(
+        step: 're-enable-reconcile-timer/${removal.candidate.names.baseName}',
+        action: () => _driver.enableAndStart(
+          LinuxSystemdTimerName.parse(removal.candidate.names.timerFileName),
+        ),
+        failures: failures,
+      );
+    }
+
+    return List<LinuxSystemdSchedulerRollbackFailure>.unmodifiable(failures);
+  }
+
+  bool _sameRegistryEntries(
+    List<LinuxSystemdScheduleRegistryEntry> left,
+    List<LinuxSystemdScheduleRegistryEntry> right,
+  ) {
+    if (left.length != right.length) {
+      return false;
+    }
+
+    for (var index = 0; index < left.length; index += 1) {
+      if (left[index] != right[index]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   Future<void> _scheduleUnlocked(NotificationRequest request) async {
@@ -743,4 +1051,28 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
       );
     }
   }
+}
+
+final class _ReconciliationCleanupCandidate {
+  const _ReconciliationCleanupCandidate({
+    required this.names,
+    required this.scheduleId,
+    required this.previousEntry,
+  });
+
+  final LinuxSystemdUnitNames names;
+  final String? scheduleId;
+  final LinuxSystemdScheduleRegistryEntry? previousEntry;
+
+  String get sortKey => scheduleId ?? names.baseName;
+}
+
+final class _ReconciliationAppliedRemoval {
+  const _ReconciliationAppliedRemoval({
+    required this.candidate,
+    required this.transaction,
+  });
+
+  final _ReconciliationCleanupCandidate candidate;
+  final LinuxSystemdUnitRemoveTransaction transaction;
 }
