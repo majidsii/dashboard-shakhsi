@@ -485,70 +485,187 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
       action: _registryStore.load,
     );
     final existing = registry.entryForScheduleId(scheduleId);
-
-    if (existing == null) {
-      return;
-    }
-
-    final transaction = await _step<LinuxSystemdUnitRemoveTransaction>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
-      scheduleId: scheduleId,
-      owner: owner ?? existing.owner,
-      names: names,
-      action: () => _unitStore.beginRemove(names),
-    );
+    final effectiveOwner = owner ?? existing?.owner;
     final timerName = LinuxSystemdTimerName.parse(names.timerFileName);
 
-    await _step<LinuxSystemdTimerStatus>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.mutationFailed,
-      scheduleId: scheduleId,
-      owner: owner ?? existing.owner,
-      names: names,
-      action: () => _driver.disableAndStop(timerName),
+    LinuxSystemdUnitRemoveTransaction? transaction;
+    var registryReplaceAttempted = false;
+
+    try {
+      transaction = await _step<LinuxSystemdUnitRemoveTransaction>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+        scheduleId: scheduleId,
+        owner: effectiveOwner,
+        names: names,
+        action: () => _unitStore.beginRemove(names),
+      );
+
+      if (transaction.names != names) {
+        throw LinuxSystemdNotificationSchedulerException(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: scheduleId,
+          owner: effectiveOwner,
+          names: names,
+          cause: StateError(
+            'Remove transaction identity does not match the schedule.',
+          ),
+          causeStackTrace: StackTrace.current,
+        );
+      }
+
+      await _step<LinuxSystemdTimerStatus>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.mutationFailed,
+        scheduleId: scheduleId,
+        owner: effectiveOwner,
+        names: names,
+        action: () => _driver.disableAndStop(timerName),
+      );
+      await _step<void>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+        scheduleId: scheduleId,
+        owner: effectiveOwner,
+        names: names,
+        action: transaction.apply,
+      );
+      await _step<void>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.daemonReloadFailed,
+        scheduleId: scheduleId,
+        owner: effectiveOwner,
+        names: names,
+        action: _driver.reloadDaemon,
+      );
+
+      if (existing != null) {
+        final nextRegistry = LinuxSystemdScheduleRegistry(
+          schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+          generation: registry.generation + 1,
+          entries: registry.entries.where(
+            (entry) => entry.scheduleId != scheduleId,
+          ),
+        );
+
+        registryReplaceAttempted = true;
+        await _step<void>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+          scheduleId: scheduleId,
+          owner: effectiveOwner,
+          names: names,
+          action: () => _registryStore.replace(nextRegistry),
+        );
+      }
+
+      await _step<void>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+        scheduleId: scheduleId,
+        owner: effectiveOwner,
+        names: names,
+        action: transaction.finalize,
+      );
+    } catch (error, stackTrace) {
+      final retainedTransaction = transaction;
+      if (retainedTransaction == null) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+
+      final rollbackFailures = await _rollbackFailedCancel(
+        transaction: retainedTransaction,
+        timerName: timerName,
+        previousRegistry: registry,
+        previousEntry: existing,
+        registryReplaceAttempted: registryReplaceAttempted,
+      );
+
+      if (rollbackFailures.isEmpty) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+
+      throw LinuxSystemdNotificationSchedulerException(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.rollbackFailed,
+        scheduleId: scheduleId,
+        owner: effectiveOwner,
+        names: names,
+        cause: error,
+        causeStackTrace: stackTrace,
+        rollbackFailures: rollbackFailures,
+      );
+    }
+  }
+
+  Future<List<LinuxSystemdSchedulerRollbackFailure>> _rollbackFailedCancel({
+    required LinuxSystemdUnitRemoveTransaction transaction,
+    required LinuxSystemdTimerName timerName,
+    required LinuxSystemdScheduleRegistry previousRegistry,
+    required LinuxSystemdScheduleRegistryEntry? previousEntry,
+    required bool registryReplaceAttempted,
+  }) async {
+    final failures = <LinuxSystemdSchedulerRollbackFailure>[];
+
+    await _captureRollbackFailure(
+      step: 'rollback-remove-transaction',
+      action: transaction.rollback,
+      failures: failures,
+      expandUnitStoreFailures: true,
     );
-    await _step<void>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
-      scheduleId: scheduleId,
-      owner: owner ?? existing.owner,
-      names: names,
-      action: transaction.apply,
-    );
-    await _step<void>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.daemonReloadFailed,
-      scheduleId: scheduleId,
-      owner: owner ?? existing.owner,
-      names: names,
+
+    await _captureRollbackFailure(
+      step: 'reload-after-remove-restore',
       action: _driver.reloadDaemon,
+      failures: failures,
     );
 
-    final nextRegistry = LinuxSystemdScheduleRegistry(
-      schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
-      generation: registry.generation + 1,
-      entries: registry.entries.where(
-        (entry) => entry.scheduleId != scheduleId,
-      ),
-    );
+    if (registryReplaceAttempted) {
+      LinuxSystemdScheduleRegistry? currentRegistry;
 
-    await _step<void>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
-      scheduleId: scheduleId,
-      owner: owner ?? existing.owner,
-      names: names,
-      action: () => _registryStore.replace(nextRegistry),
-    );
-    await _step<void>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
-      scheduleId: scheduleId,
-      owner: owner ?? existing.owner,
-      names: names,
-      action: transaction.finalize,
-    );
+      try {
+        currentRegistry = await _registryStore.load();
+      } catch (error, stackTrace) {
+        failures.add(
+          LinuxSystemdSchedulerRollbackFailure(
+            step: 'load-registry-for-cancel-restore',
+            error: error,
+            stackTrace: stackTrace,
+          ),
+        );
+      }
+
+      if (currentRegistry != null) {
+        final currentGeneration = currentRegistry.generation;
+        final previousGeneration = previousRegistry.generation;
+        final baseGeneration = currentGeneration > previousGeneration
+            ? currentGeneration
+            : previousGeneration;
+        final restoredRegistry = LinuxSystemdScheduleRegistry(
+          schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+          generation: baseGeneration + 1,
+          entries: previousRegistry.entries,
+        );
+
+        await _captureRollbackFailure(
+          step: 'restore-registry-after-cancel',
+          action: () => _registryStore.replace(restoredRegistry),
+          failures: failures,
+        );
+      }
+    }
+
+    if (previousEntry != null) {
+      await _captureRollbackFailure(
+        step: 're-enable-canceled-timer',
+        action: () => _driver.enableAndStart(timerName),
+        failures: failures,
+      );
+    }
+
+    return List<LinuxSystemdSchedulerRollbackFailure>.unmodifiable(failures);
   }
 
   Future<T> _step<T>({

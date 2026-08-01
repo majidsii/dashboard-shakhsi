@@ -773,7 +773,7 @@ final class _ScriptedRunner implements LinuxProcessRunner {
       exitCode: result.exitCode,
       duration: const Duration(milliseconds: 2),
       stdout: _output(result.stdout),
-      stderr: _output(result.stderr),
+      stderr: _output(''),
     );
   }
 
@@ -811,15 +811,10 @@ sealed class _RunnerAction {
 }
 
 final class _RunnerResult extends _RunnerAction {
-  const _RunnerResult({
-    required this.exitCode,
-    this.stdout = '',
-    this.stderr = '',
-  });
+  const _RunnerResult({required this.exitCode, this.stdout = ''});
 
   final int exitCode;
   final String stdout;
-  final String stderr;
 }
 
 final class _RunnerError extends _RunnerAction {

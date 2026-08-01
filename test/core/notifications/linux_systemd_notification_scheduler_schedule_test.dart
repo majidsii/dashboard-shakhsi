@@ -288,7 +288,16 @@ void main() {
           'source': 'notification',
         },
       );
-      final harness = _Harness(now: now);
+      final names = LinuxSystemdUnitNames.forScheduleKey(request.scheduleId);
+      final harness = _Harness(now: now)
+        ..processRunner.enqueueSuccess()
+        ..processRunner.enqueueStatus(
+          names,
+          activeState: 'inactive',
+          subState: 'dead',
+          unitFileState: 'disabled',
+        )
+        ..processRunner.enqueueSuccess();
 
       await harness.scheduler.schedule(request);
 
