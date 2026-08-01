@@ -199,7 +199,7 @@ void main() {
       );
     });
 
-    test('service deletion failure is wrapped as remove error', () async {
+    test('service deletion failure restores the removed timer', () async {
       final fileSystem = FakeLinuxSystemdFileSystem();
       final names = _buildNames();
       final original = StateError('service delete failed');
@@ -218,7 +218,8 @@ void main() {
       expect(exception.serviceFileName, names.serviceFileName);
       expect(exception.timerFileName, names.timerFileName);
       expect(exception.rollbackFailures, isEmpty);
-      expect(fileSystem.containsPath(_timerPath(names)), isFalse);
+      expect(fileSystem.containsPath(_timerPath(names)), isTrue);
+      expect(fileSystem.bytesOf(_timerPath(names)), utf8.encode('timer'));
       expect(fileSystem.containsPath(_servicePath(names)), isTrue);
     });
   });
