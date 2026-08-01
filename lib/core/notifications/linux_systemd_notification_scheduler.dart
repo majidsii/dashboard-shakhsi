@@ -86,28 +86,74 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
 
   @override
   Future<void> cancelByOwner(NotificationOwner owner) {
-    return _globalLock.runWrite(() async {
-      final registry = await _step(
-        operation: LinuxSystemdNotificationSchedulerOperation.cancelByOwner,
-        failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
-        owner: owner,
-        action: _registryStore.load,
-      );
-      final matches = registry.entries
-          .where((entry) => entry.owner == owner)
-          .toList(growable: false);
+    return _globalLock.runWrite(() => _cancelByOwnerUnlocked(owner));
+  }
 
-      if (matches.isEmpty) {
-        return;
+  Future<void> _cancelByOwnerUnlocked(NotificationOwner owner) async {
+    final operation = LinuxSystemdNotificationSchedulerOperation.cancelByOwner;
+    final initialRegistry = await _step<LinuxSystemdScheduleRegistry>(
+      operation: operation,
+      failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+      owner: owner,
+      action: _registryStore.load,
+    );
+    final scheduleIds =
+        initialRegistry.entries
+            .where((entry) => entry.owner == owner)
+            .map((entry) => entry.scheduleId)
+            .toList(growable: false)
+          ..sort();
+
+    if (scheduleIds.isEmpty) {
+      return;
+    }
+
+    var workingRegistry = initialRegistry;
+    final completedScheduleIds = <String>[];
+
+    for (final scheduleId in scheduleIds) {
+      try {
+        await _cancelUnlocked(
+          scheduleId,
+          operation: operation,
+          owner: owner,
+          registrySnapshot: workingRegistry,
+        );
+      } catch (error, stackTrace) {
+        final nested = error is LinuxSystemdNotificationSchedulerException
+            ? error
+            : null;
+
+        throw LinuxSystemdNotificationSchedulerException(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.partialOwnerCancellation,
+          scheduleId: scheduleId,
+          owner: owner,
+          names: LinuxSystemdUnitNames.forScheduleKey(scheduleId),
+          cause: error,
+          causeStackTrace: stackTrace,
+          rollbackFailures:
+              nested?.rollbackFailures ??
+              const <LinuxSystemdSchedulerRollbackFailure>[],
+          confirmedStatus: nested?.confirmedStatus,
+          completedScheduleIds: completedScheduleIds,
+        );
       }
 
-      throw LinuxSystemdNotificationSchedulerException(
-        operation: LinuxSystemdNotificationSchedulerOperation.cancelByOwner,
-        failure:
-            LinuxSystemdNotificationSchedulerFailure.partialOwnerCancellation,
-        owner: owner,
-      );
-    });
+      final existing = workingRegistry.entryForScheduleId(scheduleId);
+      if (existing != null) {
+        workingRegistry = LinuxSystemdScheduleRegistry(
+          schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+          generation: workingRegistry.generation + 1,
+          entries: workingRegistry.entries.where(
+            (entry) => entry.scheduleId != scheduleId,
+          ),
+        );
+      }
+
+      completedScheduleIds.add(scheduleId);
+    }
   }
 
   @override
@@ -474,16 +520,19 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
     String scheduleId, {
     required LinuxSystemdNotificationSchedulerOperation operation,
     NotificationOwner? owner,
+    LinuxSystemdScheduleRegistry? registrySnapshot,
   }) async {
     final names = LinuxSystemdUnitNames.forScheduleKey(scheduleId);
-    final registry = await _step<LinuxSystemdScheduleRegistry>(
-      operation: operation,
-      failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
-      scheduleId: scheduleId,
-      owner: owner,
-      names: names,
-      action: _registryStore.load,
-    );
+    final registry =
+        registrySnapshot ??
+        await _step<LinuxSystemdScheduleRegistry>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+          scheduleId: scheduleId,
+          owner: owner,
+          names: names,
+          action: _registryStore.load,
+        );
     final existing = registry.entryForScheduleId(scheduleId);
     final effectiveOwner = owner ?? existing?.owner;
     final timerName = LinuxSystemdTimerName.parse(names.timerFileName);
