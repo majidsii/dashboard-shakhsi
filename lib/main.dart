@@ -1,5 +1,15 @@
 import 'package:dashboard_shakhsi/app/bootstrap/app_bootstrap.dart';
+import 'package:dashboard_shakhsi/app/bootstrap/application_entrypoint.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> arguments) async {
+  final entrypoint = buildProductionApplicationEntrypoint(
+    normalApplicationRunner: CallbackNormalApplicationRunner(
+      _runNormalApplication,
+    ),
+  );
+  await entrypoint.run(arguments);
+}
+
+Future<void> _runNormalApplication() async {
   await bootstrapApp();
 }
