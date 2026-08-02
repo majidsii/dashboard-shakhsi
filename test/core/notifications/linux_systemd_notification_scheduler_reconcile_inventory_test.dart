@@ -9,6 +9,7 @@ import 'package:dashboard_shakhsi/core/notifications/linux_process_request.dart'
 import 'package:dashboard_shakhsi/core/notifications/linux_process_result.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_process_runner.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_scheduler.dart';
+import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_scheduler_exception.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_unit.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry_exception.dart';
@@ -28,7 +29,13 @@ void main() {
   group('desired-state normalization', () {
     test('last value wins before due filtering', () async {
       final scheduleId = 'task-reconcile-duplicate';
-      final entry = _entry(scheduleId);
+      final future = _request(
+        scheduleId,
+        scheduledAtUtc: now.add(const Duration(hours: 2)),
+      );
+      final futureFingerprint = await LinuxNotificationRequestFingerprint()
+          .compute(future);
+      final entry = _entryForRequest(future, futureFingerprint);
       final discovery = _discovery(
         complete: <LinuxSystemdUnitNames>[
           LinuxSystemdUnitNames.forScheduleKey(scheduleId),
@@ -44,10 +51,11 @@ void main() {
       );
       await keepHarness.scheduler.reconcile(<NotificationRequest>[
         _request(scheduleId, scheduledAtUtc: now),
-        _request(scheduleId, scheduledAtUtc: now.add(const Duration(hours: 2))),
+        future,
       ]);
 
       expect(keepHarness.unitStore.beginOrder, isEmpty);
+      expect(keepHarness.unitStore.installCalls, 0);
       expect(keepHarness.registryStore.replacements, isEmpty);
       expect(keepHarness.gateway.showNowCalls, 0);
 
@@ -59,7 +67,7 @@ void main() {
         discovery: discovery,
       );
       await removeHarness.scheduler.reconcile(<NotificationRequest>[
-        _request(scheduleId, scheduledAtUtc: now.add(const Duration(hours: 2))),
+        future,
         _request(scheduleId, scheduledAtUtc: now),
       ]);
 
@@ -123,7 +131,13 @@ void main() {
     test(
       'removes stale registry entry while preserving desired future entry',
       () async {
-        final keep = _entry('task-reconcile-keep');
+        final keepRequest = _request(
+          'task-reconcile-keep',
+          scheduledAtUtc: now.add(const Duration(hours: 1)),
+        );
+        final keepFingerprint = await LinuxNotificationRequestFingerprint()
+            .compute(keepRequest);
+        final keep = _entryForRequest(keepRequest, keepFingerprint);
         final stale = _entry('task-reconcile-stale');
         final harness = _Harness(
           now: now,
@@ -139,14 +153,10 @@ void main() {
           ),
         );
 
-        await harness.scheduler.reconcile(<NotificationRequest>[
-          _request(
-            keep.scheduleId,
-            scheduledAtUtc: now.add(const Duration(hours: 1)),
-          ),
-        ]);
+        await harness.scheduler.reconcile(<NotificationRequest>[keepRequest]);
 
         expect(harness.unitStore.beginOrder, <String>[stale.scheduleId]);
+        expect(harness.unitStore.installCalls, 0);
         expect(
           harness.registryStore.current.entries.map(
             (entry) => entry.scheduleId,
@@ -181,7 +191,7 @@ void main() {
     );
 
     test(
-      'preserves orphan complete pair when it belongs to desired future state',
+      'repairs orphan complete pair when desired future lacks registry evidence',
       () async {
         final desiredId = 'task-reconcile-desired-orphan';
         final harness = _Harness(
@@ -200,8 +210,13 @@ void main() {
         ]);
 
         expect(harness.unitStore.beginOrder, isEmpty);
-        expect(harness.registryStore.replacements, isEmpty);
-        expect(harness.runner.reloadCount, 0);
+        expect(harness.unitStore.installCalls, 1);
+        expect(harness.registryStore.replacements, hasLength(1));
+        expect(harness.runner.reloadCount, 1);
+        expect(
+          harness.registryStore.current.entryForScheduleId(desiredId),
+          isNotNull,
+        );
       },
     );
 
@@ -242,7 +257,7 @@ void main() {
 
   group('corrupt registry recovery', () {
     test(
-      'quarantines corruption, discovers once, and removes all exact pairs',
+      'quarantines corruption, discovers once, and repairs desired state',
       () async {
         final desiredId = 'task-reconcile-corrupt-desired';
         final orphanId = 'task-reconcile-corrupt-orphan';
@@ -287,11 +302,16 @@ void main() {
           orphanId,
           partialId,
         });
-        expect(harness.runner.reloadCount, 1);
-        expect(harness.registryStore.current.entries, isEmpty);
-        expect(harness.registryStore.current.generation, 1);
+        expect(harness.runner.reloadCount, 2);
+        expect(harness.unitStore.installCalls, 1);
+        expect(
+          harness.registryStore.current.entries.map(
+            (entry) => entry.scheduleId,
+          ),
+          orderedEquals(<String>[desiredId]),
+        );
+        expect(harness.registryStore.current.generation, 2);
         expect(harness.gateway.showNowCalls, 0);
-        expect(harness.unitStore.installCalls, 0);
       },
     );
 
@@ -318,6 +338,39 @@ void main() {
         expect(harness.runner.reloadCount, 1);
       },
     );
+  });
+
+  test('repair failure does not roll back finalized cleanup', () async {
+    final staleId = 'task-reconcile-boundary-stale';
+    final desiredId = 'task-reconcile-boundary-desired';
+    final harness = _Harness(
+      now: now,
+      registry: _registry(
+        generation: 8,
+        entries: <LinuxSystemdScheduleRegistryEntry>[_entry(staleId)],
+      ),
+      discovery: _discovery(complete: <LinuxSystemdUnitNames>[_names(staleId)]),
+      failFactoryId: desiredId,
+    )..unitStore.track(staleId);
+
+    LinuxSystemdNotificationSchedulerException? actual;
+    try {
+      await harness.scheduler.reconcile(<NotificationRequest>[
+        _request(desiredId, scheduledAtUtc: now.add(const Duration(hours: 1))),
+      ]);
+      fail('Expected partial reconciliation.');
+    } on LinuxSystemdNotificationSchedulerException catch (error) {
+      actual = error;
+    }
+
+    expect(
+      actual.failure,
+      LinuxSystemdNotificationSchedulerFailure.partialReconciliation,
+    );
+    expect(actual.scheduleId, desiredId);
+    expect(harness.unitStore.beginOrder, <String>[staleId]);
+    expect(harness.registryStore.current.entries, isEmpty);
+    expect(harness.registryStore.current.generation, 9);
   });
 
   test(
@@ -348,6 +401,7 @@ final class _Harness {
     required LinuxSystemdScheduleRegistry registry,
     required LinuxSystemdUnitDiscovery discovery,
     Object? loadError,
+    String? failFactoryId,
   }) {
     registryStore = _RegistryStore(
       initial: registry,
@@ -363,7 +417,7 @@ final class _Harness {
     scheduler = LinuxSystemdNotificationScheduler(
       clock: FixedAppClock(utcValue: now, localValue: now),
       gateway: gateway,
-      commandFactory: const _NoopFactory(),
+      commandFactory: _RepairFactory(failId: failFactoryId),
       renderer: const LinuxSystemdUnitRenderer(),
       unitStore: unitStore,
       driver: LinuxSystemdUserDriver(processRunner: runner),
@@ -447,13 +501,19 @@ final class _UnitStore implements LinuxSystemdUnitStore {
     LinuxSystemdRenderedUnits units,
   ) async {
     installCalls += 1;
-    throw UnsupportedError('Install is reserved for Gate 10.5.10.');
+    final serviceSuffix = '.service';
+    final baseName = units.serviceFileName.substring(
+      0,
+      units.serviceFileName.length - serviceSuffix.length,
+    );
+    return _InstallTransaction(LinuxSystemdUnitNames.parseBaseName(baseName));
   }
 
   @override
   Future<void> install(LinuxSystemdRenderedUnits units) async {
-    installCalls += 1;
-    throw UnsupportedError('Install is reserved for Gate 10.5.10.');
+    final transaction = await beginInstall(units);
+    await transaction.apply();
+    await transaction.finalize();
   }
 
   @override
@@ -461,6 +521,32 @@ final class _UnitStore implements LinuxSystemdUnitStore {
     final transaction = await beginRemove(names);
     await transaction.apply();
     await transaction.finalize();
+  }
+}
+
+final class _InstallTransaction implements LinuxSystemdUnitInstallTransaction {
+  _InstallTransaction(this.names);
+
+  @override
+  final LinuxSystemdUnitNames names;
+
+  @override
+  LinuxSystemdUnitTransactionState state =
+      LinuxSystemdUnitTransactionState.pending;
+
+  @override
+  Future<void> apply() async {
+    state = LinuxSystemdUnitTransactionState.applied;
+  }
+
+  @override
+  Future<void> finalize() async {
+    state = LinuxSystemdUnitTransactionState.finalized;
+  }
+
+  @override
+  Future<void> rollback() async {
+    state = LinuxSystemdUnitTransactionState.rolledBack;
   }
 }
 
@@ -491,6 +577,9 @@ final class _RemoveTransaction implements LinuxSystemdUnitRemoveTransaction {
 }
 
 final class _AutomaticRunner implements LinuxProcessRunner {
+  final Set<String> _disabledBaseNames = <String>{};
+  final Set<String> _enabledBaseNames = <String>{};
+
   int reloadCount = 0;
 
   @override
@@ -500,6 +589,9 @@ final class _AutomaticRunner implements LinuxProcessRunner {
   }) async {
     final isReload = request.arguments.contains('daemon-reload');
     final isStatus = request.arguments.contains('show');
+    final isEnable = request.arguments.contains('enable');
+    final isDisable = request.arguments.contains('disable');
+
     if (isReload) {
       reloadCount += 1;
     }
@@ -508,13 +600,31 @@ final class _AutomaticRunner implements LinuxProcessRunner {
       (argument) => argument.endsWith('.timer'),
       orElse: () => 'dashboard-shakhsi-notification-0000000000000000.timer',
     );
+    final timerSuffix = '.timer';
+    final baseName = timerName.substring(
+      0,
+      timerName.length - timerSuffix.length,
+    );
+
+    if (isDisable) {
+      _disabledBaseNames.add(baseName);
+      _enabledBaseNames.remove(baseName);
+    }
+    if (isEnable) {
+      _enabledBaseNames.add(baseName);
+      _disabledBaseNames.remove(baseName);
+    }
+
+    final healthy =
+        _enabledBaseNames.contains(baseName) ||
+        !_disabledBaseNames.contains(baseName);
     final stdout = isStatus
         ? <String>[
             'Id=$timerName',
             'LoadState=loaded',
-            'ActiveState=inactive',
-            'SubState=dead',
-            'UnitFileState=disabled',
+            'ActiveState=${healthy ? 'active' : 'inactive'}',
+            'SubState=${healthy ? 'waiting' : 'dead'}',
+            'UnitFileState=${healthy ? 'enabled' : 'disabled'}',
             'Result=success',
             '',
           ].join('\n')
@@ -578,12 +688,22 @@ final class _RecordingGateway implements NativeNotificationGateway {
   }
 }
 
-final class _NoopFactory implements LinuxNotificationDeliveryCommandFactory {
-  const _NoopFactory();
+final class _RepairFactory implements LinuxNotificationDeliveryCommandFactory {
+  const _RepairFactory({this.failId});
+
+  final String? failId;
 
   @override
   LinuxSystemdNotificationUnit create(NotificationRequest request) {
-    throw UnsupportedError('Repair is reserved for Gate 10.5.10.');
+    if (request.scheduleId == failId) {
+      throw StateError('repair factory failure for ${request.scheduleId}');
+    }
+    return LinuxSystemdNotificationUnit(
+      scheduleKey: request.scheduleId,
+      scheduledAtUtc: request.scheduledAtUtc,
+      executablePath: '/opt/dashboard-shakhsi',
+      arguments: <String>['--deliver-notification', request.scheduleId],
+    );
   }
 }
 
@@ -600,6 +720,21 @@ NotificationRequest _request(
     title: 'Title',
     body: 'Body',
     scheduledAtUtc: scheduledAtUtc,
+  );
+}
+
+LinuxSystemdScheduleRegistryEntry _entryForRequest(
+  NotificationRequest request,
+  String requestFingerprint,
+) {
+  final names = _names(request.scheduleId);
+  return LinuxSystemdScheduleRegistryEntry(
+    scheduleId: request.scheduleId,
+    owner: request.owner,
+    timerName: LinuxSystemdTimerName.parse(names.timerFileName),
+    serviceFileName: names.serviceFileName,
+    scheduledAtUtc: request.scheduledAtUtc,
+    requestFingerprint: requestFingerprint,
   );
 }
 

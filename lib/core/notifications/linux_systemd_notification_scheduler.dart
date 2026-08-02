@@ -385,6 +385,371 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
         rollbackFailures: rollbackFailures,
       );
     }
+
+    final confirmedRegistry = registryChanged ? nextRegistry : registry;
+    await _repairReconciliationDesired(
+      desired: desired,
+      discovery: discovery,
+      registry: confirmedRegistry,
+    );
+  }
+
+  Future<void> _repairReconciliationDesired({
+    required List<NotificationRequest> desired,
+    required LinuxSystemdUnitDiscovery discovery,
+    required LinuxSystemdScheduleRegistry registry,
+  }) async {
+    final operation = LinuxSystemdNotificationSchedulerOperation.reconcile;
+    final completeBaseNames = discovery.completePairs
+        .map((names) => names.baseName)
+        .toSet();
+    final staged = <_ReconciliationInstall>[];
+    final completedScheduleIds = <String>[];
+
+    for (final request in desired) {
+      final names = LinuxSystemdUnitNames.forScheduleKey(request.scheduleId);
+      final timerName = LinuxSystemdTimerName.parse(names.timerFileName);
+
+      try {
+        final requestFingerprint = await _step<String>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.renderFailed,
+          scheduleId: request.scheduleId,
+          owner: request.owner,
+          names: names,
+          action: () => _fingerprint.compute(request),
+        );
+        final previous = registry.entryForScheduleId(request.scheduleId);
+        final hasCompletePair = completeBaseNames.contains(names.baseName);
+
+        if (previous != null &&
+            hasCompletePair &&
+            previous.requestFingerprint == requestFingerprint) {
+          final status = await _step<LinuxSystemdTimerStatus>(
+            operation: operation,
+            failure: LinuxSystemdNotificationSchedulerFailure.mutationFailed,
+            scheduleId: request.scheduleId,
+            owner: request.owner,
+            names: names,
+            action: () => _driver.status(timerName),
+          );
+          if (status.isHealthy) {
+            completedScheduleIds.add(request.scheduleId);
+            continue;
+          }
+        }
+
+        final unit = await _step<LinuxSystemdNotificationUnit>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.commandFactoryFailed,
+          scheduleId: request.scheduleId,
+          owner: request.owner,
+          names: names,
+          action: () => _commandFactory.create(request),
+        );
+        final rendered = await _step<LinuxSystemdRenderedUnits>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.renderFailed,
+          scheduleId: request.scheduleId,
+          owner: request.owner,
+          names: names,
+          action: () => _renderer.render(unit),
+        );
+
+        if (rendered.serviceFileName != names.serviceFileName ||
+            rendered.timerFileName != names.timerFileName) {
+          throw LinuxSystemdNotificationSchedulerException(
+            operation: operation,
+            failure: LinuxSystemdNotificationSchedulerFailure.renderFailed,
+            scheduleId: request.scheduleId,
+            owner: request.owner,
+            names: names,
+            cause: StateError(
+              'Rendered reconciliation unit identity does not match '
+              'the desired schedule.',
+            ),
+            causeStackTrace: StackTrace.current,
+          );
+        }
+
+        final transaction = await _step<LinuxSystemdUnitInstallTransaction>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: request.scheduleId,
+          owner: request.owner,
+          names: names,
+          action: () => _unitStore.beginInstall(rendered),
+        );
+
+        if (transaction.names != names) {
+          throw LinuxSystemdNotificationSchedulerException(
+            operation: operation,
+            failure:
+                LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+            scheduleId: request.scheduleId,
+            owner: request.owner,
+            names: names,
+            cause: StateError(
+              'Install transaction identity does not match '
+              'the desired schedule.',
+            ),
+            causeStackTrace: StackTrace.current,
+          );
+        }
+
+        final repair = _ReconciliationInstall(
+          request: request,
+          names: names,
+          timerName: timerName,
+          requestFingerprint: requestFingerprint,
+          transaction: transaction,
+        );
+        staged.add(repair);
+
+        await _step<void>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: request.scheduleId,
+          owner: request.owner,
+          names: names,
+          action: transaction.apply,
+        );
+      } catch (error, stackTrace) {
+        final rollbackFailures =
+            await _rollbackUnconfirmedReconciliationInstalls(
+              installs: staged,
+              reload: staged.isNotEmpty,
+            );
+        _throwPartialReconciliation(
+          request: request,
+          error: error,
+          stackTrace: stackTrace,
+          completedScheduleIds: completedScheduleIds,
+          rollbackFailures: rollbackFailures,
+        );
+      }
+    }
+
+    if (staged.isEmpty) {
+      return;
+    }
+
+    try {
+      await _step<void>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.daemonReloadFailed,
+        action: _driver.reloadDaemon,
+      );
+    } catch (error, stackTrace) {
+      final rollbackFailures = await _rollbackUnconfirmedReconciliationInstalls(
+        installs: staged,
+        reload: true,
+      );
+      _throwPartialReconciliation(
+        request: staged.first.request,
+        error: error,
+        stackTrace: stackTrace,
+        completedScheduleIds: completedScheduleIds,
+        rollbackFailures: rollbackFailures,
+      );
+    }
+
+    final finalized = <_ReconciliationInstall>[];
+    final nextEntries = <LinuxSystemdScheduleRegistryEntry>[
+      ...registry.entries,
+    ];
+
+    for (final repair in staged) {
+      try {
+        final status = await _step<LinuxSystemdTimerStatus>(
+          operation: operation,
+          failure: LinuxSystemdNotificationSchedulerFailure.mutationFailed,
+          scheduleId: repair.request.scheduleId,
+          owner: repair.request.owner,
+          names: repair.names,
+          action: () => _driver.enableAndStart(repair.timerName),
+        );
+        if (!status.isHealthy) {
+          throw LinuxSystemdNotificationSchedulerException(
+            operation: operation,
+            failure: LinuxSystemdNotificationSchedulerFailure.mutationFailed,
+            scheduleId: repair.request.scheduleId,
+            owner: repair.request.owner,
+            names: repair.names,
+            cause: StateError(
+              'Reconciled timer did not reach the healthy waiting state.',
+            ),
+            causeStackTrace: StackTrace.current,
+            confirmedStatus: status,
+          );
+        }
+
+        repair.enabled = true;
+        await _step<void>(
+          operation: operation,
+          failure:
+              LinuxSystemdNotificationSchedulerFailure.unitTransactionFailed,
+          scheduleId: repair.request.scheduleId,
+          owner: repair.request.owner,
+          names: repair.names,
+          action: repair.transaction.finalize,
+        );
+        repair.finalized = true;
+        finalized.add(repair);
+        completedScheduleIds.add(repair.request.scheduleId);
+
+        nextEntries.removeWhere(
+          (entry) => entry.scheduleId == repair.request.scheduleId,
+        );
+        nextEntries.add(repair.registryEntry);
+      } catch (error, stackTrace) {
+        final index = staged.indexOf(repair);
+        final rollbackFailures =
+            await _rollbackUnconfirmedReconciliationInstalls(
+              installs: staged.sublist(index),
+              reload: true,
+            );
+        final registryFailures = await _writeConfirmedReconciliationRegistry(
+          previousRegistry: registry,
+          entries: nextEntries,
+          rollbackFailures: rollbackFailures,
+        );
+        _throwPartialReconciliation(
+          request: repair.request,
+          error: error,
+          stackTrace: stackTrace,
+          completedScheduleIds: completedScheduleIds,
+          rollbackFailures: registryFailures,
+        );
+      }
+    }
+
+    final repairRegistry = LinuxSystemdScheduleRegistry(
+      schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+      generation: registry.generation + 1,
+      entries: nextEntries,
+    );
+
+    try {
+      await _step<void>(
+        operation: operation,
+        failure: LinuxSystemdNotificationSchedulerFailure.registryFailed,
+        action: () => _registryStore.replace(repairRegistry),
+      );
+    } catch (error, stackTrace) {
+      final rollbackFailures = <LinuxSystemdSchedulerRollbackFailure>[];
+      final registryFailures = await _writeConfirmedReconciliationRegistry(
+        previousRegistry: registry,
+        entries: nextEntries,
+        rollbackFailures: rollbackFailures,
+      );
+      _throwPartialReconciliation(
+        request: finalized.isEmpty
+            ? staged.first.request
+            : finalized.last.request,
+        error: error,
+        stackTrace: stackTrace,
+        completedScheduleIds: completedScheduleIds,
+        rollbackFailures: registryFailures,
+      );
+    }
+  }
+
+  Future<List<LinuxSystemdSchedulerRollbackFailure>>
+  _rollbackUnconfirmedReconciliationInstalls({
+    required List<_ReconciliationInstall> installs,
+    required bool reload,
+  }) async {
+    final failures = <LinuxSystemdSchedulerRollbackFailure>[];
+
+    for (final repair in installs.reversed) {
+      if (repair.enabled) {
+        await _captureRollbackFailure(
+          step: 'disable-reconcile-install/${repair.names.baseName}',
+          action: () => _driver.disableAndStop(repair.timerName),
+          failures: failures,
+        );
+      }
+      if (!repair.finalized) {
+        await _captureRollbackFailure(
+          step: 'rollback-reconcile-install/${repair.names.baseName}',
+          action: repair.transaction.rollback,
+          failures: failures,
+          expandUnitStoreFailures: true,
+        );
+      }
+    }
+
+    if (reload && installs.isNotEmpty) {
+      await _captureRollbackFailure(
+        step: 'reload-after-reconcile-install-rollback',
+        action: _driver.reloadDaemon,
+        failures: failures,
+      );
+    }
+
+    return failures;
+  }
+
+  Future<List<LinuxSystemdSchedulerRollbackFailure>>
+  _writeConfirmedReconciliationRegistry({
+    required LinuxSystemdScheduleRegistry previousRegistry,
+    required Iterable<LinuxSystemdScheduleRegistryEntry> entries,
+    required List<LinuxSystemdSchedulerRollbackFailure> rollbackFailures,
+  }) async {
+    try {
+      final current = await _registryStore.load();
+      final baseGeneration = current.generation > previousRegistry.generation
+          ? current.generation
+          : previousRegistry.generation;
+      await _registryStore.replace(
+        LinuxSystemdScheduleRegistry(
+          schemaVersion: LinuxSystemdScheduleRegistry.currentSchemaVersion,
+          generation: baseGeneration + 1,
+          entries: entries,
+        ),
+      );
+    } catch (error, stackTrace) {
+      rollbackFailures.add(
+        LinuxSystemdSchedulerRollbackFailure(
+          step: 'write-confirmed-reconciliation-registry',
+          error: error,
+          stackTrace: stackTrace,
+        ),
+      );
+    }
+    return rollbackFailures;
+  }
+
+  Never _throwPartialReconciliation({
+    required NotificationRequest request,
+    required Object error,
+    required StackTrace stackTrace,
+    required List<String> completedScheduleIds,
+    required List<LinuxSystemdSchedulerRollbackFailure> rollbackFailures,
+  }) {
+    final nested = error is LinuxSystemdNotificationSchedulerException
+        ? error
+        : null;
+    throw LinuxSystemdNotificationSchedulerException(
+      operation: LinuxSystemdNotificationSchedulerOperation.reconcile,
+      failure: LinuxSystemdNotificationSchedulerFailure.partialReconciliation,
+      scheduleId: request.scheduleId,
+      owner: request.owner,
+      names: LinuxSystemdUnitNames.forScheduleKey(request.scheduleId),
+      cause: error,
+      causeStackTrace: stackTrace,
+      rollbackFailures: <LinuxSystemdSchedulerRollbackFailure>[
+        ...(nested?.rollbackFailures ??
+            const <LinuxSystemdSchedulerRollbackFailure>[]),
+        ...rollbackFailures,
+      ],
+      confirmedStatus: nested?.confirmedStatus,
+      completedScheduleIds: completedScheduleIds,
+    );
   }
 
   Future<List<LinuxSystemdSchedulerRollbackFailure>>
@@ -1050,6 +1415,36 @@ final class LinuxSystemdNotificationScheduler implements NotificationScheduler {
         causeStackTrace: stackTrace,
       );
     }
+  }
+}
+
+final class _ReconciliationInstall {
+  _ReconciliationInstall({
+    required this.request,
+    required this.names,
+    required this.timerName,
+    required this.requestFingerprint,
+    required this.transaction,
+  });
+
+  final NotificationRequest request;
+  final LinuxSystemdUnitNames names;
+  final LinuxSystemdTimerName timerName;
+  final String requestFingerprint;
+  final LinuxSystemdUnitInstallTransaction transaction;
+
+  bool enabled = false;
+  bool finalized = false;
+
+  LinuxSystemdScheduleRegistryEntry get registryEntry {
+    return LinuxSystemdScheduleRegistryEntry(
+      scheduleId: request.scheduleId,
+      owner: request.owner,
+      timerName: timerName,
+      serviceFileName: names.serviceFileName,
+      scheduledAtUtc: request.scheduledAtUtc,
+      requestFingerprint: requestFingerprint,
+    );
   }
 }
 

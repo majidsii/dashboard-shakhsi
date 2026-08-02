@@ -2,7 +2,6 @@ import 'package:dashboard_shakhsi/core/date_time/app_clock.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_notification_delivery_command_factory.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_notification_request_fingerprint.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_scheduler.dart';
-import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_scheduler_exception.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_unit.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_schedule_registry.dart';
 import 'package:dashboard_shakhsi/core/notifications/linux_systemd_timer_name.dart';
@@ -333,24 +332,15 @@ void main() {
       },
     );
 
-    test(
-      'reconcile accepts empty input and rejects non-empty input typed',
-      () async {
-        final harness = _Harness(now: now);
+    test('reconcile accepts empty input', () async {
+      final harness = _Harness(now: now);
 
-        await harness.scheduler.reconcile(const <NotificationRequest>[]);
+      await harness.scheduler.reconcile(const <NotificationRequest>[]);
 
-        await expectLater(
-          harness.scheduler.reconcile(<NotificationRequest>[
-            _request(
-              scheduleId: 'task-reconcile-temporary',
-              scheduledAtUtc: now.add(const Duration(hours: 1)),
-            ),
-          ]),
-          completes,
-        );
-      },
-    );
+      expect(harness.registryStore.loadCount, 1);
+      expect(harness.registryStore.discoveryCount, 1);
+      expect(harness.registryStore.replacements, isEmpty);
+    });
   });
 }
 
