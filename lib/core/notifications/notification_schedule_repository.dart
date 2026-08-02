@@ -6,6 +6,8 @@ abstract interface class NotificationScheduleRepository {
 
   Future<List<NotificationRequest>> getAll();
 
+  Future<NotificationRequest?> getById(String scheduleId);
+
   Future<void> upsert(NotificationRequest request);
 
   Future<void> delete(String scheduleId);

@@ -69,6 +69,47 @@ void main() {
     }
   });
 
+  test('getById uses exact ID and maps the complete request', () async {
+    final database = openTestDatabase();
+    final now = DateTime.utc(2026, 8, 2, 8);
+    final repository = DriftNotificationScheduleRepository(
+      database,
+      clock: FixedAppClock(utcValue: now, localValue: now),
+    );
+    final request = _request(
+      scheduleId: 'task-exact',
+      owner: _habitOwner,
+      title: 'عنوان دقیق',
+      hour: 14,
+      payload: const <String, String>{
+        'route': '/habits/habit-1',
+        'source': 'hidden-delivery',
+      },
+      privacyMode: NotificationPrivacyMode.private,
+    );
+
+    try {
+      await repository.upsert(request);
+
+      final actual = await repository.getById('task-exact');
+
+      expect(actual, isNotNull);
+      expect(actual!.scheduleId, request.scheduleId);
+      expect(actual.owner, request.owner);
+      expect(actual.title, request.title);
+      expect(actual.body, request.body);
+      expect(actual.scheduledAtUtc, request.scheduledAtUtc);
+      expect(actual.payload, request.payload);
+      expect(actual.privacyMode, request.privacyMode);
+
+      expect(await repository.getById('TASK-EXACT'), isNull);
+      expect(await repository.getById('task-exact '), isNull);
+      expect(await repository.getById('missing'), isNull);
+    } finally {
+      await database.close();
+    }
+  });
+
   test('deleteByOwner does not remove another owner schedules', () async {
     final database = openTestDatabase();
     final now = DateTime.utc(2026, 7, 27, 8);

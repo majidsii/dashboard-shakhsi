@@ -23,6 +23,11 @@ final class MemoryNotificationScheduleRepository
   Future<List<NotificationRequest>> getAll() async => _snapshot();
 
   @override
+  Future<NotificationRequest?> getById(String scheduleId) async {
+    return _items[scheduleId];
+  }
+
+  @override
   Future<void> upsert(NotificationRequest request) async {
     _items[request.scheduleId] = request;
     _emit();

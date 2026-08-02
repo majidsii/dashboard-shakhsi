@@ -47,6 +47,15 @@ final class DriftNotificationScheduleRepository
   }
 
   @override
+  Future<NotificationRequest?> getById(String scheduleId) async {
+    final row = await (_database.select(
+      _database.notificationScheduleRows,
+    )..where((item) => item.scheduleId.equals(scheduleId))).getSingleOrNull();
+
+    return row == null ? null : _requestFromRow(row);
+  }
+
+  @override
   Future<void> upsert(NotificationRequest request) async {
     final nowUtc = _clock.nowUtc().toUtc();
     await _upsert(request, nowUtc: nowUtc);
