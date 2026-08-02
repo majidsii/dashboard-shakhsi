@@ -840,7 +840,9 @@ final class _NoopFactory implements LinuxNotificationDeliveryCommandFactory {
   const _NoopFactory();
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     throw UnsupportedError('Factory is not used by cancel tests.');
   }
 }

@@ -17,14 +17,19 @@ final class FakeLinuxNotificationDeliveryCommandFactory
   final List<NotificationRequest> requests = <NotificationRequest>[];
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     requests.add(request);
 
     final configuredError = error;
     if (configuredError != null) {
       final configuredStackTrace = errorStackTrace;
       if (configuredStackTrace != null) {
-        Error.throwWithStackTrace(configuredError, configuredStackTrace);
+        Error.throwWithStackTrace(
+          configuredError,
+          configuredStackTrace,
+        );
       }
 
       throw configuredError;

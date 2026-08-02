@@ -280,28 +280,29 @@ void main() {
         } on LinuxSystemdNotificationSchedulerException catch (error) {
           actual = error;
         }
-        final error = actual;
 
+        expect(actual, isNotNull);
         expect(
-          error.operation,
+          actual.operation,
           LinuxSystemdNotificationSchedulerOperation.cancelByOwner,
         );
         expect(
-          error.failure,
+          actual.failure,
           LinuxSystemdNotificationSchedulerFailure.partialOwnerCancellation,
         );
-        expect(error.scheduleId, 'task-owner-beta-evidence');
-        expect(error.owner, same(target));
+        expect(actual.scheduleId, 'task-owner-beta-evidence');
+        expect(actual.owner, same(target));
         expect(
-          error.completedScheduleIds,
+          actual.completedScheduleIds,
           orderedEquals(<String>['task-owner-alpha-evidence']),
         );
         expect(
-          () =>
-              error.completedScheduleIds.add('task-owner-unexpected-evidence'),
+          () => actual!.completedScheduleIds.add(
+            'task-owner-unexpected-evidence',
+          ),
           throwsUnsupportedError,
         );
-        expect(error.cause, isNotNull);
+        expect(actual.cause, isNotNull);
       },
     );
   });
@@ -555,7 +556,9 @@ final class _NoopFactory implements LinuxNotificationDeliveryCommandFactory {
   const _NoopFactory();
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     throw UnsupportedError('Factory is not used by concurrency tests.');
   }
 }

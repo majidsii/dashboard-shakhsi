@@ -363,11 +363,12 @@ void main() {
       actual = error;
     }
 
+    final exception = actual;
     expect(
-      actual.failure,
+      exception.failure,
       LinuxSystemdNotificationSchedulerFailure.partialReconciliation,
     );
-    expect(actual.scheduleId, desiredId);
+    expect(exception.scheduleId, desiredId);
     expect(harness.unitStore.beginOrder, <String>[staleId]);
     expect(harness.registryStore.current.entries, isEmpty);
     expect(harness.registryStore.current.generation, 9);
@@ -694,7 +695,9 @@ final class _RepairFactory implements LinuxNotificationDeliveryCommandFactory {
   final String? failId;
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     if (request.scheduleId == failId) {
       throw StateError('repair factory failure for ${request.scheduleId}');
     }

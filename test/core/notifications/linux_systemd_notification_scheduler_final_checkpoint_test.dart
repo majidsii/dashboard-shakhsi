@@ -310,7 +310,9 @@ final class _DeliveryFactory
   const _DeliveryFactory();
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     return LinuxSystemdNotificationUnit(
       scheduleKey: request.scheduleId,
       scheduledAtUtc: request.scheduledAtUtc,

@@ -498,7 +498,9 @@ final class _ScriptedFactory
   final String? scheduleKey;
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     operations.add('factory.create');
     final configuredError = error;
     if (configuredError != null) {
@@ -519,7 +521,9 @@ final class _DeliveryFactory
   const _DeliveryFactory();
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     return LinuxSystemdNotificationUnit(
       scheduleKey: request.scheduleId,
       scheduledAtUtc: request.scheduledAtUtc,

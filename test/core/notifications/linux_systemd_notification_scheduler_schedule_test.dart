@@ -391,7 +391,9 @@ final class _RecordingDeliveryFactory
       <LinuxSystemdNotificationUnit>[];
 
   @override
-  LinuxSystemdNotificationUnit create(NotificationRequest request) {
+  Future<LinuxSystemdNotificationUnit> create(
+    NotificationRequest request,
+  ) async {
     operations.add('factory.create');
     requests.add(request);
 

@@ -10,19 +10,24 @@ import '../../support/fake_linux_notification_delivery_command_factory.dart';
 
 void main() {
   group('LinuxNotificationDeliveryCommandFactory', () {
-    test('fake records the exact request and returns the configured unit', () {
-      final request = _request();
-      final unit = _unit(request);
-      final factory = FakeLinuxNotificationDeliveryCommandFactory(result: unit);
+    test(
+      'fake records the exact request and returns the configured unit',
+      () async {
+        final request = _request();
+        final unit = _unit(request);
+        final factory = FakeLinuxNotificationDeliveryCommandFactory(
+          result: unit,
+        );
 
-      final actual = factory.create(request);
+        final actual = await factory.create(request);
 
-      expect(actual, same(unit));
-      expect(factory.requests, hasLength(1));
-      expect(factory.requests.single, same(request));
-    });
+        expect(actual, same(unit));
+        expect(factory.requests, hasLength(1));
+        expect(factory.requests.single, same(request));
+      },
+    );
 
-    test('fake preserves the configured failure and stack trace', () {
+    test('fake preserves the configured failure and stack trace', () async {
       final error = StateError('TOP_SECRET_FACTORY_FAILURE');
       final stackTrace = StackTrace.fromString('factory-stack-marker');
       final factory = FakeLinuxNotificationDeliveryCommandFactory(
@@ -35,7 +40,7 @@ void main() {
       StackTrace? actualStackTrace;
 
       try {
-        factory.create(_request());
+        await factory.create(_request());
         fail('Expected factory failure.');
       } catch (caught, caughtStackTrace) {
         actualError = caught;
