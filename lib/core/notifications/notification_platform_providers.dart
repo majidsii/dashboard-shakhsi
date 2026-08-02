@@ -27,6 +27,7 @@ import 'noop_notification_scheduler.dart';
 import 'notification_host_platform.dart';
 import 'notification_platform_capabilities.dart';
 import 'notification_scheduler.dart';
+import 'notification_startup_service.dart';
 import 'platform_notification_scheduler.dart';
 import 'resolved_linux_notification_delivery_command_factory.dart';
 
@@ -201,3 +202,11 @@ final notificationSchedulerProvider = Provider<NotificationScheduler>((ref) {
     ),
   };
 });
+
+final notificationStartupProvider =
+    FutureProvider.family<void, ProviderListenable<NotificationStartup>>((
+      ref,
+      startupProvider,
+    ) async {
+      await ref.watch(startupProvider).initialize();
+    });

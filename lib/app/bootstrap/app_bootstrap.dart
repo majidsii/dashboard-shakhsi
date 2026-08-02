@@ -1,4 +1,6 @@
 import 'dart:ui';
+
+import 'package:dashboard_shakhsi/app/bootstrap/notification_startup_bootstrap.dart';
 import 'package:dashboard_shakhsi/app/router/app_router.dart';
 import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
 import 'package:dashboard_shakhsi/app/theme/theme_mode_controller.dart';
@@ -21,23 +23,13 @@ Future<void> bootstrapApp() async {
 
   final container = ProviderContainer();
 
-  try {
-    await initializeNotificationsForApp(container);
-  } catch (error, stackTrace) {
-    FlutterError.reportError(
-      FlutterErrorDetails(
-        exception: error,
-        stack: stackTrace,
-        library: 'dashboard_shakhsi',
-        context: ErrorDescription('while initializing local notifications'),
-      ),
-    );
-  }
-
   runApp(
     UncontrolledProviderScope(
       container: container,
-      child: const DashboardShakhsiApp(),
+      child: NotificationStartupBootstrap(
+        startupProvider: notificationStartupProvider,
+        child: const DashboardShakhsiApp(),
+      ),
     ),
   );
 }
