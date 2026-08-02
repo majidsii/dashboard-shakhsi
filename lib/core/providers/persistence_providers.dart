@@ -2,23 +2,18 @@ import 'package:dashboard_shakhsi/core/database/app_database.dart';
 import 'package:dashboard_shakhsi/core/date_time/app_clock.dart';
 import 'package:dashboard_shakhsi/core/notifications/device_time_zone_source.dart';
 import 'package:dashboard_shakhsi/core/notifications/drift_notification_schedule_repository.dart';
-import 'package:dashboard_shakhsi/core/notifications/flutter_local_notifications_driver.dart';
 import 'package:dashboard_shakhsi/core/notifications/local_notification_plugin_config.dart';
 import 'package:dashboard_shakhsi/core/notifications/local_notifications_driver.dart';
 import 'package:dashboard_shakhsi/core/notifications/local_notifications_initializer.dart';
-import 'package:dashboard_shakhsi/core/notifications/native_notification_gateway.dart';
-import 'package:dashboard_shakhsi/core/notifications/noop_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_coordinator.dart';
-import 'package:dashboard_shakhsi/core/notifications/notification_host_platform.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_permission.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_permission_service.dart';
-import 'package:dashboard_shakhsi/core/notifications/notification_platform_capabilities.dart';
+import 'package:dashboard_shakhsi/core/notifications/notification_platform_providers.dart'
+    as notification_platform;
 import 'package:dashboard_shakhsi/core/notifications/notification_request.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_schedule_repository.dart';
-import 'package:dashboard_shakhsi/core/notifications/notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_startup_service.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_time_zone_initializer.dart';
-import 'package:dashboard_shakhsi/core/notifications/platform_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/features/finance/application/finance_report_service.dart';
 import 'package:dashboard_shakhsi/features/finance/data/drift_finance_repository.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/debt.dart';
@@ -28,7 +23,6 @@ import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart'
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final appClockProvider = Provider<AppClock>((ref) {
@@ -85,20 +79,8 @@ final financeReportServiceProvider = Provider<FinanceReportService>((ref) {
   return const FinanceReportService();
 });
 
-final notificationSchedulerProvider = Provider<NotificationScheduler>((ref) {
-  final capabilities = ref.watch(notificationPlatformCapabilitiesProvider);
-
-  if (!capabilities.supportsImmediateDelivery &&
-      !capabilities.supportsScheduledDelivery) {
-    return const NoopNotificationScheduler();
-  }
-
-  return PlatformNotificationScheduler(
-    gateway: ref.watch(nativeNotificationGatewayProvider),
-    capabilities: capabilities,
-    clock: ref.watch(appClockProvider),
-  );
-});
+final notificationSchedulerProvider =
+    notification_platform.notificationSchedulerProvider;
 
 final notificationCoordinatorProvider = Provider<NotificationCoordinator>((
   ref,
@@ -109,21 +91,11 @@ final notificationCoordinatorProvider = Provider<NotificationCoordinator>((
   );
 });
 
-final notificationHostPlatformProvider = Provider<NotificationHostPlatform>((
-  ref,
-) {
-  return detectNotificationHostPlatform(
-    isWeb: kIsWeb,
-    platform: defaultTargetPlatform,
-  );
-});
+final notificationHostPlatformProvider =
+    notification_platform.notificationHostPlatformProvider;
 
 final notificationPlatformCapabilitiesProvider =
-    Provider<NotificationPlatformCapabilities>((ref) {
-      return NotificationPlatformCapabilities.forPlatform(
-        ref.watch(notificationHostPlatformProvider),
-      );
-    });
+    notification_platform.notificationPlatformCapabilitiesProvider;
 
 final localNotificationPluginConfigProvider =
     Provider<LocalNotificationPluginConfig>((ref) {
@@ -140,12 +112,7 @@ final notificationTimeZoneRuntimeProvider =
     });
 
 final flutterLocalNotificationsDriverProvider =
-    Provider<FlutterLocalNotificationsDriver>((ref) {
-      return FlutterLocalNotificationsDriver(
-        config: ref.watch(localNotificationPluginConfigProvider),
-        hostPlatform: ref.watch(notificationHostPlatformProvider),
-      );
-    });
+    notification_platform.flutterLocalNotificationsDriverProvider;
 
 final localNotificationsDriverProvider = Provider<LocalNotificationsDriver>((
   ref,
@@ -153,11 +120,8 @@ final localNotificationsDriverProvider = Provider<LocalNotificationsDriver>((
   return ref.watch(flutterLocalNotificationsDriverProvider);
 });
 
-final nativeNotificationGatewayProvider = Provider<NativeNotificationGateway>((
-  ref,
-) {
-  return ref.watch(flutterLocalNotificationsDriverProvider);
-});
+final nativeNotificationGatewayProvider =
+    notification_platform.nativeNotificationGatewayProvider;
 
 final notificationTimeZoneInitializerProvider =
     Provider<NotificationTimeZoneInitializer>((ref) {

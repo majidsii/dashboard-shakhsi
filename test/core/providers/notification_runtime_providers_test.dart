@@ -1,11 +1,11 @@
 import 'package:dashboard_shakhsi/core/date_time/app_clock.dart';
 import 'package:dashboard_shakhsi/core/notifications/device_time_zone_source.dart';
+import 'package:dashboard_shakhsi/core/notifications/linux_systemd_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/notifications/local_notifications_driver.dart';
 import 'package:dashboard_shakhsi/core/notifications/noop_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_platform_capabilities.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_startup_service.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_time_zone_initializer.dart';
-import 'package:dashboard_shakhsi/core/notifications/platform_notification_scheduler.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +14,7 @@ import '../../support/fake_native_notification_gateway.dart';
 import '../../support/memory_notification_schedule_repository.dart';
 
 void main() {
-  test('Linux provider graph uses capability-aware scheduler', () async {
+  test('Linux provider graph uses systemd scheduler', () async {
     final repository = MemoryNotificationScheduleRepository();
     final driver = _Driver();
     final gateway = FakeNativeNotificationGateway();
@@ -48,7 +48,7 @@ void main() {
     );
     expect(
       container.read(notificationSchedulerProvider),
-      isA<PlatformNotificationScheduler>(),
+      isA<LinuxSystemdNotificationScheduler>(),
     );
     expect(
       container.read(notificationStartupProvider),
