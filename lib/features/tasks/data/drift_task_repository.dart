@@ -1,6 +1,8 @@
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
+import 'package:dashboard_shakhsi/core/errors/app_failure.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:drift/drift.dart';
 
 final class DriftTaskRepository implements TaskRepository {
@@ -17,22 +19,39 @@ final class DriftTaskRepository implements TaskRepository {
         (row) => OrderingTerm.asc(row.id),
       ]);
 
-    return query.watch().map(
-      (rows) => rows
+    return query.watch().map((rows) {
+      final displayRows = rows.toList(growable: false)
+        ..sort((left, right) {
+          final createdAtOrder = left.createdAtUtc.compareTo(
+            right.createdAtUtc,
+          );
+          if (createdAtOrder != 0) {
+            return createdAtOrder;
+          }
+          return left.id.compareTo(right.id);
+        });
+      final displayNumbers = <String, int>{
+        for (final entry in displayRows.indexed) entry.$2.id: entry.$1 + 1,
+      };
+
+      return rows
           .map(
             (row) => TaskItem(
               id: row.id,
+              displayNumber: displayNumbers[row.id]!,
               title: row.title,
               priority: row.priority,
-              isDone: row.isDone,
-              sortOrder: row.sortOrder,
+              status: row.isDone ? TaskStatus.completed : TaskStatus.planned,
+              positionInStatus: row.sortOrder,
               createdAtUtc: row.createdAtUtc.toUtc(),
               updatedAtUtc: row.updatedAtUtc.toUtc(),
-              completedAtUtc: row.completedAtUtc?.toUtc(),
+              completedAtUtc: row.isDone
+                  ? (row.completedAtUtc ?? row.updatedAtUtc).toUtc()
+                  : null,
             ),
           )
-          .toList(growable: false),
-    );
+          .toList(growable: false);
+    });
   }
 
   @override
@@ -89,14 +108,23 @@ final class DriftTaskRepository implements TaskRepository {
 }
 
 TaskRowsCompanion _companionFromTask(TaskItem task) {
+  if (task.status == TaskStatus.inProgress ||
+      task.status == TaskStatus.canceled) {
+    throw const ValidationFailure(
+      'این وضعیت کار پس از مهاجرت پایگاه داده قابل ذخیره است.',
+    );
+  }
+
+  final isDone = task.status == TaskStatus.completed;
+
   return TaskRowsCompanion(
     id: Value<String>(task.id),
     title: Value<String>(task.title),
     priority: Value<int>(task.priority),
-    isDone: Value<bool>(task.isDone),
-    sortOrder: Value<int>(task.sortOrder),
+    isDone: Value<bool>(isDone),
+    sortOrder: Value<int>(task.positionInStatus),
     createdAtUtc: Value<DateTime>(task.createdAtUtc),
     updatedAtUtc: Value<DateTime>(task.updatedAtUtc),
-    completedAtUtc: Value<DateTime?>(task.completedAtUtc),
+    completedAtUtc: Value<DateTime?>(isDone ? task.completedAtUtc : null),
   );
 }

@@ -5,6 +5,7 @@ import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/dashboard/presentation/widgets/tasks_panel.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -64,10 +65,11 @@ void main() {
     repository.seed(<TaskItem>[
       TaskItem(
         id: 'persisted-task',
+        displayNumber: 1,
         title: 'تسک ذخیره‌شده',
         priority: 3,
-        isDone: false,
-        sortOrder: 0,
+        status: TaskStatus.planned,
+        positionInStatus: 0,
         createdAtUtc: now,
         updatedAtUtc: now,
       ),
@@ -103,10 +105,11 @@ void main() {
     repository.seed(<TaskItem>[
       TaskItem(
         id: 'editable-task',
+        displayNumber: 1,
         title: 'عنوان قبلی',
         priority: 1,
-        isDone: false,
-        sortOrder: 0,
+        status: TaskStatus.planned,
+        positionInStatus: 0,
         createdAtUtc: now,
         updatedAtUtc: now,
       ),
@@ -203,10 +206,11 @@ final class _MemoryTaskRepository implements TaskRepository {
     final changedAtUtc = changedAt.toUtc();
     _items[index] = TaskItem(
       id: current.id,
+      displayNumber: current.displayNumber,
       title: current.title,
       priority: current.priority,
-      isDone: isDone,
-      sortOrder: current.sortOrder,
+      status: isDone ? TaskStatus.completed : TaskStatus.planned,
+      positionInStatus: current.positionInStatus,
       createdAtUtc: current.createdAtUtc,
       updatedAtUtc: changedAtUtc,
       completedAtUtc: isDone ? changedAtUtc : null,
@@ -237,13 +241,15 @@ final class _MemoryTaskRepository implements TaskRepository {
       reordered.add(
         TaskItem(
           id: current.id,
+          displayNumber: current.displayNumber,
           title: current.title,
           priority: current.priority,
-          isDone: current.isDone,
-          sortOrder: index,
+          status: current.status,
+          positionInStatus: index,
           createdAtUtc: current.createdAtUtc,
           updatedAtUtc: current.updatedAtUtc,
           completedAtUtc: current.completedAtUtc,
+          canceledAtUtc: current.canceledAtUtc,
         ),
       );
     }

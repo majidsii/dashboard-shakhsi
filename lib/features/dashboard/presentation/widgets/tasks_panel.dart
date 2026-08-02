@@ -8,6 +8,7 @@ import 'package:dashboard_shakhsi/core/date_time/persian_date_label.dart';
 import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -255,10 +256,16 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     await repository.create(
       TaskItem(
         id: id,
+        displayNumber:
+            tasks.fold<int>(
+              0,
+              (highest, task) => math.max(highest, task.displayNumber),
+            ) +
+            1,
         title: title,
         priority: _priority,
-        isDone: false,
-        sortOrder: 0,
+        status: TaskStatus.planned,
+        positionInStatus: 0,
         createdAtUtc: now,
         updatedAtUtc: now,
       ),

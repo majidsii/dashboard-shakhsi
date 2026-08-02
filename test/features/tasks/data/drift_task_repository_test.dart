@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,7 +35,14 @@ void main() {
     );
 
     await repository.create(
-      _task(id: 'task-a', title: 'اول', priority: 0, sortOrder: 2, now: now),
+      _task(
+        id: 'task-a',
+        displayNumber: 1,
+        title: 'اول',
+        priority: 0,
+        sortOrder: 2,
+        now: now,
+      ),
     );
     await repository.create(
       _task(
@@ -55,6 +63,7 @@ void main() {
     final now = DateTime.utc(2026, 7, 26, 11);
     final original = _task(
       id: 'task-1',
+      displayNumber: 1,
       title: 'عنوان قدیمی',
       priority: 0,
       sortOrder: 3,
@@ -65,7 +74,7 @@ void main() {
     final updated = original.copyWith(
       title: 'عنوان جدید',
       priority: 2,
-      sortOrder: 1,
+      positionInStatus: 1,
       updatedAtUtc: now.add(const Duration(hours: 1)),
     );
 
@@ -131,10 +140,11 @@ void main() {
     await repository.create(
       TaskItem(
         id: 'done',
+        displayNumber: 2,
         title: 'انجام شده',
         priority: 2,
-        isDone: true,
-        sortOrder: 1,
+        status: TaskStatus.completed,
+        positionInStatus: 1,
         createdAtUtc: now,
         updatedAtUtc: now,
         completedAtUtc: now,
@@ -241,6 +251,7 @@ void main() {
 
 TaskItem _task({
   required String id,
+  int? displayNumber,
   required String title,
   required int priority,
   required int sortOrder,
@@ -248,10 +259,11 @@ TaskItem _task({
 }) {
   return TaskItem(
     id: id,
+    displayNumber: displayNumber ?? sortOrder + 1,
     title: title,
     priority: priority,
-    isDone: false,
-    sortOrder: sortOrder,
+    status: TaskStatus.planned,
+    positionInStatus: sortOrder,
     createdAtUtc: now,
     updatedAtUtc: now,
   );

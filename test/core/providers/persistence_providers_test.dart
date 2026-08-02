@@ -9,6 +9,7 @@ import 'package:dashboard_shakhsi/features/finance/domain/finance_transaction.da
 import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -52,10 +53,11 @@ void main() {
         .create(
           TaskItem(
             id: 'provider-task',
+            displayNumber: 1,
             title: 'تسک ذخیره‌شده',
             priority: 2,
-            isDone: false,
-            sortOrder: 0,
+            status: TaskStatus.planned,
+            positionInStatus: 0,
             createdAtUtc: now,
             updatedAtUtc: now,
           ),

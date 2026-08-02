@@ -9,6 +9,7 @@ import 'package:dashboard_shakhsi/features/finance/domain/finance_transaction.da
 import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,10 +35,11 @@ void main() {
       await firstTasks.create(
         TaskItem(
           id: 'task-a',
+          displayNumber: 1,
           title: 'عنوان اولیه',
           priority: 1,
-          isDone: false,
-          sortOrder: 0,
+          status: TaskStatus.planned,
+          positionInStatus: 0,
           createdAtUtc: createdAt,
           updatedAtUtc: createdAt,
         ),
@@ -45,10 +47,11 @@ void main() {
       await firstTasks.create(
         TaskItem(
           id: 'task-b',
+          displayNumber: 2,
           title: 'کار انجام‌شده',
           priority: 3,
-          isDone: false,
-          sortOrder: 1,
+          status: TaskStatus.planned,
+          positionInStatus: 1,
           createdAtUtc: createdAt,
           updatedAtUtc: createdAt,
         ),
@@ -56,10 +59,11 @@ void main() {
       await firstTasks.create(
         TaskItem(
           id: 'task-deleted',
+          displayNumber: 3,
           title: 'کار حذف‌شدنی',
           priority: 0,
-          isDone: false,
-          sortOrder: 2,
+          status: TaskStatus.planned,
+          positionInStatus: 2,
           createdAtUtc: createdAt,
           updatedAtUtc: createdAt,
         ),
@@ -68,10 +72,11 @@ void main() {
       await firstTasks.update(
         TaskItem(
           id: 'task-a',
+          displayNumber: 1,
           title: 'کار ماندگار و ویرایش‌شده',
           priority: 2,
-          isDone: false,
-          sortOrder: 0,
+          status: TaskStatus.planned,
+          positionInStatus: 0,
           createdAtUtc: createdAt,
           updatedAtUtc: changedAt,
         ),
