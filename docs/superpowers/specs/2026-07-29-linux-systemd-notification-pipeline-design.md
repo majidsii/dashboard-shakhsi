@@ -3,13 +3,13 @@
 Date: 2026-07-29  
 Phase: 1  
 Tasks: 10.4, 10.5, 10.6  
-Status: Approved architecture; Tasks 10.4 and 10.5 implemented; Task 10.6 pending
+Status: Approved architecture; Tasks 10.4–10.6 implemented
 
 ## Implementation status
 
 - Task 10.4 — Persistent Linux Schedule Registry: **Implemented**
 - Task 10.5 — Linux systemd Notification Scheduler: **Implemented** ([checkpoint](../checkpoints/2026-07-30-linux-systemd-notification-scheduler-checkpoint.md))
-- Task 10.6 — Delivery Entrypoint and Platform Wiring: **Pending**
+- Task 10.6 — Delivery Entrypoint and Platform Wiring: **Implemented** ([checkpoint](../checkpoints/2026-08-02-linux-notification-delivery-platform-wiring-checkpoint.md))
 
 
 ## Objective
@@ -711,7 +711,7 @@ Required coverage:
 
 # Task 10.6 — Delivery Entrypoint and Platform Wiring
 
-Status: **Pending**
+Status: **Implemented** — [checkpoint](../checkpoints/2026-08-02-linux-notification-delivery-platform-wiring-checkpoint.md)
 
 ## Scope
 
