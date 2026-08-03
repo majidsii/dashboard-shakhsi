@@ -19,15 +19,81 @@ final class DriftTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<void> create(TaskItem task) async {
-    await _database.into(_database.taskRows).insert(_companionFromTask(task));
+  Stream<List<TaskItem>> watchByStatus(TaskStatus status) {
+    final query = _database.select(_database.taskRows)
+      ..where((row) => row.status.equals(status.storageValue))
+      ..orderBy(<OrderingTerm Function(TaskRows)>[
+        (row) => OrderingTerm.asc(row.positionInStatus),
+        (row) => OrderingTerm.asc(row.createdAtUtc),
+        (row) => OrderingTerm.asc(row.id),
+      ]);
+
+    return query.watch().map(
+      (rows) => rows.map(_taskFromRow).toList(growable: false),
+    );
+  }
+
+  @override
+  Future<TaskItem?> getById(String id) async {
+    final row = await (_database.select(
+      _database.taskRows,
+    )..where((candidate) => candidate.id.equals(id))).getSingleOrNull();
+
+    return row == null ? null : _taskFromRow(row);
+  }
+
+  @override
+  Future<void> create(TaskItem task) {
+    return _database.transaction(() async {
+      final allocation = await _database
+          .customSelect(
+            '''
+          SELECT
+            COALESCE(MAX(display_number), 0) + 1 AS next_display_number,
+            (
+              SELECT COUNT(*)
+              FROM tasks
+              WHERE status = ?
+            ) AS next_position
+          FROM tasks
+        ''',
+            variables: <Variable<Object>>[
+              Variable<String>(task.status.storageValue),
+            ],
+            readsFrom: {_database.taskRows},
+          )
+          .getSingle();
+
+      final nextDisplayNumber = allocation.read<int>('next_display_number');
+      final nextPosition = allocation.read<int>('next_position');
+
+      await _database
+          .into(_database.taskRows)
+          .insert(
+            _companionFromTask(
+              task,
+              displayNumber: nextDisplayNumber,
+              positionInStatus: nextPosition,
+            ),
+          );
+    });
   }
 
   @override
   Future<void> update(TaskItem task) async {
     await (_database.update(
       _database.taskRows,
-    )..where((row) => row.id.equals(task.id))).write(_companionFromTask(task));
+    )..where((row) => row.id.equals(task.id))).write(
+      TaskRowsCompanion(
+        title: Value<String>(task.title),
+        priority: Value<int>(task.priority),
+        status: Value<String>(task.status.storageValue),
+        positionInStatus: Value<int>(task.positionInStatus),
+        updatedAtUtc: Value<DateTime>(task.updatedAtUtc),
+        completedAtUtc: Value<DateTime?>(task.completedAtUtc),
+        canceledAtUtc: Value<DateTime?>(task.canceledAtUtc),
+      ),
+    );
   }
 
   @override
@@ -107,14 +173,18 @@ TaskItem _taskFromRow(TaskRow row) {
   );
 }
 
-TaskRowsCompanion _companionFromTask(TaskItem task) {
+TaskRowsCompanion _companionFromTask(
+  TaskItem task, {
+  int? displayNumber,
+  int? positionInStatus,
+}) {
   return TaskRowsCompanion(
     id: Value<String>(task.id),
-    displayNumber: Value<int>(task.displayNumber),
+    displayNumber: Value<int>(displayNumber ?? task.displayNumber),
     title: Value<String>(task.title),
     priority: Value<int>(task.priority),
     status: Value<String>(task.status.storageValue),
-    positionInStatus: Value<int>(task.positionInStatus),
+    positionInStatus: Value<int>(positionInStatus ?? task.positionInStatus),
     createdAtUtc: Value<DateTime>(task.createdAtUtc),
     updatedAtUtc: Value<DateTime>(task.updatedAtUtc),
     completedAtUtc: Value<DateTime?>(task.completedAtUtc),

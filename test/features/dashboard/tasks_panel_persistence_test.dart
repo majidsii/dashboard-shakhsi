@@ -170,8 +170,12 @@ final class _MemoryTaskRepository implements TaskRepository {
 
   void _emit() {
     _items.sort((left, right) {
-      final order = left.sortOrder.compareTo(right.sortOrder);
-      if (order != 0) return order;
+      final statusOrder = left.status.index.compareTo(right.status.index);
+      if (statusOrder != 0) return statusOrder;
+      final positionOrder = left.positionInStatus.compareTo(
+        right.positionInStatus,
+      );
+      if (positionOrder != 0) return positionOrder;
       return left.id.compareTo(right.id);
     });
     _controller.add(items);
@@ -184,8 +188,49 @@ final class _MemoryTaskRepository implements TaskRepository {
   }
 
   @override
+  Stream<List<TaskItem>> watchByStatus(TaskStatus status) async* {
+    List<TaskItem> matching(List<TaskItem> source) =>
+        source.where((item) => item.status == status).toList(growable: false);
+
+    yield matching(items);
+    yield* _controller.stream.map(matching);
+  }
+
+  @override
+  Future<TaskItem?> getById(String id) async {
+    for (final item in _items) {
+      if (item.id == id) return item;
+    }
+    return null;
+  }
+
+  @override
   Future<void> create(TaskItem task) async {
-    _items.add(task);
+    final nextDisplayNumber =
+        _items.fold<int>(
+          0,
+          (highest, item) =>
+              item.displayNumber > highest ? item.displayNumber : highest,
+        ) +
+        1;
+    final nextPosition = _items
+        .where((item) => item.status == task.status)
+        .length;
+
+    _items.add(
+      TaskItem(
+        id: task.id,
+        displayNumber: nextDisplayNumber,
+        title: task.title,
+        priority: task.priority,
+        status: task.status,
+        positionInStatus: nextPosition,
+        createdAtUtc: task.createdAtUtc,
+        updatedAtUtc: task.updatedAtUtc,
+        completedAtUtc: task.completedAtUtc,
+        canceledAtUtc: task.canceledAtUtc,
+      ),
+    );
     _emit();
   }
 
