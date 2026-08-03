@@ -275,4 +275,126 @@ void main() {
     expect(first.hashCode, equal.hashCode);
     expect(first, isNot(differentStatus));
   });
+
+  // Task 2.2 Gate 2.2.1 RED
+  group('task planning fields', () {
+    test('normalizes and keeps canonical planning fields', () {
+      final task = TaskItem(
+        id: 'planning-task',
+        displayNumber: 12,
+        title: '  برنامه‌ریزی انتشار  ',
+        description: '  توضیح چندخطی\nبرای انتشار  ',
+        priority: 2,
+        status: TaskStatus.planned,
+        positionInStatus: 0,
+        startAtUtc: DateTime.utc(2026, 8, 4, 8),
+        dueAtUtc: DateTime.utc(2026, 8, 4, 10),
+        estimatedDurationMinutes: 90,
+        createdAtUtc: DateTime.utc(2026, 8, 3, 12),
+        updatedAtUtc: DateTime.utc(2026, 8, 3, 12),
+      );
+
+      expect(task.title, 'برنامه‌ریزی انتشار');
+      expect(task.description, 'توضیح چندخطی\nبرای انتشار');
+      expect(task.startAtUtc, DateTime.utc(2026, 8, 4, 8));
+      expect(task.dueAtUtc, DateTime.utc(2026, 8, 4, 10));
+      expect(task.estimatedDurationMinutes, 90);
+    });
+
+    test('normalizes a blank description to null', () {
+      final task = plannedTask().copyWith(description: '   ');
+      expect(task.description, isNull);
+    });
+
+    test('rejects non-UTC planning timestamps', () {
+      final local = DateTime(2026, 8, 4, 8);
+
+      expect(
+        () => plannedTask().copyWith(startAtUtc: local),
+        throwsA(isA<ValidationFailure>()),
+      );
+      expect(
+        () => plannedTask().copyWith(dueAtUtc: local),
+        throwsA(isA<ValidationFailure>()),
+      );
+    });
+
+    test('rejects a due time before the start time', () {
+      expect(
+        () => plannedTask().copyWith(
+          startAtUtc: DateTime.utc(2026, 8, 4, 10),
+          dueAtUtc: DateTime.utc(2026, 8, 4, 9, 59),
+        ),
+        throwsA(isA<ValidationFailure>()),
+      );
+    });
+
+    test('allows equal start and due instants', () {
+      final instant = DateTime.utc(2026, 8, 4, 10);
+      final task = plannedTask().copyWith(
+        startAtUtc: instant,
+        dueAtUtc: instant,
+      );
+
+      expect(task.startAtUtc, instant);
+      expect(task.dueAtUtc, instant);
+    });
+
+    test('requires a positive estimated duration', () {
+      for (final value in <int>[0, -1]) {
+        expect(
+          () => plannedTask().copyWith(estimatedDurationMinutes: value),
+          throwsA(isA<ValidationFailure>()),
+        );
+      }
+
+      expect(
+        plannedTask()
+            .copyWith(estimatedDurationMinutes: 1)
+            .estimatedDurationMinutes,
+        1,
+      );
+    });
+
+    test('copyWith explicitly clears every optional planning field', () {
+      final task = plannedTask().copyWith(
+        description: 'توضیح',
+        startAtUtc: DateTime.utc(2026, 8, 4, 8),
+        dueAtUtc: DateTime.utc(2026, 8, 4, 10),
+        estimatedDurationMinutes: 90,
+      );
+
+      final cleared = task.copyWith(
+        clearDescription: true,
+        clearStartAt: true,
+        clearDueAt: true,
+        clearEstimatedDuration: true,
+        updatedAtUtc: DateTime.utc(2026, 8, 3, 13),
+      );
+
+      expect(cleared.description, isNull);
+      expect(cleared.startAtUtc, isNull);
+      expect(cleared.dueAtUtc, isNull);
+      expect(cleared.estimatedDurationMinutes, isNull);
+      expect(cleared.id, task.id);
+      expect(cleared.displayNumber, task.displayNumber);
+      expect(cleared.createdAtUtc, task.createdAtUtc);
+      expect(cleared.status, task.status);
+      expect(cleared.positionInStatus, task.positionInStatus);
+    });
+
+    test('equality and hash include planning fields', () {
+      final base = plannedTask();
+      final withDescription = base.copyWith(description: 'توضیح');
+      final withStart = base.copyWith(startAtUtc: DateTime.utc(2026, 8, 4, 8));
+      final withDue = base.copyWith(dueAtUtc: DateTime.utc(2026, 8, 4, 10));
+      final withDuration = base.copyWith(estimatedDurationMinutes: 30);
+
+      expect(base, isNot(withDescription));
+      expect(base, isNot(withStart));
+      expect(base, isNot(withDue));
+      expect(base, isNot(withDuration));
+      expect(base.hashCode, isNot(withDescription.hashCode));
+    });
+  });
 }

@@ -6,14 +6,19 @@ final class TaskItem {
     required this.id,
     required this.displayNumber,
     required String title,
+    String? description,
     required this.priority,
     required this.status,
     required this.positionInStatus,
+    this.startAtUtc,
+    this.dueAtUtc,
+    this.estimatedDurationMinutes,
     required this.createdAtUtc,
     required this.updatedAtUtc,
     this.completedAtUtc,
     this.canceledAtUtc,
-  }) : title = title.trim() {
+  }) : title = title.trim(),
+       description = _normalizeOptionalText(description) {
     if (id.trim().isEmpty) {
       throw const ValidationFailure('شناسه کار نمی‌تواند خالی باشد.');
     }
@@ -28,6 +33,24 @@ final class TaskItem {
     }
     if (positionInStatus < 0) {
       throw const ValidationFailure('ترتیب کار در وضعیت نامعتبر است.');
+    }
+
+    final startAt = startAtUtc;
+    if (startAt != null) {
+      _validateUtc(startAt);
+    }
+    final dueAt = dueAtUtc;
+    if (dueAt != null) {
+      _validateUtc(dueAt);
+    }
+    if (startAt != null && dueAt != null && dueAt.isBefore(startAt)) {
+      throw const ValidationFailure(
+        'زمان سررسید نمی‌تواند قبل از زمان شروع باشد.',
+      );
+    }
+    final estimatedDuration = estimatedDurationMinutes;
+    if (estimatedDuration != null && estimatedDuration <= 0) {
+      throw const ValidationFailure('مدت تخمینی کار باید بیشتر از صفر باشد.');
     }
 
     _validateUtc(createdAtUtc);
@@ -52,9 +75,13 @@ final class TaskItem {
   final String id;
   final int displayNumber;
   final String title;
+  final String? description;
   final int priority;
   final TaskStatus status;
   final int positionInStatus;
+  final DateTime? startAtUtc;
+  final DateTime? dueAtUtc;
+  final int? estimatedDurationMinutes;
   final DateTime createdAtUtc;
   final DateTime updatedAtUtc;
   final DateTime? completedAtUtc;
@@ -69,9 +96,17 @@ final class TaskItem {
 
   TaskItem copyWith({
     String? title,
+    String? description,
+    bool clearDescription = false,
     int? priority,
     TaskStatus? status,
     int? positionInStatus,
+    DateTime? startAtUtc,
+    bool clearStartAt = false,
+    DateTime? dueAtUtc,
+    bool clearDueAt = false,
+    int? estimatedDurationMinutes,
+    bool clearEstimatedDuration = false,
     DateTime? updatedAtUtc,
     DateTime? completedAtUtc,
     bool clearCompletedAt = false,
@@ -82,9 +117,15 @@ final class TaskItem {
       id: id,
       displayNumber: displayNumber,
       title: title ?? this.title,
+      description: clearDescription ? null : description ?? this.description,
       priority: priority ?? this.priority,
       status: status ?? this.status,
       positionInStatus: positionInStatus ?? this.positionInStatus,
+      startAtUtc: clearStartAt ? null : startAtUtc ?? this.startAtUtc,
+      dueAtUtc: clearDueAt ? null : dueAtUtc ?? this.dueAtUtc,
+      estimatedDurationMinutes: clearEstimatedDuration
+          ? null
+          : estimatedDurationMinutes ?? this.estimatedDurationMinutes,
       createdAtUtc: createdAtUtc,
       updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
       completedAtUtc: clearCompletedAt
@@ -103,9 +144,13 @@ final class TaskItem {
             other.id == id &&
             other.displayNumber == displayNumber &&
             other.title == title &&
+            other.description == description &&
             other.priority == priority &&
             other.status == status &&
             other.positionInStatus == positionInStatus &&
+            other.startAtUtc == startAtUtc &&
+            other.dueAtUtc == dueAtUtc &&
+            other.estimatedDurationMinutes == estimatedDurationMinutes &&
             other.createdAtUtc == createdAtUtc &&
             other.updatedAtUtc == updatedAtUtc &&
             other.completedAtUtc == completedAtUtc &&
@@ -117,9 +162,13 @@ final class TaskItem {
     id,
     displayNumber,
     title,
+    description,
     priority,
     status,
     positionInStatus,
+    startAtUtc,
+    dueAtUtc,
+    estimatedDurationMinutes,
     createdAtUtc,
     updatedAtUtc,
     completedAtUtc,
@@ -129,9 +178,16 @@ final class TaskItem {
   @override
   String toString() {
     return 'TaskItem(id: $id, displayNumber: $displayNumber, title: $title, '
-        'priority: $priority, status: $status, '
-        'positionInStatus: $positionInStatus)';
+        'description: $description, priority: $priority, status: $status, '
+        'positionInStatus: $positionInStatus, startAtUtc: $startAtUtc, '
+        'dueAtUtc: $dueAtUtc, '
+        'estimatedDurationMinutes: $estimatedDurationMinutes)';
   }
+}
+
+String? _normalizeOptionalText(String? value) {
+  final normalized = value?.trim();
+  return normalized == null || normalized.isEmpty ? null : normalized;
 }
 
 void _validateUtc(DateTime value) {
