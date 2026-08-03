@@ -38,6 +38,17 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _priorityMeta = const VerificationMeta(
     'priority',
   );
@@ -69,6 +80,39 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _startAtUtcMeta = const VerificationMeta(
+    'startAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startAtUtc = GeneratedColumn<DateTime>(
+    'start_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueAtUtcMeta = const VerificationMeta(
+    'dueAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dueAtUtc = GeneratedColumn<DateTime>(
+    'due_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _estimatedDurationMinutesMeta =
+      const VerificationMeta('estimatedDurationMinutes');
+  @override
+  late final GeneratedColumn<int> estimatedDurationMinutes =
+      GeneratedColumn<int>(
+        'estimated_duration_minutes',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
     'createdAtUtc',
   );
@@ -120,9 +164,13 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     id,
     displayNumber,
     title,
+    description,
     priority,
     status,
     positionInStatus,
+    startAtUtc,
+    dueAtUtc,
+    estimatedDurationMinutes,
     createdAtUtc,
     updatedAtUtc,
     completedAtUtc,
@@ -164,6 +212,15 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
     if (data.containsKey('priority')) {
       context.handle(
         _priorityMeta,
@@ -190,6 +247,30 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
       );
     } else if (isInserting) {
       context.missing(_positionInStatusMeta);
+    }
+    if (data.containsKey('start_at_utc')) {
+      context.handle(
+        _startAtUtcMeta,
+        startAtUtc.isAcceptableOrUnknown(
+          data['start_at_utc']!,
+          _startAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('due_at_utc')) {
+      context.handle(
+        _dueAtUtcMeta,
+        dueAtUtc.isAcceptableOrUnknown(data['due_at_utc']!, _dueAtUtcMeta),
+      );
+    }
+    if (data.containsKey('estimated_duration_minutes')) {
+      context.handle(
+        _estimatedDurationMinutesMeta,
+        estimatedDurationMinutes.isAcceptableOrUnknown(
+          data['estimated_duration_minutes']!,
+          _estimatedDurationMinutesMeta,
+        ),
+      );
     }
     if (data.containsKey('created_at_utc')) {
       context.handle(
@@ -252,6 +333,10 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
       priority: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}priority'],
@@ -264,6 +349,18 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         DriftSqlType.int,
         data['${effectivePrefix}position_in_status'],
       )!,
+      startAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_at_utc'],
+      ),
+      dueAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}due_at_utc'],
+      ),
+      estimatedDurationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}estimated_duration_minutes'],
+      ),
       createdAtUtc: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at_utc'],
@@ -293,9 +390,13 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
   final String id;
   final int displayNumber;
   final String title;
+  final String? description;
   final int priority;
   final String status;
   final int positionInStatus;
+  final DateTime? startAtUtc;
+  final DateTime? dueAtUtc;
+  final int? estimatedDurationMinutes;
   final DateTime createdAtUtc;
   final DateTime updatedAtUtc;
   final DateTime? completedAtUtc;
@@ -304,9 +405,13 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     required this.id,
     required this.displayNumber,
     required this.title,
+    this.description,
     required this.priority,
     required this.status,
     required this.positionInStatus,
+    this.startAtUtc,
+    this.dueAtUtc,
+    this.estimatedDurationMinutes,
     required this.createdAtUtc,
     required this.updatedAtUtc,
     this.completedAtUtc,
@@ -318,9 +423,23 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     map['id'] = Variable<String>(id);
     map['display_number'] = Variable<int>(displayNumber);
     map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     map['priority'] = Variable<int>(priority);
     map['status'] = Variable<String>(status);
     map['position_in_status'] = Variable<int>(positionInStatus);
+    if (!nullToAbsent || startAtUtc != null) {
+      map['start_at_utc'] = Variable<DateTime>(startAtUtc);
+    }
+    if (!nullToAbsent || dueAtUtc != null) {
+      map['due_at_utc'] = Variable<DateTime>(dueAtUtc);
+    }
+    if (!nullToAbsent || estimatedDurationMinutes != null) {
+      map['estimated_duration_minutes'] = Variable<int>(
+        estimatedDurationMinutes,
+      );
+    }
     map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
     map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
     if (!nullToAbsent || completedAtUtc != null) {
@@ -337,9 +456,21 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
       id: Value(id),
       displayNumber: Value(displayNumber),
       title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
       priority: Value(priority),
       status: Value(status),
       positionInStatus: Value(positionInStatus),
+      startAtUtc: startAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startAtUtc),
+      dueAtUtc: dueAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueAtUtc),
+      estimatedDurationMinutes: estimatedDurationMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimatedDurationMinutes),
       createdAtUtc: Value(createdAtUtc),
       updatedAtUtc: Value(updatedAtUtc),
       completedAtUtc: completedAtUtc == null && nullToAbsent
@@ -360,9 +491,15 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
       id: serializer.fromJson<String>(json['id']),
       displayNumber: serializer.fromJson<int>(json['displayNumber']),
       title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
       priority: serializer.fromJson<int>(json['priority']),
       status: serializer.fromJson<String>(json['status']),
       positionInStatus: serializer.fromJson<int>(json['positionInStatus']),
+      startAtUtc: serializer.fromJson<DateTime?>(json['startAtUtc']),
+      dueAtUtc: serializer.fromJson<DateTime?>(json['dueAtUtc']),
+      estimatedDurationMinutes: serializer.fromJson<int?>(
+        json['estimatedDurationMinutes'],
+      ),
       createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
       updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
       completedAtUtc: serializer.fromJson<DateTime?>(json['completedAtUtc']),
@@ -376,9 +513,15 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
       'id': serializer.toJson<String>(id),
       'displayNumber': serializer.toJson<int>(displayNumber),
       'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
       'priority': serializer.toJson<int>(priority),
       'status': serializer.toJson<String>(status),
       'positionInStatus': serializer.toJson<int>(positionInStatus),
+      'startAtUtc': serializer.toJson<DateTime?>(startAtUtc),
+      'dueAtUtc': serializer.toJson<DateTime?>(dueAtUtc),
+      'estimatedDurationMinutes': serializer.toJson<int?>(
+        estimatedDurationMinutes,
+      ),
       'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
       'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
       'completedAtUtc': serializer.toJson<DateTime?>(completedAtUtc),
@@ -390,9 +533,13 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     String? id,
     int? displayNumber,
     String? title,
+    Value<String?> description = const Value.absent(),
     int? priority,
     String? status,
     int? positionInStatus,
+    Value<DateTime?> startAtUtc = const Value.absent(),
+    Value<DateTime?> dueAtUtc = const Value.absent(),
+    Value<int?> estimatedDurationMinutes = const Value.absent(),
     DateTime? createdAtUtc,
     DateTime? updatedAtUtc,
     Value<DateTime?> completedAtUtc = const Value.absent(),
@@ -401,9 +548,15 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     id: id ?? this.id,
     displayNumber: displayNumber ?? this.displayNumber,
     title: title ?? this.title,
+    description: description.present ? description.value : this.description,
     priority: priority ?? this.priority,
     status: status ?? this.status,
     positionInStatus: positionInStatus ?? this.positionInStatus,
+    startAtUtc: startAtUtc.present ? startAtUtc.value : this.startAtUtc,
+    dueAtUtc: dueAtUtc.present ? dueAtUtc.value : this.dueAtUtc,
+    estimatedDurationMinutes: estimatedDurationMinutes.present
+        ? estimatedDurationMinutes.value
+        : this.estimatedDurationMinutes,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
     updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
     completedAtUtc: completedAtUtc.present
@@ -420,11 +573,21 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
           ? data.displayNumber.value
           : this.displayNumber,
       title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       priority: data.priority.present ? data.priority.value : this.priority,
       status: data.status.present ? data.status.value : this.status,
       positionInStatus: data.positionInStatus.present
           ? data.positionInStatus.value
           : this.positionInStatus,
+      startAtUtc: data.startAtUtc.present
+          ? data.startAtUtc.value
+          : this.startAtUtc,
+      dueAtUtc: data.dueAtUtc.present ? data.dueAtUtc.value : this.dueAtUtc,
+      estimatedDurationMinutes: data.estimatedDurationMinutes.present
+          ? data.estimatedDurationMinutes.value
+          : this.estimatedDurationMinutes,
       createdAtUtc: data.createdAtUtc.present
           ? data.createdAtUtc.value
           : this.createdAtUtc,
@@ -446,9 +609,13 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
           ..write('id: $id, ')
           ..write('displayNumber: $displayNumber, ')
           ..write('title: $title, ')
+          ..write('description: $description, ')
           ..write('priority: $priority, ')
           ..write('status: $status, ')
           ..write('positionInStatus: $positionInStatus, ')
+          ..write('startAtUtc: $startAtUtc, ')
+          ..write('dueAtUtc: $dueAtUtc, ')
+          ..write('estimatedDurationMinutes: $estimatedDurationMinutes, ')
           ..write('createdAtUtc: $createdAtUtc, ')
           ..write('updatedAtUtc: $updatedAtUtc, ')
           ..write('completedAtUtc: $completedAtUtc, ')
@@ -462,9 +629,13 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     id,
     displayNumber,
     title,
+    description,
     priority,
     status,
     positionInStatus,
+    startAtUtc,
+    dueAtUtc,
+    estimatedDurationMinutes,
     createdAtUtc,
     updatedAtUtc,
     completedAtUtc,
@@ -477,9 +648,13 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
           other.id == this.id &&
           other.displayNumber == this.displayNumber &&
           other.title == this.title &&
+          other.description == this.description &&
           other.priority == this.priority &&
           other.status == this.status &&
           other.positionInStatus == this.positionInStatus &&
+          other.startAtUtc == this.startAtUtc &&
+          other.dueAtUtc == this.dueAtUtc &&
+          other.estimatedDurationMinutes == this.estimatedDurationMinutes &&
           other.createdAtUtc == this.createdAtUtc &&
           other.updatedAtUtc == this.updatedAtUtc &&
           other.completedAtUtc == this.completedAtUtc &&
@@ -490,9 +665,13 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
   final Value<String> id;
   final Value<int> displayNumber;
   final Value<String> title;
+  final Value<String?> description;
   final Value<int> priority;
   final Value<String> status;
   final Value<int> positionInStatus;
+  final Value<DateTime?> startAtUtc;
+  final Value<DateTime?> dueAtUtc;
+  final Value<int?> estimatedDurationMinutes;
   final Value<DateTime> createdAtUtc;
   final Value<DateTime> updatedAtUtc;
   final Value<DateTime?> completedAtUtc;
@@ -502,9 +681,13 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     this.id = const Value.absent(),
     this.displayNumber = const Value.absent(),
     this.title = const Value.absent(),
+    this.description = const Value.absent(),
     this.priority = const Value.absent(),
     this.status = const Value.absent(),
     this.positionInStatus = const Value.absent(),
+    this.startAtUtc = const Value.absent(),
+    this.dueAtUtc = const Value.absent(),
+    this.estimatedDurationMinutes = const Value.absent(),
     this.createdAtUtc = const Value.absent(),
     this.updatedAtUtc = const Value.absent(),
     this.completedAtUtc = const Value.absent(),
@@ -515,9 +698,13 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     required String id,
     required int displayNumber,
     required String title,
+    this.description = const Value.absent(),
     required int priority,
     required String status,
     required int positionInStatus,
+    this.startAtUtc = const Value.absent(),
+    this.dueAtUtc = const Value.absent(),
+    this.estimatedDurationMinutes = const Value.absent(),
     required DateTime createdAtUtc,
     required DateTime updatedAtUtc,
     this.completedAtUtc = const Value.absent(),
@@ -535,9 +722,13 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     Expression<String>? id,
     Expression<int>? displayNumber,
     Expression<String>? title,
+    Expression<String>? description,
     Expression<int>? priority,
     Expression<String>? status,
     Expression<int>? positionInStatus,
+    Expression<DateTime>? startAtUtc,
+    Expression<DateTime>? dueAtUtc,
+    Expression<int>? estimatedDurationMinutes,
     Expression<DateTime>? createdAtUtc,
     Expression<DateTime>? updatedAtUtc,
     Expression<DateTime>? completedAtUtc,
@@ -548,9 +739,14 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
       if (id != null) 'id': id,
       if (displayNumber != null) 'display_number': displayNumber,
       if (title != null) 'title': title,
+      if (description != null) 'description': description,
       if (priority != null) 'priority': priority,
       if (status != null) 'status': status,
       if (positionInStatus != null) 'position_in_status': positionInStatus,
+      if (startAtUtc != null) 'start_at_utc': startAtUtc,
+      if (dueAtUtc != null) 'due_at_utc': dueAtUtc,
+      if (estimatedDurationMinutes != null)
+        'estimated_duration_minutes': estimatedDurationMinutes,
       if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
       if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
       if (completedAtUtc != null) 'completed_at_utc': completedAtUtc,
@@ -563,9 +759,13 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     Value<String>? id,
     Value<int>? displayNumber,
     Value<String>? title,
+    Value<String?>? description,
     Value<int>? priority,
     Value<String>? status,
     Value<int>? positionInStatus,
+    Value<DateTime?>? startAtUtc,
+    Value<DateTime?>? dueAtUtc,
+    Value<int?>? estimatedDurationMinutes,
     Value<DateTime>? createdAtUtc,
     Value<DateTime>? updatedAtUtc,
     Value<DateTime?>? completedAtUtc,
@@ -576,9 +776,14 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
       id: id ?? this.id,
       displayNumber: displayNumber ?? this.displayNumber,
       title: title ?? this.title,
+      description: description ?? this.description,
       priority: priority ?? this.priority,
       status: status ?? this.status,
       positionInStatus: positionInStatus ?? this.positionInStatus,
+      startAtUtc: startAtUtc ?? this.startAtUtc,
+      dueAtUtc: dueAtUtc ?? this.dueAtUtc,
+      estimatedDurationMinutes:
+          estimatedDurationMinutes ?? this.estimatedDurationMinutes,
       createdAtUtc: createdAtUtc ?? this.createdAtUtc,
       updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
       completedAtUtc: completedAtUtc ?? this.completedAtUtc,
@@ -599,6 +804,9 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
     }
@@ -607,6 +815,17 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     }
     if (positionInStatus.present) {
       map['position_in_status'] = Variable<int>(positionInStatus.value);
+    }
+    if (startAtUtc.present) {
+      map['start_at_utc'] = Variable<DateTime>(startAtUtc.value);
+    }
+    if (dueAtUtc.present) {
+      map['due_at_utc'] = Variable<DateTime>(dueAtUtc.value);
+    }
+    if (estimatedDurationMinutes.present) {
+      map['estimated_duration_minutes'] = Variable<int>(
+        estimatedDurationMinutes.value,
+      );
     }
     if (createdAtUtc.present) {
       map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
@@ -632,9 +851,13 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
           ..write('id: $id, ')
           ..write('displayNumber: $displayNumber, ')
           ..write('title: $title, ')
+          ..write('description: $description, ')
           ..write('priority: $priority, ')
           ..write('status: $status, ')
           ..write('positionInStatus: $positionInStatus, ')
+          ..write('startAtUtc: $startAtUtc, ')
+          ..write('dueAtUtc: $dueAtUtc, ')
+          ..write('estimatedDurationMinutes: $estimatedDurationMinutes, ')
           ..write('createdAtUtc: $createdAtUtc, ')
           ..write('updatedAtUtc: $updatedAtUtc, ')
           ..write('completedAtUtc: $completedAtUtc, ')
@@ -3910,9 +4133,13 @@ typedef $$TaskRowsTableCreateCompanionBuilder =
       required String id,
       required int displayNumber,
       required String title,
+      Value<String?> description,
       required int priority,
       required String status,
       required int positionInStatus,
+      Value<DateTime?> startAtUtc,
+      Value<DateTime?> dueAtUtc,
+      Value<int?> estimatedDurationMinutes,
       required DateTime createdAtUtc,
       required DateTime updatedAtUtc,
       Value<DateTime?> completedAtUtc,
@@ -3924,9 +4151,13 @@ typedef $$TaskRowsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<int> displayNumber,
       Value<String> title,
+      Value<String?> description,
       Value<int> priority,
       Value<String> status,
       Value<int> positionInStatus,
+      Value<DateTime?> startAtUtc,
+      Value<DateTime?> dueAtUtc,
+      Value<int?> estimatedDurationMinutes,
       Value<DateTime> createdAtUtc,
       Value<DateTime> updatedAtUtc,
       Value<DateTime?> completedAtUtc,
@@ -3958,6 +4189,11 @@ class $$TaskRowsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get priority => $composableBuilder(
     column: $table.priority,
     builder: (column) => ColumnFilters(column),
@@ -3970,6 +4206,21 @@ class $$TaskRowsTableFilterComposer
 
   ColumnFilters<int> get positionInStatus => $composableBuilder(
     column: $table.positionInStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startAtUtc => $composableBuilder(
+    column: $table.startAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dueAtUtc => $composableBuilder(
+    column: $table.dueAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get estimatedDurationMinutes => $composableBuilder(
+    column: $table.estimatedDurationMinutes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4018,6 +4269,11 @@ class $$TaskRowsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get priority => $composableBuilder(
     column: $table.priority,
     builder: (column) => ColumnOrderings(column),
@@ -4030,6 +4286,21 @@ class $$TaskRowsTableOrderingComposer
 
   ColumnOrderings<int> get positionInStatus => $composableBuilder(
     column: $table.positionInStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startAtUtc => $composableBuilder(
+    column: $table.startAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dueAtUtc => $composableBuilder(
+    column: $table.dueAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get estimatedDurationMinutes => $composableBuilder(
+    column: $table.estimatedDurationMinutes,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4074,6 +4345,11 @@ class $$TaskRowsTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get priority =>
       $composableBuilder(column: $table.priority, builder: (column) => column);
 
@@ -4082,6 +4358,19 @@ class $$TaskRowsTableAnnotationComposer
 
   GeneratedColumn<int> get positionInStatus => $composableBuilder(
     column: $table.positionInStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get startAtUtc => $composableBuilder(
+    column: $table.startAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dueAtUtc =>
+      $composableBuilder(column: $table.dueAtUtc, builder: (column) => column);
+
+  GeneratedColumn<int> get estimatedDurationMinutes => $composableBuilder(
+    column: $table.estimatedDurationMinutes,
     builder: (column) => column,
   );
 
@@ -4137,9 +4426,13 @@ class $$TaskRowsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<int> displayNumber = const Value.absent(),
                 Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<int> priority = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<int> positionInStatus = const Value.absent(),
+                Value<DateTime?> startAtUtc = const Value.absent(),
+                Value<DateTime?> dueAtUtc = const Value.absent(),
+                Value<int?> estimatedDurationMinutes = const Value.absent(),
                 Value<DateTime> createdAtUtc = const Value.absent(),
                 Value<DateTime> updatedAtUtc = const Value.absent(),
                 Value<DateTime?> completedAtUtc = const Value.absent(),
@@ -4149,9 +4442,13 @@ class $$TaskRowsTableTableManager
                 id: id,
                 displayNumber: displayNumber,
                 title: title,
+                description: description,
                 priority: priority,
                 status: status,
                 positionInStatus: positionInStatus,
+                startAtUtc: startAtUtc,
+                dueAtUtc: dueAtUtc,
+                estimatedDurationMinutes: estimatedDurationMinutes,
                 createdAtUtc: createdAtUtc,
                 updatedAtUtc: updatedAtUtc,
                 completedAtUtc: completedAtUtc,
@@ -4163,9 +4460,13 @@ class $$TaskRowsTableTableManager
                 required String id,
                 required int displayNumber,
                 required String title,
+                Value<String?> description = const Value.absent(),
                 required int priority,
                 required String status,
                 required int positionInStatus,
+                Value<DateTime?> startAtUtc = const Value.absent(),
+                Value<DateTime?> dueAtUtc = const Value.absent(),
+                Value<int?> estimatedDurationMinutes = const Value.absent(),
                 required DateTime createdAtUtc,
                 required DateTime updatedAtUtc,
                 Value<DateTime?> completedAtUtc = const Value.absent(),
@@ -4175,9 +4476,13 @@ class $$TaskRowsTableTableManager
                 id: id,
                 displayNumber: displayNumber,
                 title: title,
+                description: description,
                 priority: priority,
                 status: status,
                 positionInStatus: positionInStatus,
+                startAtUtc: startAtUtc,
+                dueAtUtc: dueAtUtc,
+                estimatedDurationMinutes: estimatedDurationMinutes,
                 createdAtUtc: createdAtUtc,
                 updatedAtUtc: updatedAtUtc,
                 completedAtUtc: completedAtUtc,

@@ -141,7 +141,7 @@ void main() {
         paidAt: paymentAt,
       );
 
-      expect(first.schemaVersion, 3);
+      expect(first.schemaVersion, 4);
       await first.close();
 
       final second = AppDatabase(NativeDatabase(file));
@@ -197,7 +197,7 @@ void main() {
     }
   });
 
-  test('file-backed database keeps schema version three', () async {
+  test('file-backed database keeps schema version four', () async {
     final directory = await Directory.systemTemp.createTemp(
       'dashboard-shakhsi-schema-',
     );
@@ -205,16 +205,16 @@ void main() {
 
     try {
       final first = AppDatabase(NativeDatabase(file));
-      expect(first.schemaVersion, 3);
+      expect(first.schemaVersion, 4);
       await first.close();
 
       final reopened = AppDatabase(NativeDatabase(file));
       try {
-        expect(reopened.schemaVersion, 3);
+        expect(reopened.schemaVersion, 4);
         final versionRows = await reopened
             .customSelect('PRAGMA user_version')
             .get();
-        expect(versionRows.single.read<int>('user_version'), 3);
+        expect(versionRows.single.read<int>('user_version'), 4);
       } finally {
         await reopened.close();
       }

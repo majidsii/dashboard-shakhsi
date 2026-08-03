@@ -10,9 +10,13 @@ class TaskRows extends Table {
   TextColumn get id => text()();
   IntColumn get displayNumber => integer().unique()();
   TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
   IntColumn get priority => integer()();
   TextColumn get status => text()();
   IntColumn get positionInStatus => integer()();
+  DateTimeColumn get startAtUtc => dateTime().nullable()();
+  DateTimeColumn get dueAtUtc => dateTime().nullable()();
+  IntColumn get estimatedDurationMinutes => integer().nullable()();
   DateTimeColumn get createdAtUtc => dateTime()();
   DateTimeColumn get updatedAtUtc => dateTime()();
   DateTimeColumn get completedAtUtc => dateTime().nullable()();
@@ -24,6 +28,10 @@ class TaskRows extends Table {
     'CHECK (priority BETWEEN 0 AND 3)',
     "CHECK (status IN ('planned', 'inProgress', 'completed', 'canceled'))",
     'CHECK (position_in_status >= 0)',
+    'CHECK (estimated_duration_minutes IS NULL '
+        'OR estimated_duration_minutes > 0)',
+    'CHECK (start_at_utc IS NULL OR due_at_utc IS NULL '
+        'OR due_at_utc >= start_at_utc)',
     "CHECK ((status = 'completed' AND completed_at_utc IS NOT NULL "
         "AND canceled_at_utc IS NULL) OR "
         "(status = 'canceled' AND canceled_at_utc IS NOT NULL "
@@ -183,7 +191,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -236,6 +244,45 @@ final class AppDatabase extends _$AppDatabase {
           FROM tasks_v2_legacy
         ''');
         await customStatement('DROP TABLE tasks_v2_legacy');
+      }
+      if (from >= 3 && from < 4) {
+        await customStatement('ALTER TABLE tasks RENAME TO tasks_v3_legacy');
+        await migrator.createTable(taskRows);
+        await customStatement('''
+          INSERT INTO tasks (
+            id,
+            display_number,
+            title,
+            description,
+            priority,
+            status,
+            position_in_status,
+            start_at_utc,
+            due_at_utc,
+            estimated_duration_minutes,
+            created_at_utc,
+            updated_at_utc,
+            completed_at_utc,
+            canceled_at_utc
+          )
+          SELECT
+            id,
+            display_number,
+            title,
+            NULL AS description,
+            priority,
+            status,
+            position_in_status,
+            NULL AS start_at_utc,
+            NULL AS due_at_utc,
+            NULL AS estimated_duration_minutes,
+            created_at_utc,
+            updated_at_utc,
+            completed_at_utc,
+            canceled_at_utc
+          FROM tasks_v3_legacy
+        ''');
+        await customStatement('DROP TABLE tasks_v3_legacy');
       }
     },
     beforeOpen: (OpeningDetails details) async {
