@@ -15,8 +15,8 @@ void main() {
     await database.close();
   });
 
-  test('schema version two creates all persistence tables', () async {
-    expect(database.schemaVersion, 2);
+  test('schema version three creates all persistence tables', () async {
+    expect(database.schemaVersion, 3);
 
     final rows = await database
         .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")

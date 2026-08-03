@@ -17,6 +17,18 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _displayNumberMeta = const VerificationMeta(
+    'displayNumber',
+  );
+  @override
+  late final GeneratedColumn<int> displayNumber = GeneratedColumn<int>(
+    'display_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -37,25 +49,21 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _isDoneMeta = const VerificationMeta('isDone');
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<bool> isDone = GeneratedColumn<bool>(
-    'is_done',
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_done" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
   );
-  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
-    'sortOrder',
+  static const VerificationMeta _positionInStatusMeta = const VerificationMeta(
+    'positionInStatus',
   );
   @override
-  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
-    'sort_order',
+  late final GeneratedColumn<int> positionInStatus = GeneratedColumn<int>(
+    'position_in_status',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -95,16 +103,30 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _canceledAtUtcMeta = const VerificationMeta(
+    'canceledAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> canceledAtUtc =
+      GeneratedColumn<DateTime>(
+        'canceled_at_utc',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    displayNumber,
     title,
     priority,
-    isDone,
-    sortOrder,
+    status,
+    positionInStatus,
     createdAtUtc,
     updatedAtUtc,
     completedAtUtc,
+    canceledAtUtc,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -123,6 +145,17 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('display_number')) {
+      context.handle(
+        _displayNumberMeta,
+        displayNumber.isAcceptableOrUnknown(
+          data['display_number']!,
+          _displayNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNumberMeta);
+    }
     if (data.containsKey('title')) {
       context.handle(
         _titleMeta,
@@ -139,19 +172,24 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
     } else if (isInserting) {
       context.missing(_priorityMeta);
     }
-    if (data.containsKey('is_done')) {
+    if (data.containsKey('status')) {
       context.handle(
-        _isDoneMeta,
-        isDone.isAcceptableOrUnknown(data['is_done']!, _isDoneMeta),
-      );
-    }
-    if (data.containsKey('sort_order')) {
-      context.handle(
-        _sortOrderMeta,
-        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
       );
     } else if (isInserting) {
-      context.missing(_sortOrderMeta);
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('position_in_status')) {
+      context.handle(
+        _positionInStatusMeta,
+        positionInStatus.isAcceptableOrUnknown(
+          data['position_in_status']!,
+          _positionInStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_positionInStatusMeta);
     }
     if (data.containsKey('created_at_utc')) {
       context.handle(
@@ -184,6 +222,15 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         ),
       );
     }
+    if (data.containsKey('canceled_at_utc')) {
+      context.handle(
+        _canceledAtUtcMeta,
+        canceledAtUtc.isAcceptableOrUnknown(
+          data['canceled_at_utc']!,
+          _canceledAtUtcMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -197,6 +244,10 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      displayNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}display_number'],
+      )!,
       title: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}title'],
@@ -205,13 +256,13 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         DriftSqlType.int,
         data['${effectivePrefix}priority'],
       )!,
-      isDone: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_done'],
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
       )!,
-      sortOrder: attachedDatabase.typeMapping.read(
+      positionInStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}sort_order'],
+        data['${effectivePrefix}position_in_status'],
       )!,
       createdAtUtc: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -225,6 +276,10 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}completed_at_utc'],
       ),
+      canceledAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}canceled_at_utc'],
+      ),
     );
   }
 
@@ -236,35 +291,43 @@ class $TaskRowsTable extends TaskRows with TableInfo<$TaskRowsTable, TaskRow> {
 
 class TaskRow extends DataClass implements Insertable<TaskRow> {
   final String id;
+  final int displayNumber;
   final String title;
   final int priority;
-  final bool isDone;
-  final int sortOrder;
+  final String status;
+  final int positionInStatus;
   final DateTime createdAtUtc;
   final DateTime updatedAtUtc;
   final DateTime? completedAtUtc;
+  final DateTime? canceledAtUtc;
   const TaskRow({
     required this.id,
+    required this.displayNumber,
     required this.title,
     required this.priority,
-    required this.isDone,
-    required this.sortOrder,
+    required this.status,
+    required this.positionInStatus,
     required this.createdAtUtc,
     required this.updatedAtUtc,
     this.completedAtUtc,
+    this.canceledAtUtc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['display_number'] = Variable<int>(displayNumber);
     map['title'] = Variable<String>(title);
     map['priority'] = Variable<int>(priority);
-    map['is_done'] = Variable<bool>(isDone);
-    map['sort_order'] = Variable<int>(sortOrder);
+    map['status'] = Variable<String>(status);
+    map['position_in_status'] = Variable<int>(positionInStatus);
     map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
     map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
     if (!nullToAbsent || completedAtUtc != null) {
       map['completed_at_utc'] = Variable<DateTime>(completedAtUtc);
+    }
+    if (!nullToAbsent || canceledAtUtc != null) {
+      map['canceled_at_utc'] = Variable<DateTime>(canceledAtUtc);
     }
     return map;
   }
@@ -272,15 +335,19 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
   TaskRowsCompanion toCompanion(bool nullToAbsent) {
     return TaskRowsCompanion(
       id: Value(id),
+      displayNumber: Value(displayNumber),
       title: Value(title),
       priority: Value(priority),
-      isDone: Value(isDone),
-      sortOrder: Value(sortOrder),
+      status: Value(status),
+      positionInStatus: Value(positionInStatus),
       createdAtUtc: Value(createdAtUtc),
       updatedAtUtc: Value(updatedAtUtc),
       completedAtUtc: completedAtUtc == null && nullToAbsent
           ? const Value.absent()
           : Value(completedAtUtc),
+      canceledAtUtc: canceledAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canceledAtUtc),
     );
   }
 
@@ -291,13 +358,15 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return TaskRow(
       id: serializer.fromJson<String>(json['id']),
+      displayNumber: serializer.fromJson<int>(json['displayNumber']),
       title: serializer.fromJson<String>(json['title']),
       priority: serializer.fromJson<int>(json['priority']),
-      isDone: serializer.fromJson<bool>(json['isDone']),
-      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      status: serializer.fromJson<String>(json['status']),
+      positionInStatus: serializer.fromJson<int>(json['positionInStatus']),
       createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
       updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
       completedAtUtc: serializer.fromJson<DateTime?>(json['completedAtUtc']),
+      canceledAtUtc: serializer.fromJson<DateTime?>(json['canceledAtUtc']),
     );
   }
   @override
@@ -305,44 +374,57 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'displayNumber': serializer.toJson<int>(displayNumber),
       'title': serializer.toJson<String>(title),
       'priority': serializer.toJson<int>(priority),
-      'isDone': serializer.toJson<bool>(isDone),
-      'sortOrder': serializer.toJson<int>(sortOrder),
+      'status': serializer.toJson<String>(status),
+      'positionInStatus': serializer.toJson<int>(positionInStatus),
       'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
       'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
       'completedAtUtc': serializer.toJson<DateTime?>(completedAtUtc),
+      'canceledAtUtc': serializer.toJson<DateTime?>(canceledAtUtc),
     };
   }
 
   TaskRow copyWith({
     String? id,
+    int? displayNumber,
     String? title,
     int? priority,
-    bool? isDone,
-    int? sortOrder,
+    String? status,
+    int? positionInStatus,
     DateTime? createdAtUtc,
     DateTime? updatedAtUtc,
     Value<DateTime?> completedAtUtc = const Value.absent(),
+    Value<DateTime?> canceledAtUtc = const Value.absent(),
   }) => TaskRow(
     id: id ?? this.id,
+    displayNumber: displayNumber ?? this.displayNumber,
     title: title ?? this.title,
     priority: priority ?? this.priority,
-    isDone: isDone ?? this.isDone,
-    sortOrder: sortOrder ?? this.sortOrder,
+    status: status ?? this.status,
+    positionInStatus: positionInStatus ?? this.positionInStatus,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
     updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
     completedAtUtc: completedAtUtc.present
         ? completedAtUtc.value
         : this.completedAtUtc,
+    canceledAtUtc: canceledAtUtc.present
+        ? canceledAtUtc.value
+        : this.canceledAtUtc,
   );
   TaskRow copyWithCompanion(TaskRowsCompanion data) {
     return TaskRow(
       id: data.id.present ? data.id.value : this.id,
+      displayNumber: data.displayNumber.present
+          ? data.displayNumber.value
+          : this.displayNumber,
       title: data.title.present ? data.title.value : this.title,
       priority: data.priority.present ? data.priority.value : this.priority,
-      isDone: data.isDone.present ? data.isDone.value : this.isDone,
-      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      status: data.status.present ? data.status.value : this.status,
+      positionInStatus: data.positionInStatus.present
+          ? data.positionInStatus.value
+          : this.positionInStatus,
       createdAtUtc: data.createdAtUtc.present
           ? data.createdAtUtc.value
           : this.createdAtUtc,
@@ -352,6 +434,9 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
       completedAtUtc: data.completedAtUtc.present
           ? data.completedAtUtc.value
           : this.completedAtUtc,
+      canceledAtUtc: data.canceledAtUtc.present
+          ? data.canceledAtUtc.value
+          : this.canceledAtUtc,
     );
   }
 
@@ -359,13 +444,15 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
   String toString() {
     return (StringBuffer('TaskRow(')
           ..write('id: $id, ')
+          ..write('displayNumber: $displayNumber, ')
           ..write('title: $title, ')
           ..write('priority: $priority, ')
-          ..write('isDone: $isDone, ')
-          ..write('sortOrder: $sortOrder, ')
+          ..write('status: $status, ')
+          ..write('positionInStatus: $positionInStatus, ')
           ..write('createdAtUtc: $createdAtUtc, ')
           ..write('updatedAtUtc: $updatedAtUtc, ')
-          ..write('completedAtUtc: $completedAtUtc')
+          ..write('completedAtUtc: $completedAtUtc, ')
+          ..write('canceledAtUtc: $canceledAtUtc')
           ..write(')'))
         .toString();
   }
@@ -373,109 +460,129 @@ class TaskRow extends DataClass implements Insertable<TaskRow> {
   @override
   int get hashCode => Object.hash(
     id,
+    displayNumber,
     title,
     priority,
-    isDone,
-    sortOrder,
+    status,
+    positionInStatus,
     createdAtUtc,
     updatedAtUtc,
     completedAtUtc,
+    canceledAtUtc,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is TaskRow &&
           other.id == this.id &&
+          other.displayNumber == this.displayNumber &&
           other.title == this.title &&
           other.priority == this.priority &&
-          other.isDone == this.isDone &&
-          other.sortOrder == this.sortOrder &&
+          other.status == this.status &&
+          other.positionInStatus == this.positionInStatus &&
           other.createdAtUtc == this.createdAtUtc &&
           other.updatedAtUtc == this.updatedAtUtc &&
-          other.completedAtUtc == this.completedAtUtc);
+          other.completedAtUtc == this.completedAtUtc &&
+          other.canceledAtUtc == this.canceledAtUtc);
 }
 
 class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
   final Value<String> id;
+  final Value<int> displayNumber;
   final Value<String> title;
   final Value<int> priority;
-  final Value<bool> isDone;
-  final Value<int> sortOrder;
+  final Value<String> status;
+  final Value<int> positionInStatus;
   final Value<DateTime> createdAtUtc;
   final Value<DateTime> updatedAtUtc;
   final Value<DateTime?> completedAtUtc;
+  final Value<DateTime?> canceledAtUtc;
   final Value<int> rowid;
   const TaskRowsCompanion({
     this.id = const Value.absent(),
+    this.displayNumber = const Value.absent(),
     this.title = const Value.absent(),
     this.priority = const Value.absent(),
-    this.isDone = const Value.absent(),
-    this.sortOrder = const Value.absent(),
+    this.status = const Value.absent(),
+    this.positionInStatus = const Value.absent(),
     this.createdAtUtc = const Value.absent(),
     this.updatedAtUtc = const Value.absent(),
     this.completedAtUtc = const Value.absent(),
+    this.canceledAtUtc = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TaskRowsCompanion.insert({
     required String id,
+    required int displayNumber,
     required String title,
     required int priority,
-    this.isDone = const Value.absent(),
-    required int sortOrder,
+    required String status,
+    required int positionInStatus,
     required DateTime createdAtUtc,
     required DateTime updatedAtUtc,
     this.completedAtUtc = const Value.absent(),
+    this.canceledAtUtc = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
+       displayNumber = Value(displayNumber),
        title = Value(title),
        priority = Value(priority),
-       sortOrder = Value(sortOrder),
+       status = Value(status),
+       positionInStatus = Value(positionInStatus),
        createdAtUtc = Value(createdAtUtc),
        updatedAtUtc = Value(updatedAtUtc);
   static Insertable<TaskRow> custom({
     Expression<String>? id,
+    Expression<int>? displayNumber,
     Expression<String>? title,
     Expression<int>? priority,
-    Expression<bool>? isDone,
-    Expression<int>? sortOrder,
+    Expression<String>? status,
+    Expression<int>? positionInStatus,
     Expression<DateTime>? createdAtUtc,
     Expression<DateTime>? updatedAtUtc,
     Expression<DateTime>? completedAtUtc,
+    Expression<DateTime>? canceledAtUtc,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (displayNumber != null) 'display_number': displayNumber,
       if (title != null) 'title': title,
       if (priority != null) 'priority': priority,
-      if (isDone != null) 'is_done': isDone,
-      if (sortOrder != null) 'sort_order': sortOrder,
+      if (status != null) 'status': status,
+      if (positionInStatus != null) 'position_in_status': positionInStatus,
       if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
       if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
       if (completedAtUtc != null) 'completed_at_utc': completedAtUtc,
+      if (canceledAtUtc != null) 'canceled_at_utc': canceledAtUtc,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   TaskRowsCompanion copyWith({
     Value<String>? id,
+    Value<int>? displayNumber,
     Value<String>? title,
     Value<int>? priority,
-    Value<bool>? isDone,
-    Value<int>? sortOrder,
+    Value<String>? status,
+    Value<int>? positionInStatus,
     Value<DateTime>? createdAtUtc,
     Value<DateTime>? updatedAtUtc,
     Value<DateTime?>? completedAtUtc,
+    Value<DateTime?>? canceledAtUtc,
     Value<int>? rowid,
   }) {
     return TaskRowsCompanion(
       id: id ?? this.id,
+      displayNumber: displayNumber ?? this.displayNumber,
       title: title ?? this.title,
       priority: priority ?? this.priority,
-      isDone: isDone ?? this.isDone,
-      sortOrder: sortOrder ?? this.sortOrder,
+      status: status ?? this.status,
+      positionInStatus: positionInStatus ?? this.positionInStatus,
       createdAtUtc: createdAtUtc ?? this.createdAtUtc,
       updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
       completedAtUtc: completedAtUtc ?? this.completedAtUtc,
+      canceledAtUtc: canceledAtUtc ?? this.canceledAtUtc,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -486,17 +593,20 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (displayNumber.present) {
+      map['display_number'] = Variable<int>(displayNumber.value);
+    }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
     }
-    if (isDone.present) {
-      map['is_done'] = Variable<bool>(isDone.value);
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
     }
-    if (sortOrder.present) {
-      map['sort_order'] = Variable<int>(sortOrder.value);
+    if (positionInStatus.present) {
+      map['position_in_status'] = Variable<int>(positionInStatus.value);
     }
     if (createdAtUtc.present) {
       map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
@@ -506,6 +616,9 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
     }
     if (completedAtUtc.present) {
       map['completed_at_utc'] = Variable<DateTime>(completedAtUtc.value);
+    }
+    if (canceledAtUtc.present) {
+      map['canceled_at_utc'] = Variable<DateTime>(canceledAtUtc.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -517,13 +630,15 @@ class TaskRowsCompanion extends UpdateCompanion<TaskRow> {
   String toString() {
     return (StringBuffer('TaskRowsCompanion(')
           ..write('id: $id, ')
+          ..write('displayNumber: $displayNumber, ')
           ..write('title: $title, ')
           ..write('priority: $priority, ')
-          ..write('isDone: $isDone, ')
-          ..write('sortOrder: $sortOrder, ')
+          ..write('status: $status, ')
+          ..write('positionInStatus: $positionInStatus, ')
           ..write('createdAtUtc: $createdAtUtc, ')
           ..write('updatedAtUtc: $updatedAtUtc, ')
           ..write('completedAtUtc: $completedAtUtc, ')
+          ..write('canceledAtUtc: $canceledAtUtc, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3793,25 +3908,29 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$TaskRowsTableCreateCompanionBuilder =
     TaskRowsCompanion Function({
       required String id,
+      required int displayNumber,
       required String title,
       required int priority,
-      Value<bool> isDone,
-      required int sortOrder,
+      required String status,
+      required int positionInStatus,
       required DateTime createdAtUtc,
       required DateTime updatedAtUtc,
       Value<DateTime?> completedAtUtc,
+      Value<DateTime?> canceledAtUtc,
       Value<int> rowid,
     });
 typedef $$TaskRowsTableUpdateCompanionBuilder =
     TaskRowsCompanion Function({
       Value<String> id,
+      Value<int> displayNumber,
       Value<String> title,
       Value<int> priority,
-      Value<bool> isDone,
-      Value<int> sortOrder,
+      Value<String> status,
+      Value<int> positionInStatus,
       Value<DateTime> createdAtUtc,
       Value<DateTime> updatedAtUtc,
       Value<DateTime?> completedAtUtc,
+      Value<DateTime?> canceledAtUtc,
       Value<int> rowid,
     });
 
@@ -3829,6 +3948,11 @@ class $$TaskRowsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get displayNumber => $composableBuilder(
+    column: $table.displayNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnFilters(column),
@@ -3839,13 +3963,13 @@ class $$TaskRowsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<bool> get isDone => $composableBuilder(
-    column: $table.isDone,
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get sortOrder => $composableBuilder(
-    column: $table.sortOrder,
+  ColumnFilters<int> get positionInStatus => $composableBuilder(
+    column: $table.positionInStatus,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3861,6 +3985,11 @@ class $$TaskRowsTableFilterComposer
 
   ColumnFilters<DateTime> get completedAtUtc => $composableBuilder(
     column: $table.completedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get canceledAtUtc => $composableBuilder(
+    column: $table.canceledAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3879,6 +4008,11 @@ class $$TaskRowsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get displayNumber => $composableBuilder(
+    column: $table.displayNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnOrderings(column),
@@ -3889,13 +4023,13 @@ class $$TaskRowsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<bool> get isDone => $composableBuilder(
-    column: $table.isDone,
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get sortOrder => $composableBuilder(
-    column: $table.sortOrder,
+  ColumnOrderings<int> get positionInStatus => $composableBuilder(
+    column: $table.positionInStatus,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3913,6 +4047,11 @@ class $$TaskRowsTableOrderingComposer
     column: $table.completedAtUtc,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get canceledAtUtc => $composableBuilder(
+    column: $table.canceledAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$TaskRowsTableAnnotationComposer
@@ -3927,17 +4066,24 @@ class $$TaskRowsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<int> get displayNumber => $composableBuilder(
+    column: $table.displayNumber,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
   GeneratedColumn<int> get priority =>
       $composableBuilder(column: $table.priority, builder: (column) => column);
 
-  GeneratedColumn<bool> get isDone =>
-      $composableBuilder(column: $table.isDone, builder: (column) => column);
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
 
-  GeneratedColumn<int> get sortOrder =>
-      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+  GeneratedColumn<int> get positionInStatus => $composableBuilder(
+    column: $table.positionInStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
     column: $table.createdAtUtc,
@@ -3951,6 +4097,11 @@ class $$TaskRowsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get completedAtUtc => $composableBuilder(
     column: $table.completedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get canceledAtUtc => $composableBuilder(
+    column: $table.canceledAtUtc,
     builder: (column) => column,
   );
 }
@@ -3984,45 +4135,53 @@ class $$TaskRowsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<int> displayNumber = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<int> priority = const Value.absent(),
-                Value<bool> isDone = const Value.absent(),
-                Value<int> sortOrder = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> positionInStatus = const Value.absent(),
                 Value<DateTime> createdAtUtc = const Value.absent(),
                 Value<DateTime> updatedAtUtc = const Value.absent(),
                 Value<DateTime?> completedAtUtc = const Value.absent(),
+                Value<DateTime?> canceledAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TaskRowsCompanion(
                 id: id,
+                displayNumber: displayNumber,
                 title: title,
                 priority: priority,
-                isDone: isDone,
-                sortOrder: sortOrder,
+                status: status,
+                positionInStatus: positionInStatus,
                 createdAtUtc: createdAtUtc,
                 updatedAtUtc: updatedAtUtc,
                 completedAtUtc: completedAtUtc,
+                canceledAtUtc: canceledAtUtc,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
+                required int displayNumber,
                 required String title,
                 required int priority,
-                Value<bool> isDone = const Value.absent(),
-                required int sortOrder,
+                required String status,
+                required int positionInStatus,
                 required DateTime createdAtUtc,
                 required DateTime updatedAtUtc,
                 Value<DateTime?> completedAtUtc = const Value.absent(),
+                Value<DateTime?> canceledAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TaskRowsCompanion.insert(
                 id: id,
+                displayNumber: displayNumber,
                 title: title,
                 priority: priority,
-                isDone: isDone,
-                sortOrder: sortOrder,
+                status: status,
+                positionInStatus: positionInStatus,
                 createdAtUtc: createdAtUtc,
                 updatedAtUtc: updatedAtUtc,
                 completedAtUtc: completedAtUtc,
+                canceledAtUtc: canceledAtUtc,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

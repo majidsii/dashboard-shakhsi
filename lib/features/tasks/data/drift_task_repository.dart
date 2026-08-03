@@ -1,5 +1,4 @@
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
-import 'package:dashboard_shakhsi/core/errors/app_failure.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
@@ -12,45 +11,10 @@ final class DriftTaskRepository implements TaskRepository {
 
   @override
   Stream<List<TaskItem>> watchAll() {
-    final query = _database.select(_database.taskRows)
-      ..orderBy(<OrderingTerm Function(TaskRows)>[
-        (row) => OrderingTerm.asc(row.sortOrder),
-        (row) => OrderingTerm.asc(row.createdAtUtc),
-        (row) => OrderingTerm.asc(row.id),
-      ]);
-
-    return query.watch().map((rows) {
-      final displayRows = rows.toList(growable: false)
-        ..sort((left, right) {
-          final createdAtOrder = left.createdAtUtc.compareTo(
-            right.createdAtUtc,
-          );
-          if (createdAtOrder != 0) {
-            return createdAtOrder;
-          }
-          return left.id.compareTo(right.id);
-        });
-      final displayNumbers = <String, int>{
-        for (final entry in displayRows.indexed) entry.$2.id: entry.$1 + 1,
-      };
-
-      return rows
-          .map(
-            (row) => TaskItem(
-              id: row.id,
-              displayNumber: displayNumbers[row.id]!,
-              title: row.title,
-              priority: row.priority,
-              status: row.isDone ? TaskStatus.completed : TaskStatus.planned,
-              positionInStatus: row.sortOrder,
-              createdAtUtc: row.createdAtUtc.toUtc(),
-              updatedAtUtc: row.updatedAtUtc.toUtc(),
-              completedAtUtc: row.isDone
-                  ? (row.completedAtUtc ?? row.updatedAtUtc).toUtc()
-                  : null,
-            ),
-          )
-          .toList(growable: false);
+    return _database.select(_database.taskRows).watch().map((rows) {
+      final items = rows.map(_taskFromRow).toList(growable: false)
+        ..sort(_compareTasks);
+      return items;
     });
   }
 
@@ -74,9 +38,14 @@ final class DriftTaskRepository implements TaskRepository {
       _database.taskRows,
     )..where((row) => row.id.equals(id))).write(
       TaskRowsCompanion(
-        isDone: Value<bool>(isDone),
+        status: Value<String>(
+          isDone
+              ? TaskStatus.completed.storageValue
+              : TaskStatus.planned.storageValue,
+        ),
         updatedAtUtc: Value<DateTime>(changedAtUtc),
         completedAtUtc: Value<DateTime?>(isDone ? changedAtUtc : null),
+        canceledAtUtc: const Value<DateTime?>(null),
       ),
     );
   }
@@ -91,40 +60,83 @@ final class DriftTaskRepository implements TaskRepository {
   @override
   Future<void> deleteCompleted() async {
     await (_database.delete(
-      _database.taskRows,
-    )..where((row) => row.isDone.equals(true))).go();
+          _database.taskRows,
+        )..where((row) => row.status.equals(TaskStatus.completed.storageValue)))
+        .go();
   }
 
   @override
   Future<void> reorder(List<String> orderedIds) {
     return _database.transaction(() async {
-      for (var index = 0; index < orderedIds.length; index++) {
-        await (_database.update(_database.taskRows)
-              ..where((row) => row.id.equals(orderedIds[index])))
-            .write(TaskRowsCompanion(sortOrder: Value<int>(index)));
+      final rows = await (_database.select(
+        _database.taskRows,
+      )..where((row) => row.id.isIn(orderedIds))).get();
+      final byId = <String, TaskRow>{for (final row in rows) row.id: row};
+      final nextPositionByStatus = <String, int>{};
+
+      for (final id in orderedIds) {
+        final row = byId[id];
+        if (row == null) {
+          continue;
+        }
+        final nextPosition = nextPositionByStatus[row.status] ?? 0;
+        nextPositionByStatus[row.status] = nextPosition + 1;
+
+        await (_database.update(
+          _database.taskRows,
+        )..where((candidate) => candidate.id.equals(id))).write(
+          TaskRowsCompanion(positionInStatus: Value<int>(nextPosition)),
+        );
       }
     });
   }
 }
 
+TaskItem _taskFromRow(TaskRow row) {
+  return TaskItem(
+    id: row.id,
+    displayNumber: row.displayNumber,
+    title: row.title,
+    priority: row.priority,
+    status: TaskStatus.parseStorage(row.status),
+    positionInStatus: row.positionInStatus,
+    createdAtUtc: row.createdAtUtc.toUtc(),
+    updatedAtUtc: row.updatedAtUtc.toUtc(),
+    completedAtUtc: row.completedAtUtc?.toUtc(),
+    canceledAtUtc: row.canceledAtUtc?.toUtc(),
+  );
+}
+
 TaskRowsCompanion _companionFromTask(TaskItem task) {
-  if (task.status == TaskStatus.inProgress ||
-      task.status == TaskStatus.canceled) {
-    throw const ValidationFailure(
-      'این وضعیت کار پس از مهاجرت پایگاه داده قابل ذخیره است.',
-    );
-  }
-
-  final isDone = task.status == TaskStatus.completed;
-
   return TaskRowsCompanion(
     id: Value<String>(task.id),
+    displayNumber: Value<int>(task.displayNumber),
     title: Value<String>(task.title),
     priority: Value<int>(task.priority),
-    isDone: Value<bool>(isDone),
-    sortOrder: Value<int>(task.positionInStatus),
+    status: Value<String>(task.status.storageValue),
+    positionInStatus: Value<int>(task.positionInStatus),
     createdAtUtc: Value<DateTime>(task.createdAtUtc),
     updatedAtUtc: Value<DateTime>(task.updatedAtUtc),
-    completedAtUtc: Value<DateTime?>(isDone ? task.completedAtUtc : null),
+    completedAtUtc: Value<DateTime?>(task.completedAtUtc),
+    canceledAtUtc: Value<DateTime?>(task.canceledAtUtc),
   );
+}
+
+int _compareTasks(TaskItem left, TaskItem right) {
+  final statusOrder = left.status.index.compareTo(right.status.index);
+  if (statusOrder != 0) {
+    return statusOrder;
+  }
+
+  final positionOrder = left.positionInStatus.compareTo(right.positionInStatus);
+  if (positionOrder != 0) {
+    return positionOrder;
+  }
+
+  final createdAtOrder = left.createdAtUtc.compareTo(right.createdAtUtc);
+  if (createdAtOrder != 0) {
+    return createdAtOrder;
+  }
+
+  return left.id.compareTo(right.id);
 }

@@ -129,7 +129,7 @@ void main() {
         paidAt: paymentAt,
       );
 
-      expect(first.schemaVersion, 2);
+      expect(first.schemaVersion, 3);
       await first.close();
 
       final second = AppDatabase(NativeDatabase(file));
@@ -150,13 +150,13 @@ void main() {
             .first;
 
         expect(reopenedTasks.map((task) => task.id).toList(), const <String>[
-          'task-b',
           'task-a',
+          'task-b',
         ]);
-        expect(reopenedTasks.first.isDone, isTrue);
-        expect(reopenedTasks.first.completedAtUtc, changedAt);
-        expect(reopenedTasks.last.title, 'کار ماندگار و ویرایش‌شده');
-        expect(reopenedTasks.last.priority, 2);
+        expect(reopenedTasks.first.title, 'کار ماندگار و ویرایش‌شده');
+        expect(reopenedTasks.first.priority, 2);
+        expect(reopenedTasks.last.isDone, isTrue);
+        expect(reopenedTasks.last.completedAtUtc, changedAt);
 
         expect(reopenedTransactions, hasLength(1));
         expect(reopenedTransactions.single.amount.minorUnits, 123456712345678);
@@ -185,7 +185,7 @@ void main() {
     }
   });
 
-  test('file-backed database keeps schema version two', () async {
+  test('file-backed database keeps schema version three', () async {
     final directory = await Directory.systemTemp.createTemp(
       'dashboard-shakhsi-schema-',
     );
@@ -193,16 +193,16 @@ void main() {
 
     try {
       final first = AppDatabase(NativeDatabase(file));
-      expect(first.schemaVersion, 2);
+      expect(first.schemaVersion, 3);
       await first.close();
 
       final reopened = AppDatabase(NativeDatabase(file));
       try {
-        expect(reopened.schemaVersion, 2);
+        expect(reopened.schemaVersion, 3);
         final versionRows = await reopened
             .customSelect('PRAGMA user_version')
             .get();
-        expect(versionRows.single.read<int>('user_version'), 2);
+        expect(versionRows.single.read<int>('user_version'), 3);
       } finally {
         await reopened.close();
       }

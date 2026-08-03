@@ -8,17 +8,28 @@ class TaskRows extends Table {
   String get tableName => 'tasks';
 
   TextColumn get id => text()();
+  IntColumn get displayNumber => integer().unique()();
   TextColumn get title => text()();
   IntColumn get priority => integer()();
-  BoolColumn get isDone => boolean().withDefault(const Constant(false))();
-  IntColumn get sortOrder => integer()();
+  TextColumn get status => text()();
+  IntColumn get positionInStatus => integer()();
   DateTimeColumn get createdAtUtc => dateTime()();
   DateTimeColumn get updatedAtUtc => dateTime()();
   DateTimeColumn get completedAtUtc => dateTime().nullable()();
+  DateTimeColumn get canceledAtUtc => dateTime().nullable()();
 
   @override
   List<String> get customConstraints => <String>[
+    'CHECK (display_number > 0)',
     'CHECK (priority BETWEEN 0 AND 3)',
+    "CHECK (status IN ('planned', 'inProgress', 'completed', 'canceled'))",
+    'CHECK (position_in_status >= 0)',
+    "CHECK ((status = 'completed' AND completed_at_utc IS NOT NULL "
+        "AND canceled_at_utc IS NULL) OR "
+        "(status = 'canceled' AND canceled_at_utc IS NOT NULL "
+        "AND completed_at_utc IS NULL) OR "
+        "(status IN ('planned', 'inProgress') "
+        "AND completed_at_utc IS NULL AND canceled_at_utc IS NULL))",
   ];
 
   @override
@@ -172,7 +183,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -182,6 +193,49 @@ final class AppDatabase extends _$AppDatabase {
     onUpgrade: (Migrator migrator, int from, int to) async {
       if (from < 2) {
         await migrator.createTable(notificationScheduleRows);
+      }
+      if (from < 3) {
+        await customStatement('ALTER TABLE tasks RENAME TO tasks_v2_legacy');
+        await migrator.createTable(taskRows);
+        await customStatement('''
+          INSERT INTO tasks (
+            id,
+            display_number,
+            title,
+            priority,
+            status,
+            position_in_status,
+            created_at_utc,
+            updated_at_utc,
+            completed_at_utc,
+            canceled_at_utc
+          )
+          SELECT
+            id,
+            ROW_NUMBER() OVER (
+              ORDER BY created_at_utc ASC, id ASC
+            ) AS display_number,
+            title,
+            priority,
+            CASE
+              WHEN is_done = 1 THEN 'completed'
+              ELSE 'planned'
+            END AS status,
+            ROW_NUMBER() OVER (
+              PARTITION BY is_done
+              ORDER BY sort_order ASC, created_at_utc ASC, id ASC
+            ) - 1 AS position_in_status,
+            created_at_utc,
+            updated_at_utc,
+            CASE
+              WHEN is_done = 1
+                THEN COALESCE(completed_at_utc, updated_at_utc)
+              ELSE NULL
+            END AS completed_at_utc,
+            NULL AS canceled_at_utc
+          FROM tasks_v2_legacy
+        ''');
+        await customStatement('DROP TABLE tasks_v2_legacy');
       }
     },
     beforeOpen: (OpeningDetails details) async {
