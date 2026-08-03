@@ -1,4 +1,5 @@
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
+import 'package:dashboard_shakhsi/core/errors/app_failure.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
@@ -97,22 +98,96 @@ final class DriftTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<void> setDone(String id, bool isDone, DateTime changedAt) async {
-    final changedAtUtc = changedAt.toUtc();
+  Future<void> transition({
+    required String id,
+    required TaskStatus status,
+    required int targetPosition,
+    required DateTime changedAtUtc,
+  }) {
+    return _database.transaction(() async {
+      final current = await (_database.select(
+        _database.taskRows,
+      )..where((row) => row.id.equals(id))).getSingleOrNull();
 
-    await (_database.update(
-      _database.taskRows,
-    )..where((row) => row.id.equals(id))).write(
-      TaskRowsCompanion(
-        status: Value<String>(
-          isDone
-              ? TaskStatus.completed.storageValue
-              : TaskStatus.planned.storageValue,
-        ),
-        updatedAtUtc: Value<DateTime>(changedAtUtc),
-        completedAtUtc: Value<DateTime?>(isDone ? changedAtUtc : null),
-        canceledAtUtc: const Value<DateTime?>(null),
-      ),
+      if (current == null) {
+        throw const ValidationFailure('کار موردنظر پیدا نشد.');
+      }
+
+      final sourceStatus = TaskStatus.parseStorage(current.status);
+      final normalizedChangedAt = changedAtUtc.toUtc();
+
+      if (sourceStatus == status) {
+        final sameStatusRows = await _orderedRowsForStatus(status);
+        final remainingIds = sameStatusRows
+            .where((row) => row.id != id)
+            .map((row) => row.id)
+            .toList(growable: true);
+        final clampedPosition = _clampPosition(
+          targetPosition,
+          remainingIds.length,
+        );
+        remainingIds.insert(clampedPosition, id);
+
+        await _writePositionsWithTemporaryOffset(remainingIds);
+        await _writeTransitionedTask(
+          current: current,
+          status: status,
+          positionInStatus: clampedPosition,
+          changedAtUtc: normalizedChangedAt,
+        );
+        return;
+      }
+
+      final sourceIds = (await _orderedRowsForStatus(sourceStatus))
+          .where((row) => row.id != id)
+          .map((row) => row.id)
+          .toList(growable: false);
+      final targetIds = (await _orderedRowsForStatus(
+        status,
+      )).map((row) => row.id).toList(growable: true);
+      final clampedPosition = _clampPosition(targetPosition, targetIds.length);
+      targetIds.insert(clampedPosition, id);
+
+      await _writePositionsWithTemporaryOffset(sourceIds);
+      await _writePositionsWithTemporaryOffset(targetIds);
+      await _writeTransitionedTask(
+        current: current,
+        status: status,
+        positionInStatus: clampedPosition,
+        changedAtUtc: normalizedChangedAt,
+      );
+    });
+  }
+
+  @override
+  Future<void> reorderWithinStatus({
+    required TaskStatus status,
+    required List<String> orderedIds,
+  }) {
+    return _database.transaction(() async {
+      final rows = await _orderedRowsForStatus(status);
+      final currentIds = rows.map((row) => row.id).toList(growable: false);
+      final suppliedIds = orderedIds.toSet();
+
+      if (suppliedIds.length != orderedIds.length ||
+          orderedIds.length != currentIds.length ||
+          !suppliedIds.containsAll(currentIds)) {
+        throw const ValidationFailure(
+          'فهرست مرتب‌سازی کارها کامل و معتبر نیست.',
+        );
+      }
+
+      await _writePositionsWithTemporaryOffset(orderedIds);
+    });
+  }
+
+  @override
+  Future<void> setDone(String id, bool isDone, DateTime changedAt) {
+    return transition(
+      id: id,
+      status: isDone ? TaskStatus.completed : TaskStatus.planned,
+      targetPosition: 0,
+      changedAtUtc: changedAt,
     );
   }
 
@@ -155,6 +230,64 @@ final class DriftTaskRepository implements TaskRepository {
         );
       }
     });
+  }
+
+  Future<List<TaskRow>> _orderedRowsForStatus(TaskStatus status) {
+    final query = _database.select(_database.taskRows)
+      ..where((row) => row.status.equals(status.storageValue))
+      ..orderBy(<OrderingTerm Function(TaskRows)>[
+        (row) => OrderingTerm.asc(row.positionInStatus),
+        (row) => OrderingTerm.asc(row.createdAtUtc),
+        (row) => OrderingTerm.asc(row.id),
+      ]);
+    return query.get();
+  }
+
+  Future<void> _writePositionsWithTemporaryOffset(
+    List<String> orderedIds,
+  ) async {
+    if (orderedIds.isEmpty) {
+      return;
+    }
+
+    final temporaryOffset = 1000000 + orderedIds.length;
+    for (var index = 0; index < orderedIds.length; index++) {
+      await (_database.update(
+        _database.taskRows,
+      )..where((row) => row.id.equals(orderedIds[index]))).write(
+        TaskRowsCompanion(
+          positionInStatus: Value<int>(temporaryOffset + index),
+        ),
+      );
+    }
+
+    for (var index = 0; index < orderedIds.length; index++) {
+      await (_database.update(_database.taskRows)
+            ..where((row) => row.id.equals(orderedIds[index])))
+          .write(TaskRowsCompanion(positionInStatus: Value<int>(index)));
+    }
+  }
+
+  Future<void> _writeTransitionedTask({
+    required TaskRow current,
+    required TaskStatus status,
+    required int positionInStatus,
+    required DateTime changedAtUtc,
+  }) async {
+    final completedAtUtc = status == TaskStatus.completed ? changedAtUtc : null;
+    final canceledAtUtc = status == TaskStatus.canceled ? changedAtUtc : null;
+
+    await (_database.update(
+      _database.taskRows,
+    )..where((row) => row.id.equals(current.id))).write(
+      TaskRowsCompanion(
+        status: Value<String>(status.storageValue),
+        positionInStatus: Value<int>(positionInStatus),
+        updatedAtUtc: Value<DateTime>(changedAtUtc),
+        completedAtUtc: Value<DateTime?>(completedAtUtc),
+        canceledAtUtc: Value<DateTime?>(canceledAtUtc),
+      ),
+    );
   }
 }
 
@@ -209,4 +342,14 @@ int _compareTasks(TaskItem left, TaskItem right) {
   }
 
   return left.id.compareTo(right.id);
+}
+
+int _clampPosition(int requested, int maximum) {
+  if (requested < 0) {
+    return 0;
+  }
+  if (requested > maximum) {
+    return maximum;
+  }
+  return requested;
 }

@@ -12,6 +12,18 @@ abstract interface class TaskRepository {
 
   Future<void> update(TaskItem task);
 
+  Future<void> transition({
+    required String id,
+    required TaskStatus status,
+    required int targetPosition,
+    required DateTime changedAtUtc,
+  });
+
+  Future<void> reorderWithinStatus({
+    required TaskStatus status,
+    required List<String> orderedIds,
+  });
+
   Future<void> setDone(String id, bool isDone, DateTime changedAt);
 
   Future<void> delete(String id);

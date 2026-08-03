@@ -243,24 +243,129 @@ final class _MemoryTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<void> setDone(String id, bool isDone, DateTime changedAt) async {
+  Future<void> transition({
+    required String id,
+    required TaskStatus status,
+    required int targetPosition,
+    required DateTime changedAtUtc,
+  }) async {
     final index = _items.indexWhere((item) => item.id == id);
-    if (index == -1) return;
+    if (index == -1) {
+      throw StateError('Task not found: $id');
+    }
 
     final current = _items[index];
-    final changedAtUtc = changedAt.toUtc();
-    _items[index] = TaskItem(
-      id: current.id,
-      displayNumber: current.displayNumber,
-      title: current.title,
-      priority: current.priority,
-      status: isDone ? TaskStatus.completed : TaskStatus.planned,
-      positionInStatus: current.positionInStatus,
-      createdAtUtc: current.createdAtUtc,
-      updatedAtUtc: changedAtUtc,
-      completedAtUtc: isDone ? changedAtUtc : null,
-    );
+    final sourceStatus = current.status;
+    final normalizedChangedAt = changedAtUtc.toUtc();
+    final remaining = _items.where((item) => item.id != id).toList();
+
+    List<TaskItem> ordered(TaskStatus candidate) {
+      final result = remaining
+          .where((item) => item.status == candidate)
+          .toList(growable: true);
+      result.sort(
+        (left, right) =>
+            left.positionInStatus.compareTo(right.positionInStatus),
+      );
+      return result;
+    }
+
+    TaskItem transitioned;
+    switch (status) {
+      case TaskStatus.completed:
+        transitioned = current.copyWith(
+          status: status,
+          updatedAtUtc: normalizedChangedAt,
+          completedAtUtc: normalizedChangedAt,
+          clearCanceledAt: true,
+        );
+        break;
+      case TaskStatus.canceled:
+        transitioned = current.copyWith(
+          status: status,
+          updatedAtUtc: normalizedChangedAt,
+          canceledAtUtc: normalizedChangedAt,
+          clearCompletedAt: true,
+        );
+        break;
+      case TaskStatus.planned:
+      case TaskStatus.inProgress:
+        transitioned = current.copyWith(
+          status: status,
+          updatedAtUtc: normalizedChangedAt,
+          clearCompletedAt: true,
+          clearCanceledAt: true,
+        );
+        break;
+    }
+
+    final targetItems = ordered(status);
+    final clampedPosition = targetPosition < 0
+        ? 0
+        : targetPosition > targetItems.length
+        ? targetItems.length
+        : targetPosition;
+    targetItems.insert(clampedPosition, transitioned);
+
+    final normalizedTarget = <TaskItem>[
+      for (final entry in targetItems.indexed)
+        entry.$2.copyWith(positionInStatus: entry.$1),
+    ];
+    final normalizedSource = sourceStatus == status
+        ? const <TaskItem>[]
+        : <TaskItem>[
+            for (final entry in ordered(sourceStatus).indexed)
+              entry.$2.copyWith(positionInStatus: entry.$1),
+          ];
+
+    _items = <TaskItem>[
+      ...remaining.where(
+        (item) => item.status != status && item.status != sourceStatus,
+      ),
+      ...normalizedSource,
+      ...normalizedTarget,
+    ];
     _emit();
+  }
+
+  @override
+  Future<void> reorderWithinStatus({
+    required TaskStatus status,
+    required List<String> orderedIds,
+  }) async {
+    final current = _items
+        .where((item) => item.status == status)
+        .toList(growable: false);
+    final currentIds = current.map((item) => item.id).toSet();
+    final suppliedIds = orderedIds.toSet();
+
+    if (suppliedIds.length != orderedIds.length ||
+        orderedIds.length != current.length ||
+        !suppliedIds.containsAll(currentIds)) {
+      throw StateError('Invalid task reorder inventory.');
+    }
+
+    final byId = <String, TaskItem>{for (final item in current) item.id: item};
+    final reordered = <TaskItem>[
+      for (final entry in orderedIds.indexed)
+        byId[entry.$2]!.copyWith(positionInStatus: entry.$1),
+    ];
+
+    _items = <TaskItem>[
+      ..._items.where((item) => item.status != status),
+      ...reordered,
+    ];
+    _emit();
+  }
+
+  @override
+  Future<void> setDone(String id, bool isDone, DateTime changedAt) {
+    return transition(
+      id: id,
+      status: isDone ? TaskStatus.completed : TaskStatus.planned,
+      targetPosition: 0,
+      changedAtUtc: changedAt,
+    );
   }
 
   @override
