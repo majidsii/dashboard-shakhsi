@@ -2,6 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+Status: **Implemented and freshly verified**  
+Checkpoint: [Task 2.1 status and ordering evidence](../checkpoints/2026-08-02-task-2-1-status-ordering-checkpoint.md)
+
 **Goal:** Replace boolean completion and global task ordering with a durable four-status model, immutable display numbers, independent per-status positions, and deterministic schema-version-3 migration while preserving the current Tasks panel.
 
 **Architecture:** Add the TaskStatus storage contract first, then introduce the v2 TaskItem domain, rebuild the Drift tasks table in an append-only migration, map the repository to the new schema, add transactional transition/reorder operations, and finally adapt the current UI through compatibility behavior. Database and ordering changes remain isolated behind TaskRepository.
@@ -571,12 +574,12 @@ git commit -m "feat: preserve task panel on status model"
 - Consumes all Gate 2.1.1–2.1.6 commits and fresh verification logs
 - Produces exact Task 2.1 completion evidence
 
-- [ ] **Step 1: Run focused cross-gate suite**
+- [x] **Step 1: Run focused cross-gate suite**
 
 Include status, TaskItem, migration, restart, repository, transition, provider,
 and dashboard tests.
 
-- [ ] **Step 2: Run fresh project verification**
+- [x] **Step 2: Run fresh project verification**
 
 ```bash
 flutter analyze 2>&1 | tee /tmp/task2-1-analyze.log
@@ -585,7 +588,7 @@ flutter build linux --debug 2>&1 | tee /tmp/task2-1-build.log
 git diff --check
 ```
 
-- [ ] **Step 3: Generate checkpoint**
+- [x] **Step 3: Generate checkpoint**
 
 Checkpoint records:
 
@@ -600,13 +603,13 @@ Checkpoint records:
 - unchanged current UI behavior;
 - explicit non-completion of the remainder of Phase 2.
 
-- [ ] **Step 4: Verify checkpoint**
+- [x] **Step 4: Verify checkpoint**
 
 ```bash
 python3 tool/verify_phase2_task2_1_complete.py
 ```
 
-- [ ] **Step 5: Commit and push**
+- [x] **Step 5: Commit and push**
 
 ```bash
 git commit -m "test: checkpoint task status ordering foundation"
