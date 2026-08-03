@@ -24,11 +24,7 @@ abstract interface class TaskRepository {
     required List<String> orderedIds,
   });
 
-  Future<void> setDone(String id, bool isDone, DateTime changedAt);
-
   Future<void> delete(String id);
 
   Future<void> deleteCompleted();
-
-  Future<void> reorder(List<String> orderedIds);
 }

@@ -182,20 +182,25 @@ final class DriftTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<void> setDone(String id, bool isDone, DateTime changedAt) {
-    return transition(
-      id: id,
-      status: isDone ? TaskStatus.completed : TaskStatus.planned,
-      targetPosition: 0,
-      changedAtUtc: changedAt,
-    );
-  }
+  Future<void> delete(String id) {
+    return _database.transaction(() async {
+      final current = await (_database.select(
+        _database.taskRows,
+      )..where((row) => row.id.equals(id))).getSingleOrNull();
+      if (current == null) {
+        return;
+      }
 
-  @override
-  Future<void> delete(String id) async {
-    await (_database.delete(
-      _database.taskRows,
-    )..where((row) => row.id.equals(id))).go();
+      final status = TaskStatus.parseStorage(current.status);
+      await (_database.delete(
+        _database.taskRows,
+      )..where((row) => row.id.equals(id))).go();
+
+      final remainingIds = (await _orderedRowsForStatus(
+        status,
+      )).map((row) => row.id).toList(growable: false);
+      await _writePositionsWithTemporaryOffset(remainingIds);
+    });
   }
 
   @override
@@ -204,32 +209,6 @@ final class DriftTaskRepository implements TaskRepository {
           _database.taskRows,
         )..where((row) => row.status.equals(TaskStatus.completed.storageValue)))
         .go();
-  }
-
-  @override
-  Future<void> reorder(List<String> orderedIds) {
-    return _database.transaction(() async {
-      final rows = await (_database.select(
-        _database.taskRows,
-      )..where((row) => row.id.isIn(orderedIds))).get();
-      final byId = <String, TaskRow>{for (final row in rows) row.id: row};
-      final nextPositionByStatus = <String, int>{};
-
-      for (final id in orderedIds) {
-        final row = byId[id];
-        if (row == null) {
-          continue;
-        }
-        final nextPosition = nextPositionByStatus[row.status] ?? 0;
-        nextPositionByStatus[row.status] = nextPosition + 1;
-
-        await (_database.update(
-          _database.taskRows,
-        )..where((candidate) => candidate.id.equals(id))).write(
-          TaskRowsCompanion(positionInStatus: Value<int>(nextPosition)),
-        );
-      }
-    });
   }
 
   Future<List<TaskRow>> _orderedRowsForStatus(TaskStatus status) {

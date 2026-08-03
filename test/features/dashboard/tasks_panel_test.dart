@@ -3,6 +3,8 @@ import 'package:dashboard_shakhsi/app/widgets/original_glass.dart';
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/dashboard/presentation/widgets/tasks_panel.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -67,10 +69,10 @@ void main() {
     );
 
     expect(find.text('تکمیل گزارش ماهانه'), findsOneWidget);
-    expect(find.byKey(const ValueKey<String>('task-number-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey<String>('task-number-1')), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byKey(const ValueKey<String>('task-number-0')),
+        of: find.byKey(const ValueKey<String>('task-number-1')),
         matching: find.text('۱'),
       ),
       findsOneWidget,
@@ -129,5 +131,73 @@ void main() {
 
     expect(find.text('کار قابل حذف'), findsNothing);
     expect(find.text('هنوز کاری اضافه نکرده‌اید'), findsOneWidget);
+  });
+
+  testWidgets('current panel excludes canceled from rows counts and progress', (
+    tester,
+  ) async {
+    final repository = container.read(taskRepositoryProvider);
+    final now = DateTime.utc(2026, 7, 26, 8);
+
+    await repository.create(
+      TaskItem(
+        id: 'planned',
+        displayNumber: 1,
+        title: 'برنامه واقعی',
+        priority: 3,
+        status: TaskStatus.planned,
+        positionInStatus: 0,
+        createdAtUtc: now,
+        updatedAtUtc: now,
+      ),
+    );
+    await repository.create(
+      TaskItem(
+        id: 'working',
+        displayNumber: 2,
+        title: 'اجرای واقعی',
+        priority: 0,
+        status: TaskStatus.inProgress,
+        positionInStatus: 0,
+        createdAtUtc: now.add(const Duration(minutes: 1)),
+        updatedAtUtc: now.add(const Duration(minutes: 1)),
+      ),
+    );
+    await repository.create(
+      TaskItem(
+        id: 'done',
+        displayNumber: 3,
+        title: 'پایان واقعی',
+        priority: 0,
+        status: TaskStatus.completed,
+        positionInStatus: 0,
+        createdAtUtc: now.add(const Duration(minutes: 2)),
+        updatedAtUtc: now.add(const Duration(minutes: 2)),
+        completedAtUtc: now.add(const Duration(minutes: 2)),
+      ),
+    );
+    await repository.create(
+      TaskItem(
+        id: 'canceled',
+        displayNumber: 4,
+        title: 'لغو واقعی و مخفی',
+        priority: 3,
+        status: TaskStatus.canceled,
+        positionInStatus: 0,
+        createdAtUtc: now.add(const Duration(minutes: 3)),
+        updatedAtUtc: now.add(const Duration(minutes: 3)),
+        canceledAtUtc: now.add(const Duration(minutes: 3)),
+      ),
+    );
+
+    await tester.pumpWidget(subject());
+    await tester.pumpAndSettle();
+
+    expect(find.text('برنامه واقعی'), findsOneWidget);
+    expect(find.text('اجرای واقعی'), findsOneWidget);
+    expect(find.text('پایان واقعی'), findsOneWidget);
+    expect(find.text('لغو واقعی و مخفی'), findsNothing);
+    expect(find.text('۲ فعال · ۱ انجام‌شده'), findsOneWidget);
+    expect(find.text('۲ کار باقی مانده · ۱ با اولویت بالا'), findsOneWidget);
   });
 }

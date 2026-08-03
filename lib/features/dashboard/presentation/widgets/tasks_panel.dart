@@ -41,12 +41,15 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     final palette = OriginalPalette.of(context);
     final tasksAsync = ref.watch(taskItemsProvider);
     final tasks = tasksAsync.asData?.value ?? const <TaskItem>[];
-    final doneCount = tasks.where((task) => task.done).length;
-    final activeCount = tasks.length - doneCount;
-    final highActiveCount = tasks
-        .where((task) => !task.done && task.priority == 3)
+    final panelTasks = tasks
+        .where((task) => task.status != TaskStatus.canceled)
+        .toList(growable: false);
+    final doneCount = panelTasks.where((task) => task.isDone).length;
+    final activeCount = panelTasks.where((task) => task.isActive).length;
+    final highActiveCount = panelTasks
+        .where((task) => task.isActive && task.priority == 3)
         .length;
-    final visibleTasks = _filteredTasks(tasks);
+    final visibleTasks = _filteredTasks(panelTasks);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,7 +88,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
                     const SizedBox(height: 9),
                     Text(
                       _statusText(
-                        total: tasks.length,
+                        total: panelTasks.length,
                         done: doneCount,
                         highActive: highActiveCount,
                       ),
@@ -100,7 +103,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
                   ],
                 ),
               ),
-              _ProgressRing(done: doneCount, total: tasks.length),
+              _ProgressRing(done: doneCount, total: panelTasks.length),
             ],
           ),
         ),
@@ -125,7 +128,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
                       controller: _newTaskController,
                       hintText: 'یک کار جدید بنویسید…',
                       pill: true,
-                      onSubmitted: (_) => unawaited(_addTask(tasks)),
+                      onSubmitted: (_) => unawaited(_addTask()),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -139,7 +142,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
                   OriginalPrimaryButton(
                     square: true,
                     icon: Icons.add_rounded,
-                    onPressed: () => unawaited(_addTask(tasks)),
+                    onPressed: () => unawaited(_addTask()),
                   ),
                 ],
               ),
@@ -149,16 +152,16 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         const SizedBox(height: 14),
         _TaskFilterPills(
           selected: _filter,
-          total: tasks.length,
+          total: panelTasks.length,
           active: activeCount,
-          high: tasks.where((task) => task.priority == 3).length,
+          high: panelTasks.where((task) => task.priority == 3).length,
           done: doneCount,
           onSelected: (value) => setState(() => _filter = value),
         ),
         const SizedBox(height: 14),
         if (visibleTasks.isEmpty)
           _EmptyTasks(
-            hasTasks: tasks.isNotEmpty,
+            hasTasks: panelTasks.isNotEmpty,
             hasQuery: _searchController.text.trim().isNotEmpty,
             filter: _filter,
           )
@@ -168,7 +171,6 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
               padding: const EdgeInsets.only(bottom: 9),
               child: _TaskRow(
                 key: ValueKey<String>(entry.$2.id),
-                index: entry.$1,
                 task: entry.$2,
                 removing: _removingTaskIds.contains(entry.$2.id),
                 onToggle: () => unawaited(_toggleTask(entry.$2)),
@@ -178,7 +180,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
               ),
             ),
           ),
-        if (tasks.isNotEmpty) ...<Widget>[
+        if (panelTasks.isNotEmpty) ...<Widget>[
           const SizedBox(height: 9),
           Container(height: 1, color: palette.line),
           const SizedBox(height: 14),
@@ -245,7 +247,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         '${highActive == 0 ? '' : ' · ${_fa(highActive)} با اولویت بالا'}';
   }
 
-  Future<void> _addTask(List<TaskItem> tasks) async {
+  Future<void> _addTask() async {
     final title = _newTaskController.text.trim();
     if (title.isEmpty) return;
 
@@ -256,12 +258,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     await repository.create(
       TaskItem(
         id: id,
-        displayNumber:
-            tasks.fold<int>(
-              0,
-              (highest, task) => math.max(highest, task.displayNumber),
-            ) +
-            1,
+        displayNumber: 1,
         title: title,
         priority: _priority,
         status: TaskStatus.planned,
@@ -270,10 +267,12 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         updatedAtUtc: now,
       ),
     );
-    await repository.reorder(<String>[
-      id,
-      ...tasks.where((task) => task.id != id).map((task) => task.id),
-    ]);
+    await repository.transition(
+      id: id,
+      status: TaskStatus.planned,
+      targetPosition: 0,
+      changedAtUtc: now,
+    );
 
     if (mounted) {
       _newTaskController.clear();
@@ -281,9 +280,17 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
   }
 
   Future<void> _toggleTask(TaskItem task) {
+    final targetStatus = task.status == TaskStatus.completed
+        ? TaskStatus.planned
+        : TaskStatus.completed;
     return ref
         .read(taskRepositoryProvider)
-        .setDone(task.id, !task.isDone, DateTime.now().toUtc());
+        .transition(
+          id: task.id,
+          status: targetStatus,
+          targetPosition: 0,
+          changedAtUtc: DateTime.now().toUtc(),
+        );
   }
 
   Future<void> _changePriority(TaskItem task) {
@@ -758,7 +765,6 @@ final class _TaskFilterPills extends StatelessWidget {
 
 final class _TaskRow extends StatefulWidget {
   const _TaskRow({
-    required this.index,
     required this.task,
     required this.removing,
     required this.onToggle,
@@ -768,7 +774,6 @@ final class _TaskRow extends StatefulWidget {
     super.key,
   });
 
-  final int index;
   final TaskItem task;
   final bool removing;
   final VoidCallback onToggle;
@@ -876,7 +881,7 @@ final class _TaskRowState extends State<_TaskRow> {
                 children: <Widget>[
                   _TaskCheck(done: task.done, onPressed: widget.onToggle),
                   const SizedBox(width: 11),
-                  _TaskNumber(index: widget.index),
+                  _TaskNumber(displayNumber: task.displayNumber),
                   const SizedBox(width: 9),
                   Expanded(
                     child: _editing
@@ -1044,15 +1049,15 @@ final class _TaskCheck extends StatelessWidget {
 }
 
 final class _TaskNumber extends StatelessWidget {
-  const _TaskNumber({required this.index});
+  const _TaskNumber({required this.displayNumber});
 
-  final int index;
+  final int displayNumber;
 
   @override
   Widget build(BuildContext context) {
     final palette = OriginalPalette.of(context);
     return Container(
-      key: ValueKey<String>('task-number-$index'),
+      key: ValueKey<String>('task-number-$displayNumber'),
       width: 24,
       height: 24,
       alignment: Alignment.center,
@@ -1062,7 +1067,7 @@ final class _TaskNumber extends StatelessWidget {
         border: Border.all(color: palette.hair),
       ),
       child: Text(
-        _fa(index + 1),
+        _fa(displayNumber),
         style: TextStyle(
           color: palette.muted,
           fontSize: 11.5,

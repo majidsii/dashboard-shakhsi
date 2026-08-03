@@ -80,7 +80,7 @@ void main() {
     expect(find.text('تسک ذخیره‌شده'), findsOneWidget);
     expect(find.text('۱ کار باقی مانده · ۱ با اولویت بالا'), findsOneWidget);
     expect(find.text('۱ فعال · ۰ انجام‌شده'), findsOneWidget);
-    expect(find.byKey(const ValueKey<String>('task-number-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey<String>('task-number-1')), findsOneWidget);
   });
 
   testWidgets('adding a task calls the repository', (tester) async {
@@ -138,6 +138,191 @@ void main() {
     expect(repository.items, isEmpty);
   });
 
+  testWidgets(
+    'counts planned and in-progress as active and hides canceled tasks',
+    (tester) async {
+      final now = DateTime.utc(2026, 7, 26, 9);
+      repository.seed(<TaskItem>[
+        _task(
+          id: 'planned',
+          displayNumber: 1,
+          title: 'برنامه‌ریزی‌شده',
+          status: TaskStatus.planned,
+          priority: 3,
+          position: 0,
+          now: now,
+        ),
+        _task(
+          id: 'in-progress',
+          displayNumber: 2,
+          title: 'در حال انجام',
+          status: TaskStatus.inProgress,
+          position: 0,
+          now: now.add(const Duration(minutes: 1)),
+        ),
+        _task(
+          id: 'completed',
+          displayNumber: 3,
+          title: 'تکمیل‌شده',
+          status: TaskStatus.completed,
+          position: 0,
+          now: now.add(const Duration(minutes: 2)),
+        ),
+        _task(
+          id: 'canceled',
+          displayNumber: 4,
+          title: 'لغوشده و مخفی',
+          status: TaskStatus.canceled,
+          position: 0,
+          now: now.add(const Duration(minutes: 3)),
+        ),
+      ]);
+
+      await pumpSubject(tester);
+
+      expect(find.text('برنامه‌ریزی‌شده'), findsOneWidget);
+      expect(find.text('در حال انجام'), findsOneWidget);
+      expect(find.text('تکمیل‌شده'), findsOneWidget);
+      expect(find.text('لغوشده و مخفی'), findsNothing);
+      expect(find.text('۲ فعال · ۱ انجام‌شده'), findsOneWidget);
+      expect(find.text('۲ کار باقی مانده · ۱ با اولویت بالا'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey<String>('task-number-1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('task-number-2')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey<String>('task-number-3')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey<String>('task-number-4')), findsNothing);
+    },
+  );
+
+  testWidgets('add creates planned then moves it to position zero', (
+    tester,
+  ) async {
+    final now = DateTime.utc(2026, 7, 26, 10);
+    repository.seed(<TaskItem>[
+      _task(
+        id: 'existing',
+        displayNumber: 1,
+        title: 'کار قبلی',
+        status: TaskStatus.planned,
+        position: 0,
+        now: now,
+      ),
+    ]);
+
+    await pumpSubject(tester);
+    await tester.enterText(
+      textFieldWithHint('یک کار جدید بنویسید…'),
+      'کار جدید در ابتدای ستون',
+    );
+    await tester.tap(find.byIcon(Icons.add_rounded));
+    await flushUiAction(tester);
+
+    expect(repository.createdTasks, hasLength(1));
+    expect(repository.createdTasks.single.status, TaskStatus.planned);
+    expect(repository.transitionCalls, hasLength(1));
+    expect(repository.transitionCalls.single.status, TaskStatus.planned);
+    expect(repository.transitionCalls.single.targetPosition, 0);
+
+    final added = repository.items.singleWhere(
+      (item) => item.title == 'کار جدید در ابتدای ستون',
+    );
+    final existing = repository.items.singleWhere(
+      (item) => item.id == 'existing',
+    );
+    expect(added.positionInStatus, 0);
+    expect(existing.positionInStatus, 1);
+  });
+
+  testWidgets('in-progress toggles to completed through transition', (
+    tester,
+  ) async {
+    final now = DateTime.utc(2026, 7, 26, 11);
+    repository.seed(<TaskItem>[
+      _task(
+        id: 'working',
+        displayNumber: 1,
+        title: 'کار جاری',
+        status: TaskStatus.inProgress,
+        position: 0,
+        now: now,
+      ),
+    ]);
+
+    await pumpSubject(tester);
+    await tester.tap(find.bySemanticsLabel('علامت به عنوان انجام‌شده'));
+    await flushUiAction(tester);
+
+    expect(repository.transitionCalls.single.status, TaskStatus.completed);
+    expect(repository.transitionCalls.single.targetPosition, 0);
+    expect(repository.items.single.status, TaskStatus.completed);
+  });
+
+  testWidgets('completed toggles back to planned through transition', (
+    tester,
+  ) async {
+    final now = DateTime.utc(2026, 7, 26, 12);
+    repository.seed(<TaskItem>[
+      _task(
+        id: 'done',
+        displayNumber: 1,
+        title: 'کار تمام‌شده',
+        status: TaskStatus.completed,
+        position: 0,
+        now: now,
+      ),
+    ]);
+
+    await pumpSubject(tester);
+    await tester.tap(find.bySemanticsLabel('علامت به عنوان انجام‌نشده'));
+    await flushUiAction(tester);
+
+    expect(repository.transitionCalls.single.status, TaskStatus.planned);
+    expect(repository.transitionCalls.single.targetPosition, 0);
+    expect(repository.items.single.status, TaskStatus.planned);
+  });
+
+  testWidgets('delete completed preserves canceled persisted tasks', (
+    tester,
+  ) async {
+    final now = DateTime.utc(2026, 7, 26, 13);
+    repository.seed(<TaskItem>[
+      _task(
+        id: 'done',
+        displayNumber: 1,
+        title: 'قابل پاک‌سازی',
+        status: TaskStatus.completed,
+        position: 0,
+        now: now,
+      ),
+      _task(
+        id: 'canceled',
+        displayNumber: 2,
+        title: 'لغوشده باقی‌مانده',
+        status: TaskStatus.canceled,
+        position: 0,
+        now: now.add(const Duration(minutes: 1)),
+      ),
+    ]);
+
+    await pumpSubject(tester);
+    await tester.tap(find.bySemanticsLabel('پاک کردن انجام‌شده‌ها'));
+    await flushUiAction(tester);
+
+    expect(repository.items, hasLength(1));
+    expect(repository.items.single.status, TaskStatus.canceled);
+    expect(find.text('قابل پاک‌سازی'), findsNothing);
+    expect(find.text('لغوشده باقی‌مانده'), findsNothing);
+    expect(find.text('هنوز کاری اضافه نکرده‌اید'), findsOneWidget);
+  });
+
   testWidgets('remount reads the current repository state', (tester) async {
     await pumpSubject(tester);
 
@@ -156,11 +341,50 @@ void main() {
   });
 }
 
+TaskItem _task({
+  required String id,
+  required int displayNumber,
+  required String title,
+  required TaskStatus status,
+  required int position,
+  required DateTime now,
+  int priority = 0,
+}) {
+  return TaskItem(
+    id: id,
+    displayNumber: displayNumber,
+    title: title,
+    priority: priority,
+    status: status,
+    positionInStatus: position,
+    createdAtUtc: now,
+    updatedAtUtc: now,
+    completedAtUtc: status == TaskStatus.completed ? now : null,
+    canceledAtUtc: status == TaskStatus.canceled ? now : null,
+  );
+}
+
+final class _TransitionCall {
+  const _TransitionCall({
+    required this.id,
+    required this.status,
+    required this.targetPosition,
+    required this.changedAtUtc,
+  });
+
+  final String id;
+  final TaskStatus status;
+  final int targetPosition;
+  final DateTime changedAtUtc;
+}
+
 final class _MemoryTaskRepository implements TaskRepository {
   final StreamController<List<TaskItem>> _controller =
       StreamController<List<TaskItem>>.broadcast(sync: true);
 
   List<TaskItem> _items = <TaskItem>[];
+  final List<TaskItem> createdTasks = <TaskItem>[];
+  final List<_TransitionCall> transitionCalls = <_TransitionCall>[];
 
   List<TaskItem> get items => List<TaskItem>.unmodifiable(_items);
 
@@ -206,6 +430,7 @@ final class _MemoryTaskRepository implements TaskRepository {
 
   @override
   Future<void> create(TaskItem task) async {
+    createdTasks.add(task);
     final nextDisplayNumber =
         _items.fold<int>(
           0,
@@ -249,6 +474,14 @@ final class _MemoryTaskRepository implements TaskRepository {
     required int targetPosition,
     required DateTime changedAtUtc,
   }) async {
+    transitionCalls.add(
+      _TransitionCall(
+        id: id,
+        status: status,
+        targetPosition: targetPosition,
+        changedAtUtc: changedAtUtc,
+      ),
+    );
     final index = _items.indexWhere((item) => item.id == id);
     if (index == -1) {
       throw StateError('Task not found: $id');
@@ -359,53 +592,33 @@ final class _MemoryTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<void> setDone(String id, bool isDone, DateTime changedAt) {
-    return transition(
-      id: id,
-      status: isDone ? TaskStatus.completed : TaskStatus.planned,
-      targetPosition: 0,
-      changedAtUtc: changedAt,
-    );
-  }
-
-  @override
   Future<void> delete(String id) async {
+    final removed = await getById(id);
+    if (removed == null) return;
+
     _items.removeWhere((item) => item.id == id);
+    final remaining =
+        _items
+            .where((item) => item.status == removed.status)
+            .toList(growable: false)
+          ..sort(
+            (left, right) =>
+                left.positionInStatus.compareTo(right.positionInStatus),
+          );
+    final normalized = <TaskItem>[
+      for (final entry in remaining.indexed)
+        entry.$2.copyWith(positionInStatus: entry.$1),
+    ];
+    _items = <TaskItem>[
+      ..._items.where((item) => item.status != removed.status),
+      ...normalized,
+    ];
     _emit();
   }
 
   @override
   Future<void> deleteCompleted() async {
     _items.removeWhere((item) => item.isDone);
-    _emit();
-  }
-
-  @override
-  Future<void> reorder(List<String> orderedIds) async {
-    final byId = <String, TaskItem>{for (final item in _items) item.id: item};
-    final reordered = <TaskItem>[];
-
-    for (var index = 0; index < orderedIds.length; index++) {
-      final current = byId.remove(orderedIds[index]);
-      if (current == null) continue;
-      reordered.add(
-        TaskItem(
-          id: current.id,
-          displayNumber: current.displayNumber,
-          title: current.title,
-          priority: current.priority,
-          status: current.status,
-          positionInStatus: index,
-          createdAtUtc: current.createdAtUtc,
-          updatedAtUtc: current.updatedAtUtc,
-          completedAtUtc: current.completedAtUtc,
-          canceledAtUtc: current.canceledAtUtc,
-        ),
-      );
-    }
-
-    reordered.addAll(byId.values);
-    _items = reordered;
     _emit();
   }
 

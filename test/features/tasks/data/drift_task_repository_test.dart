@@ -215,28 +215,37 @@ void main() {
     },
   );
 
-  test('setDone stores UTC completion and clears it when reopened', () async {
-    final now = DateTime.utc(2026, 7, 26, 16);
-    await repository.create(_task(id: 'task-1', now: now));
+  test(
+    'transition stores UTC completion and clears it when reopened',
+    () async {
+      final now = DateTime.utc(2026, 7, 26, 16);
+      await repository.create(_task(id: 'task-1', now: now));
 
-    final changedAt = DateTime(2026, 7, 26, 20, 30);
-    await repository.setDone('task-1', true, changedAt);
+      final changedAt = DateTime(2026, 7, 26, 20, 30);
+      await repository.transition(
+        id: 'task-1',
+        status: TaskStatus.completed,
+        targetPosition: 0,
+        changedAtUtc: changedAt,
+      );
 
-    final completed = await repository.getById('task-1');
-    expect(completed!.isDone, isTrue);
-    expect(completed.completedAtUtc, changedAt.toUtc());
-    expect(completed.updatedAtUtc, changedAt.toUtc());
+      final completed = await repository.getById('task-1');
+      expect(completed!.isDone, isTrue);
+      expect(completed.completedAtUtc, changedAt.toUtc());
+      expect(completed.updatedAtUtc, changedAt.toUtc());
 
-    await repository.setDone(
-      'task-1',
-      false,
-      changedAt.add(const Duration(minutes: 5)),
-    );
+      await repository.transition(
+        id: 'task-1',
+        status: TaskStatus.planned,
+        targetPosition: 0,
+        changedAtUtc: changedAt.add(const Duration(minutes: 5)),
+      );
 
-    final reopened = await repository.getById('task-1');
-    expect(reopened!.isDone, isFalse);
-    expect(reopened.completedAtUtc, isNull);
-  });
+      final reopened = await repository.getById('task-1');
+      expect(reopened!.isDone, isFalse);
+      expect(reopened.completedAtUtc, isNull);
+    },
+  );
 
   test('deleteCompleted keeps only non-completed tasks', () async {
     final now = DateTime.utc(2026, 7, 26, 17);
@@ -267,6 +276,40 @@ void main() {
     ]);
   });
 
+  test('delete compacts only the removed task status', () async {
+    final now = DateTime.utc(2026, 7, 26, 17, 30);
+    for (var index = 0; index < 3; index++) {
+      await repository.create(
+        _task(
+          id: 'planned-$index',
+          status: TaskStatus.planned,
+          now: now.add(Duration(minutes: index)),
+        ),
+      );
+    }
+    await repository.create(
+      _task(
+        id: 'completed',
+        status: TaskStatus.completed,
+        now: now.add(const Duration(minutes: 3)),
+      ),
+    );
+
+    await repository.delete('planned-1');
+
+    final planned = await repository.watchByStatus(TaskStatus.planned).first;
+    final completed = await repository
+        .watchByStatus(TaskStatus.completed)
+        .first;
+    expect(planned.map((item) => item.id).toList(), <String>[
+      'planned-0',
+      'planned-2',
+    ]);
+    expect(planned.map((item) => item.positionInStatus).toList(), <int>[0, 1]);
+    expect(completed.single.id, 'completed');
+    expect(completed.single.positionInStatus, 0);
+  });
+
   test('delete removes only the requested task', () async {
     final now = DateTime.utc(2026, 7, 26, 18);
     await repository.create(_task(id: 'keep', now: now));
@@ -280,35 +323,45 @@ void main() {
     expect((await repository.getById('keep'))!.id, 'keep');
   });
 
-  test('reorder changes positions without changing display numbers', () async {
-    final now = DateTime.utc(2026, 7, 26, 19);
-    for (var index = 0; index < 3; index++) {
-      await repository.create(
-        _task(
-          id: 'task-$index',
-          now: now.add(Duration(minutes: index)),
-        ),
+  test(
+    'status reorder changes positions without changing display numbers',
+    () async {
+      final now = DateTime.utc(2026, 7, 26, 19);
+      for (var index = 0; index < 3; index++) {
+        await repository.create(
+          _task(
+            id: 'task-$index',
+            now: now.add(Duration(minutes: index)),
+          ),
+        );
+      }
+
+      final before = <String, int>{
+        for (final item in await repository.watchAll().first)
+          item.id: item.displayNumber,
+      };
+
+      await repository.reorderWithinStatus(
+        status: TaskStatus.planned,
+        orderedIds: const <String>['task-2', 'task-0', 'task-1'],
       );
-    }
 
-    final before = <String, int>{
-      for (final item in await repository.watchAll().first)
-        item.id: item.displayNumber,
-    };
-
-    await repository.reorder(const <String>['task-2', 'task-0', 'task-1']);
-
-    final items = await repository.watchAll().first;
-    expect(items.map((item) => item.id).toList(), <String>[
-      'task-2',
-      'task-0',
-      'task-1',
-    ]);
-    expect(items.map((item) => item.positionInStatus).toList(), <int>[0, 1, 2]);
-    expect(<String, int>{
-      for (final item in items) item.id: item.displayNumber,
-    }, before);
-  });
+      final items = await repository.watchAll().first;
+      expect(items.map((item) => item.id).toList(), <String>[
+        'task-2',
+        'task-0',
+        'task-1',
+      ]);
+      expect(items.map((item) => item.positionInStatus).toList(), <int>[
+        0,
+        1,
+        2,
+      ]);
+      expect(<String, int>{
+        for (final item in items) item.id: item.displayNumber,
+      }, before);
+    },
+  );
 
   test('file restart preserves and advances display numbers', () async {
     await database.close();

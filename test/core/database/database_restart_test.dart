@@ -81,9 +81,21 @@ void main() {
           updatedAtUtc: changedAt,
         ),
       );
-      await firstTasks.setDone('task-b', true, changedAt);
+      await firstTasks.transition(
+        id: 'task-b',
+        status: TaskStatus.completed,
+        targetPosition: 0,
+        changedAtUtc: changedAt,
+      );
       await firstTasks.delete('task-deleted');
-      await firstTasks.reorder(const <String>['task-b', 'task-a']);
+      await firstTasks.reorderWithinStatus(
+        status: TaskStatus.planned,
+        orderedIds: const <String>['task-a'],
+      );
+      await firstTasks.reorderWithinStatus(
+        status: TaskStatus.completed,
+        orderedIds: const <String>['task-b'],
+      );
 
       await firstFinance.addTransaction(
         FinanceTransaction.create(
