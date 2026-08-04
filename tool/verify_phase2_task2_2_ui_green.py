@@ -104,7 +104,22 @@ need("Map<TaskDetailsField, String>" in form, "inline field error map missing")
 dialog = sources["dialog"]
 need("enum TaskDetailsDialogMode { create, edit }" in dialog, "dialog mode enum missing")
 need("showTaskDetailsDialog" in dialog, "dialog entry point missing")
-need("showGeneralDialog<TaskItem>" in dialog, "custom adaptive route missing")
+need(
+    re.search(
+        r"showGeneralDialog<\s*(?:TaskItem|TaskDetailsDialogResult)\s*>\s*\(",
+        dialog,
+    )
+    is not None,
+    "custom adaptive route missing",
+)
+need(
+    re.search(
+        r"Future<TaskItem\?>\s+showTaskDetailsDialog\s*\(",
+        dialog,
+    )
+    is not None,
+    "backward-compatible TaskItem dialog entry point missing",
+)
 need("AlertDialog" not in dialog, "default AlertDialog is forbidden")
 need("TaskDetailsForm(" in dialog, "dialog does not reuse shared form")
 need("LayoutBuilder(" in dialog, "adaptive width branch missing")
@@ -142,15 +157,31 @@ for token in (
     "_addTaskWithDetails()",
     "TaskDetailsDialogMode.create",
     "TaskDetailsDialogMode.edit",
-    "await repository.create(result)",
     "await repository.transition(",
-    "await ref.read(taskRepositoryProvider).update(result)",
     "taskStartLabel(task)",
     "taskDueLabel(task)",
     "taskEstimatedDurationLabel(task)",
     "_TaskPlanningChip",
 ):
     need(token in panel, f"TasksPanel integration missing: {token}")
+
+need(
+    re.search(
+        r"await\s+repository\.create\(\s*result(?:\.task)?\s*\)",
+        panel,
+    )
+    is not None,
+    "TasksPanel detailed-create persistence missing",
+)
+need(
+    re.search(
+        r"await\s+(?:repository|ref\.read\(taskRepositoryProvider\))"
+        r"\.update\(\s*result(?:\.task)?\s*\)",
+        panel,
+    )
+    is not None,
+    "TasksPanel detailed-edit persistence missing",
+)
 need("_editController" not in panel, "legacy inline title editor remains")
 need("_editing" not in panel, "legacy duplicate edit state remains")
 need(

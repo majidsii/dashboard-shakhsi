@@ -175,6 +175,42 @@ void main() {
       const <String>['persisted-task', 'persisted-habit'],
     );
   });
+
+  test(
+    'replaceByOwner preserves unrelated owners and rejects mixed input',
+    () async {
+      final scheduler = FakeNotificationScheduler();
+      final coordinator = NotificationCoordinator(
+        repository: repository,
+        scheduler: scheduler,
+      );
+
+      await coordinator.replaceAll(<NotificationRequest>[
+        _request(scheduleId: 'task-old', owner: _taskOwner, hour: 8),
+        _request(scheduleId: 'habit-a', owner: _habitOwner, hour: 9),
+      ]);
+
+      await coordinator.replaceByOwner(_taskOwner, <NotificationRequest>[
+        _request(scheduleId: 'task-new', owner: _taskOwner, hour: 10),
+      ]);
+
+      expect(
+        repository.items.map((request) => request.scheduleId),
+        const <String>['habit-a', 'task-new'],
+      );
+      expect(
+        scheduler.scheduledRequests.map((request) => request.scheduleId),
+        const <String>['habit-a', 'task-new'],
+      );
+
+      await expectLater(
+        coordinator.replaceByOwner(_taskOwner, <NotificationRequest>[
+          _request(scheduleId: 'wrong-owner', owner: _habitOwner, hour: 11),
+        ]),
+        throwsArgumentError,
+      );
+    },
+  );
 }
 
 final _taskOwner = NotificationOwner(

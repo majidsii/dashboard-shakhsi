@@ -5,16 +5,45 @@ import 'package:dashboard_shakhsi/app/widgets/original_controls.dart';
 import 'package:dashboard_shakhsi/app/widgets/original_glass.dart';
 import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_draft.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_form.dart';
 import 'package:flutter/material.dart';
 
 enum TaskDetailsDialogMode { create, edit }
 
+final class TaskDetailsDialogResult {
+  const TaskDetailsDialogResult({
+    required this.task,
+    required this.reminderRules,
+  });
+
+  final TaskItem task;
+  final List<TaskReminderRule> reminderRules;
+}
+
 Future<TaskItem?> showTaskDetailsDialog({
   required BuildContext context,
   required TaskDetailsDialogMode mode,
   TaskItem? initialTask,
+  DateTime Function()? now,
+  String Function()? nextId,
+}) async {
+  final result = await showTaskDetailsEditorDialog(
+    context: context,
+    mode: mode,
+    initialTask: initialTask,
+    now: now,
+    nextId: nextId,
+  );
+  return result?.task;
+}
+
+Future<TaskDetailsDialogResult?> showTaskDetailsEditorDialog({
+  required BuildContext context,
+  required TaskDetailsDialogMode mode,
+  TaskItem? initialTask,
+  List<TaskReminderRule> initialReminderRules = const <TaskReminderRule>[],
   DateTime Function()? now,
   String Function()? nextId,
 }) {
@@ -25,7 +54,7 @@ Future<TaskItem?> showTaskDetailsDialog({
   final nowSource = now ?? DateTime.now;
   final idSource = nextId ?? (() => const UuidV7IdGenerator().next());
 
-  return showGeneralDialog<TaskItem>(
+  return showGeneralDialog<TaskDetailsDialogResult>(
     context: context,
     barrierDismissible: false,
     barrierLabel: 'فرم جزئیات کار',
@@ -35,6 +64,7 @@ Future<TaskItem?> showTaskDetailsDialog({
       return _TaskDetailsDialogShell(
         mode: mode,
         initialTask: initialTask,
+        initialReminderRules: initialReminderRules,
         now: nowSource,
         nextId: idSource,
       );
@@ -60,12 +90,14 @@ final class _TaskDetailsDialogShell extends StatefulWidget {
   const _TaskDetailsDialogShell({
     required this.mode,
     required this.initialTask,
+    required this.initialReminderRules,
     required this.now,
     required this.nextId,
   });
 
   final TaskDetailsDialogMode mode;
   final TaskItem? initialTask;
+  final List<TaskReminderRule> initialReminderRules;
   final DateTime Function() now;
   final String Function() nextId;
 
@@ -89,7 +121,10 @@ final class _TaskDetailsDialogShellState
     final media = MediaQuery.of(context);
     final initialDraft = _isCreate
         ? TaskDetailsDraft.create(nowLocal: widget.now().toLocal())
-        : TaskDetailsDraft.fromTask(widget.initialTask!);
+        : TaskDetailsDraft.fromTaskWithReminderRules(
+            widget.initialTask!,
+            reminderRules: widget.initialReminderRules,
+          );
 
     return Material(
       type: MaterialType.transparency,
@@ -213,15 +248,22 @@ final class _TaskDetailsDialogShellState
 
     try {
       final savedAtUtc = widget.now().toUtc();
-      final result = _isCreate
+      final task = _isCreate
           ? form.draft.buildNewTask(id: widget.nextId(), savedAtUtc: savedAtUtc)
           : form.draft.applyTo(
               task: widget.initialTask!,
               savedAtUtc: savedAtUtc,
             );
+      final reminderRules = form.draft.buildReminderRules(
+        taskId: task.id,
+        savedAtUtc: savedAtUtc,
+        nextId: widget.nextId,
+      );
 
       if (!mounted) return;
-      Navigator.of(context).pop(result);
+      Navigator.of(
+        context,
+      ).pop(TaskDetailsDialogResult(task: task, reminderRules: reminderRules));
     } on Object catch (_) {
       if (!mounted) return;
       setState(() {

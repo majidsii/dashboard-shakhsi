@@ -37,6 +37,29 @@ final class NotificationCoordinator {
     await _scheduler.reconcile(desired);
   }
 
+  Future<void> replaceByOwner(
+    NotificationOwner owner,
+    List<NotificationRequest> expected,
+  ) async {
+    for (final request in expected) {
+      if (request.owner != owner) {
+        throw ArgumentError.value(
+          request.owner,
+          'expected',
+          'Every notification request must belong to $owner.',
+        );
+      }
+    }
+
+    final current = await _repository.getAll();
+    final merged = <NotificationRequest>[
+      for (final request in current)
+        if (request.owner != owner) request,
+      ...expected,
+    ];
+    await replaceAll(merged);
+  }
+
   Future<void> reconcileFromPersistence() async {
     final expected = await _repository.getAll();
     await _scheduler.reconcile(expected);

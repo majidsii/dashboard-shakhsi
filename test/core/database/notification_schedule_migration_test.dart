@@ -8,7 +8,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 void main() {
   test(
-    'version one migrates notifications and tasks through schema four',
+    'version one migrates notifications, tasks, and reminders through schema five',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'dashboard-shakhsi-notification-migration-',
@@ -62,12 +62,12 @@ void main() {
 
         final migrated = AppDatabase(NativeDatabase(file));
         try {
-          expect(migrated.schemaVersion, 4);
+          expect(migrated.schemaVersion, 5);
 
           final versionRows = await migrated
               .customSelect('PRAGMA user_version')
               .get();
-          expect(versionRows.single.read<int>('user_version'), 4);
+          expect(versionRows.single.read<int>('user_version'), 5);
 
           final tasks = await migrated.select(migrated.taskRows).get();
           expect(tasks, hasLength(1));

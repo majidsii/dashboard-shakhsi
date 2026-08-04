@@ -7,7 +7,9 @@ import 'package:dashboard_shakhsi/features/finance/data/drift_finance_repository
 import 'package:dashboard_shakhsi/features/finance/domain/debt.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/finance_transaction.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/reminder_aware_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +37,15 @@ void main() {
     final taskRepository = container.read(taskRepositoryProvider);
     final financeRepository = container.read(financeRepositoryProvider);
 
-    expect(taskRepository, isA<DriftTaskRepository>());
+    expect(taskRepository, isA<ReminderAwareTaskRepository>());
+    expect(
+      container.read(baseTaskRepositoryProvider),
+      isA<DriftTaskRepository>(),
+    );
+    expect(
+      container.read(taskReminderRepositoryProvider),
+      isA<DriftTaskReminderRepository>(),
+    );
     expect(financeRepository, isA<DriftFinanceRepository>());
     expect(identical(container.read(appDatabaseProvider), database), isTrue);
   });

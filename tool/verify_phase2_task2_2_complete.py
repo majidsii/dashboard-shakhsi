@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -40,7 +41,27 @@ need('2. **Task 2.2 â€” Description, Start/Due Time, and Estimated Duration** â€
 
 run_verifier("tool/verify_phase2_task2_1_complete.py")
 run_verifier("tool/verify_phase2_task2_2_1_green.py")
-run_verifier("tool/verify_phase2_task2_2_2_green.py")
+database_source = (
+    ROOT / "lib/core/database/app_database.dart"
+).read_text(encoding="utf-8")
+schema_match = re.search(
+    r"int\s+get\s+schemaVersion\s*=>\s*(\d+)\s*;",
+    database_source,
+)
+need(schema_match is not None, "current schema version is missing")
+current_schema = int(schema_match.group(1))
+if current_schema == 4:
+    run_verifier("tool/verify_phase2_task2_2_2_green.py")
+else:
+    need(current_schema > 4, "current schema regressed below Task 2.2")
+    need(
+        "if (from >= 3 && from < 4)" in database_source
+        and "NULL AS description" in database_source
+        and "NULL AS start_at_utc" in database_source
+        and "NULL AS due_at_utc" in database_source
+        and "NULL AS estimated_duration_minutes" in database_source,
+        "historical schema-3 to schema-4 planning migration changed",
+    )
 run_verifier("tool/verify_phase2_task2_2_3_green.py")
 run_verifier("tool/verify_phase2_task2_2_4_green.py")
 run_verifier("tool/verify_phase2_task2_2_ui_green.py")

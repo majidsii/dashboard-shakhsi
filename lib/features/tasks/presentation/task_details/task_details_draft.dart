@@ -1,8 +1,11 @@
 import 'package:dashboard_shakhsi/core/errors/app_failure.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_trigger.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_reminder_draft.dart';
 
-enum TaskDetailsField { title, startAt, dueAt, estimatedDuration }
+enum TaskDetailsField { title, startAt, dueAt, estimatedDuration, reminders }
 
 final class TaskDetailsDraft {
   TaskDetailsDraft({
@@ -13,7 +16,10 @@ final class TaskDetailsDraft {
     required this.dueLocal,
     required this.estimatedHours,
     required this.estimatedMinutes,
-  });
+    List<TaskReminderDraft>? reminders,
+  }) : reminders = List<TaskReminderDraft>.from(
+         reminders ?? TaskReminderTrigger.values.map(TaskReminderDraft.empty),
+       );
 
   factory TaskDetailsDraft.create({
     required DateTime nowLocal,
@@ -27,10 +33,18 @@ final class TaskDetailsDraft {
       dueLocal: null,
       estimatedHours: 0,
       estimatedMinutes: 0,
+      reminders: taskReminderDraftsFromRules(const <TaskReminderRule>[]),
     );
   }
 
   factory TaskDetailsDraft.fromTask(TaskItem task) {
+    return TaskDetailsDraft.fromTaskWithReminderRules(task);
+  }
+
+  factory TaskDetailsDraft.fromTaskWithReminderRules(
+    TaskItem task, {
+    List<TaskReminderRule> reminderRules = const <TaskReminderRule>[],
+  }) {
     final durationMinutes = task.estimatedDurationMinutes ?? 0;
 
     return TaskDetailsDraft(
@@ -41,6 +55,7 @@ final class TaskDetailsDraft {
       dueLocal: task.dueAtUtc?.toLocal(),
       estimatedHours: durationMinutes ~/ 60,
       estimatedMinutes: durationMinutes % 60,
+      reminders: taskReminderDraftsFromRules(reminderRules),
     );
   }
 
@@ -51,6 +66,7 @@ final class TaskDetailsDraft {
   DateTime? dueLocal;
   int estimatedHours;
   int estimatedMinutes;
+  final List<TaskReminderDraft> reminders;
 
   Map<TaskDetailsField, String> validate() {
     final errors = <TaskDetailsField, String>{};
@@ -80,6 +96,11 @@ final class TaskDetailsDraft {
     } else if (estimatedMinutes < 0 || estimatedMinutes > 59) {
       errors[TaskDetailsField.estimatedDuration] =
           'دقیقه مدت تخمینی باید بین ۰ تا ۵۹ باشد.';
+    }
+
+    if (reminders.any((item) => item.selected) && dueLocal == null) {
+      errors[TaskDetailsField.reminders] =
+          'برای فعال‌کردن یادآور، ابتدا زمان سررسید را مشخص کنید.';
     }
 
     return errors;
@@ -124,6 +145,25 @@ final class TaskDetailsDraft {
       estimatedDurationMinutes: durationMinutes,
       clearEstimatedDuration: durationMinutes == null,
       updatedAtUtc: savedAtUtc,
+    );
+  }
+
+  List<TaskReminderRule> buildReminderRules({
+    required String taskId,
+    required DateTime savedAtUtc,
+    required String Function() nextId,
+  }) {
+    _throwIfInvalid();
+    return List<TaskReminderRule>.unmodifiable(
+      reminders
+          .where((item) => item.selected || item.existingId != null)
+          .map(
+            (item) => item.buildRule(
+              taskId: taskId,
+              savedAtUtc: savedAtUtc,
+              nextId: nextId,
+            ),
+          ),
     );
   }
 

@@ -20,8 +20,14 @@ import 'package:dashboard_shakhsi/features/finance/domain/debt.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/finance_repository.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/finance_transaction.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart';
+import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_projection_service.dart';
+import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_rules_service.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/reminder_aware_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,8 +41,38 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
   return database;
 });
 
-final taskRepositoryProvider = Provider<TaskRepository>((ref) {
+final baseTaskRepositoryProvider = Provider<TaskRepository>((ref) {
   return DriftTaskRepository(ref.watch(appDatabaseProvider));
+});
+
+final taskReminderRepositoryProvider = Provider<TaskReminderRepository>((ref) {
+  return DriftTaskReminderRepository(ref.watch(appDatabaseProvider));
+});
+
+final taskReminderProjectionServiceProvider =
+    Provider<TaskReminderProjectionService>((ref) {
+      return TaskReminderProjectionService(
+        reminderRepository: ref.watch(taskReminderRepositoryProvider),
+        coordinator: ref.watch(notificationCoordinatorProvider),
+        nowUtc: () => ref.read(appClockProvider).nowUtc(),
+      );
+    });
+
+final taskReminderRulesServiceProvider = Provider<TaskReminderRulesService>((
+  ref,
+) {
+  return TaskReminderRulesService(
+    repository: ref.watch(taskReminderRepositoryProvider),
+    projection: ref.watch(taskReminderProjectionServiceProvider),
+  );
+});
+
+final taskRepositoryProvider = Provider<TaskRepository>((ref) {
+  return ReminderAwareTaskRepository(
+    inner: ref.watch(baseTaskRepositoryProvider),
+    reminderRepository: ref.watch(taskReminderRepositoryProvider),
+    projection: () => ref.read(taskReminderProjectionServiceProvider),
+  );
 });
 
 final financeRepositoryProvider = Provider<FinanceRepository>((ref) {
@@ -56,6 +92,11 @@ final notificationSchedulesProvider = StreamProvider<List<NotificationRequest>>(
     return ref.watch(notificationScheduleRepositoryProvider).watchAll();
   },
 );
+
+final taskReminderRulesProvider =
+    StreamProvider.family<List<TaskReminderRule>, String>((ref, taskId) {
+      return ref.watch(taskReminderRepositoryProvider).watchByTask(taskId);
+    });
 
 final taskItemsProvider = StreamProvider<List<TaskItem>>((ref) {
   return ref.watch(taskRepositoryProvider).watchAll();

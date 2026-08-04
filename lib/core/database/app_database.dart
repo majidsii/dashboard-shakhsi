@@ -147,6 +147,35 @@ class InstallmentPaymentRows extends Table {
   ];
 }
 
+class TaskReminderRuleRows extends Table {
+  @override
+  String get tableName => 'task_reminder_rules';
+
+  TextColumn get id => text()();
+  TextColumn get taskId =>
+      text().references(TaskRows, #id, onDelete: KeyAction.cascade)();
+  TextColumn get trigger => text()();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+  TextColumn get privacyMode => text().withDefault(const Constant('full'))();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    "CHECK (trigger IN ('atDue', 'fifteenMinutesBefore', 'oneHourBefore', 'oneDayBefore'))",
+    "CHECK (privacy_mode IN ('full', 'private'))",
+    'CHECK (updated_at_utc >= created_at_utc)',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => <Set<Column<Object>>>[
+    <Column<Object>>{taskId, trigger},
+  ];
+}
+
 class NotificationScheduleRows extends Table {
   @override
   String get tableName => 'notification_schedules';
@@ -183,6 +212,7 @@ class NotificationScheduleRows extends Table {
     DebtPaymentRows,
     InstallmentPlanRows,
     InstallmentPaymentRows,
+    TaskReminderRuleRows,
     NotificationScheduleRows,
   ],
 )
@@ -191,7 +221,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -283,6 +313,9 @@ final class AppDatabase extends _$AppDatabase {
           FROM tasks_v3_legacy
         ''');
         await customStatement('DROP TABLE tasks_v3_legacy');
+      }
+      if (from < 5) {
+        await migrator.createTable(taskReminderRuleRows);
       }
     },
     beforeOpen: (OpeningDetails details) async {

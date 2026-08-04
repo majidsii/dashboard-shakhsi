@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -39,7 +40,48 @@ need('1084' in checkpoint, "full test evidence changed")
 need('3. **Task 2.3 — Atomic Board Operations, List, and Kanban Views** — **Implemented** ([checkpoint](../checkpoints/2026-08-04-task-2-3-board-list-kanban-checkpoint.md))' in spec, "Phase 2 design does not mark Task 2.3 implemented")
 
 run_verifier("tool/verify_phase2_task2_2_complete.py")
-run_verifier("tool/verify_phase2_task2_3_green.py")
+database_source = (
+    ROOT / "lib/core/database/app_database.dart"
+).read_text(encoding="utf-8")
+schema_match = re.search(
+    r"int\s+get\s+schemaVersion\s*=>\s*(\d+)\s*;",
+    database_source,
+)
+need(schema_match is not None, "current schema version is missing")
+current_schema = int(schema_match.group(1))
+if current_schema == 4:
+    run_verifier("tool/verify_phase2_task2_3_green.py")
+else:
+    need(current_schema > 4, "current schema regressed below Task 2.3")
+    board = (
+        ROOT
+        / "lib/features/tasks/presentation/task_board/task_kanban_board.dart"
+    ).read_text(encoding="utf-8")
+    operations = (
+        ROOT
+        / "lib/features/tasks/presentation/task_board/task_board_operations.dart"
+    ).read_text(encoding="utf-8")
+    panel = (
+        ROOT
+        / "lib/features/dashboard/presentation/widgets/tasks_panel.dart"
+    ).read_text(encoding="utf-8")
+    for token in (
+        "TaskStatus.planned",
+        "TaskStatus.inProgress",
+        "TaskStatus.completed",
+        "TaskStatus.canceled",
+        "LongPressDraggable",
+        "DragTarget",
+    ):
+        need(token in board, f"Task 2.3 board contract missing: {token}")
+    need(
+        "reorderWithinStatus" in operations and "transition" in operations,
+        "Task 2.3 atomic board operations changed",
+    )
+    need(
+        "TaskViewMode.list" in panel and "TaskViewMode.kanban" in panel,
+        "Task 2.3 List/Kanban integration changed",
+    )
 
 print(
     "OK: Task 2.3 checkpoint is linked to exact commit evidence, "

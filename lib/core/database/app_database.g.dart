@@ -3440,6 +3440,491 @@ class InstallmentPaymentRowsCompanion
   }
 }
 
+class $TaskReminderRuleRowsTable extends TaskReminderRuleRows
+    with TableInfo<$TaskReminderRuleRowsTable, TaskReminderRuleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskReminderRuleRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tasks (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _triggerMeta = const VerificationMeta(
+    'trigger',
+  );
+  @override
+  late final GeneratedColumn<String> trigger = GeneratedColumn<String>(
+    'trigger',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _privacyModeMeta = const VerificationMeta(
+    'privacyMode',
+  );
+  @override
+  late final GeneratedColumn<String> privacyMode = GeneratedColumn<String>(
+    'privacy_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('full'),
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taskId,
+    trigger,
+    enabled,
+    privacyMode,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_reminder_rules';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskReminderRuleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('trigger')) {
+      context.handle(
+        _triggerMeta,
+        trigger.isAcceptableOrUnknown(data['trigger']!, _triggerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_triggerMeta);
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('privacy_mode')) {
+      context.handle(
+        _privacyModeMeta,
+        privacyMode.isAcceptableOrUnknown(
+          data['privacy_mode']!,
+          _privacyModeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {taskId, trigger},
+  ];
+  @override
+  TaskReminderRuleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskReminderRuleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      trigger: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trigger'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      privacyMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}privacy_mode'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskReminderRuleRowsTable createAlias(String alias) {
+    return $TaskReminderRuleRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TaskReminderRuleRow extends DataClass
+    implements Insertable<TaskReminderRuleRow> {
+  final String id;
+  final String taskId;
+  final String trigger;
+  final bool enabled;
+  final String privacyMode;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const TaskReminderRuleRow({
+    required this.id,
+    required this.taskId,
+    required this.trigger,
+    required this.enabled,
+    required this.privacyMode,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['task_id'] = Variable<String>(taskId);
+    map['trigger'] = Variable<String>(trigger);
+    map['enabled'] = Variable<bool>(enabled);
+    map['privacy_mode'] = Variable<String>(privacyMode);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  TaskReminderRuleRowsCompanion toCompanion(bool nullToAbsent) {
+    return TaskReminderRuleRowsCompanion(
+      id: Value(id),
+      taskId: Value(taskId),
+      trigger: Value(trigger),
+      enabled: Value(enabled),
+      privacyMode: Value(privacyMode),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory TaskReminderRuleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskReminderRuleRow(
+      id: serializer.fromJson<String>(json['id']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      trigger: serializer.fromJson<String>(json['trigger']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      privacyMode: serializer.fromJson<String>(json['privacyMode']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taskId': serializer.toJson<String>(taskId),
+      'trigger': serializer.toJson<String>(trigger),
+      'enabled': serializer.toJson<bool>(enabled),
+      'privacyMode': serializer.toJson<String>(privacyMode),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  TaskReminderRuleRow copyWith({
+    String? id,
+    String? taskId,
+    String? trigger,
+    bool? enabled,
+    String? privacyMode,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => TaskReminderRuleRow(
+    id: id ?? this.id,
+    taskId: taskId ?? this.taskId,
+    trigger: trigger ?? this.trigger,
+    enabled: enabled ?? this.enabled,
+    privacyMode: privacyMode ?? this.privacyMode,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  TaskReminderRuleRow copyWithCompanion(TaskReminderRuleRowsCompanion data) {
+    return TaskReminderRuleRow(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      trigger: data.trigger.present ? data.trigger.value : this.trigger,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      privacyMode: data.privacyMode.present
+          ? data.privacyMode.value
+          : this.privacyMode,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskReminderRuleRow(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('trigger: $trigger, ')
+          ..write('enabled: $enabled, ')
+          ..write('privacyMode: $privacyMode, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    taskId,
+    trigger,
+    enabled,
+    privacyMode,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskReminderRuleRow &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.trigger == this.trigger &&
+          other.enabled == this.enabled &&
+          other.privacyMode == this.privacyMode &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class TaskReminderRuleRowsCompanion
+    extends UpdateCompanion<TaskReminderRuleRow> {
+  final Value<String> id;
+  final Value<String> taskId;
+  final Value<String> trigger;
+  final Value<bool> enabled;
+  final Value<String> privacyMode;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const TaskReminderRuleRowsCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.trigger = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.privacyMode = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskReminderRuleRowsCompanion.insert({
+    required String id,
+    required String taskId,
+    required String trigger,
+    this.enabled = const Value.absent(),
+    this.privacyMode = const Value.absent(),
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taskId = Value(taskId),
+       trigger = Value(trigger),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<TaskReminderRuleRow> custom({
+    Expression<String>? id,
+    Expression<String>? taskId,
+    Expression<String>? trigger,
+    Expression<bool>? enabled,
+    Expression<String>? privacyMode,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (trigger != null) 'trigger': trigger,
+      if (enabled != null) 'enabled': enabled,
+      if (privacyMode != null) 'privacy_mode': privacyMode,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskReminderRuleRowsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taskId,
+    Value<String>? trigger,
+    Value<bool>? enabled,
+    Value<String>? privacyMode,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return TaskReminderRuleRowsCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      trigger: trigger ?? this.trigger,
+      enabled: enabled ?? this.enabled,
+      privacyMode: privacyMode ?? this.privacyMode,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (trigger.present) {
+      map['trigger'] = Variable<String>(trigger.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (privacyMode.present) {
+      map['privacy_mode'] = Variable<String>(privacyMode.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskReminderRuleRowsCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('trigger: $trigger, ')
+          ..write('enabled: $enabled, ')
+          ..write('privacyMode: $privacyMode, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $NotificationScheduleRowsTable extends NotificationScheduleRows
     with TableInfo<$NotificationScheduleRowsTable, NotificationScheduleRow> {
   @override
@@ -4094,6 +4579,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $InstallmentPlanRowsTable(this);
   late final $InstallmentPaymentRowsTable installmentPaymentRows =
       $InstallmentPaymentRowsTable(this);
+  late final $TaskReminderRuleRowsTable taskReminderRuleRows =
+      $TaskReminderRuleRowsTable(this);
   late final $NotificationScheduleRowsTable notificationScheduleRows =
       $NotificationScheduleRowsTable(this);
   @override
@@ -4107,6 +4594,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     debtPaymentRows,
     installmentPlanRows,
     installmentPaymentRows,
+    taskReminderRuleRows,
     notificationScheduleRows,
   ];
   @override
@@ -4124,6 +4612,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('installment_payments', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tasks',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('task_reminder_rules', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -4164,6 +4659,36 @@ typedef $$TaskRowsTableUpdateCompanionBuilder =
       Value<DateTime?> canceledAtUtc,
       Value<int> rowid,
     });
+
+final class $$TaskRowsTableReferences
+    extends BaseReferences<_$AppDatabase, $TaskRowsTable, TaskRow> {
+  $$TaskRowsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<
+    $TaskReminderRuleRowsTable,
+    List<TaskReminderRuleRow>
+  >
+  _taskReminderRuleRowsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.taskReminderRuleRows,
+        aliasName: 'tasks__id__task_reminder_rules__task_id',
+      );
+
+  $$TaskReminderRuleRowsTableProcessedTableManager
+  get taskReminderRuleRowsRefs {
+    final manager = $$TaskReminderRuleRowsTableTableManager(
+      $_db,
+      $_db.taskReminderRuleRows,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _taskReminderRuleRowsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$TaskRowsTableFilterComposer
     extends Composer<_$AppDatabase, $TaskRowsTable> {
@@ -4243,6 +4768,31 @@ class $$TaskRowsTableFilterComposer
     column: $table.canceledAtUtc,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> taskReminderRuleRowsRefs(
+    Expression<bool> Function($$TaskReminderRuleRowsTableFilterComposer f) f,
+  ) {
+    final $$TaskReminderRuleRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taskReminderRuleRows,
+      getReferencedColumn: (t) => t.taskId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskReminderRuleRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskReminderRuleRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$TaskRowsTableOrderingComposer
@@ -4393,6 +4943,32 @@ class $$TaskRowsTableAnnotationComposer
     column: $table.canceledAtUtc,
     builder: (column) => column,
   );
+
+  Expression<T> taskReminderRuleRowsRefs<T extends Object>(
+    Expression<T> Function($$TaskReminderRuleRowsTableAnnotationComposer a) f,
+  ) {
+    final $$TaskReminderRuleRowsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskReminderRuleRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskReminderRuleRowsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.taskReminderRuleRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TaskRowsTableTableManager
@@ -4406,9 +4982,9 @@ class $$TaskRowsTableTableManager
           $$TaskRowsTableAnnotationComposer,
           $$TaskRowsTableCreateCompanionBuilder,
           $$TaskRowsTableUpdateCompanionBuilder,
-          (TaskRow, BaseReferences<_$AppDatabase, $TaskRowsTable, TaskRow>),
+          (TaskRow, $$TaskRowsTableReferences),
           TaskRow,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool taskReminderRuleRowsRefs})
         > {
   $$TaskRowsTableTableManager(_$AppDatabase db, $TaskRowsTable table)
     : super(
@@ -4490,9 +5066,44 @@ class $$TaskRowsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaskRowsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({taskReminderRuleRowsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (taskReminderRuleRowsRefs) db.taskReminderRuleRows,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (taskReminderRuleRowsRefs)
+                    await $_getPrefetchedData<
+                      TaskRow,
+                      $TaskRowsTable,
+                      TaskReminderRuleRow
+                    >(
+                      currentTable: table,
+                      referencedTable: $$TaskRowsTableReferences
+                          ._taskReminderRuleRowsRefsTable(db),
+                      managerFromTypedResult: (p0) => $$TaskRowsTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).taskReminderRuleRowsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.taskId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -4507,9 +5118,9 @@ typedef $$TaskRowsTableProcessedTableManager =
       $$TaskRowsTableAnnotationComposer,
       $$TaskRowsTableCreateCompanionBuilder,
       $$TaskRowsTableUpdateCompanionBuilder,
-      (TaskRow, BaseReferences<_$AppDatabase, $TaskRowsTable, TaskRow>),
+      (TaskRow, $$TaskRowsTableReferences),
       TaskRow,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool taskReminderRuleRowsRefs})
     >;
 typedef $$FinanceTransactionRowsTableCreateCompanionBuilder =
     FinanceTransactionRowsCompanion Function({
@@ -6320,6 +6931,386 @@ typedef $$InstallmentPaymentRowsTableProcessedTableManager =
       InstallmentPaymentRow,
       PrefetchHooks Function({bool planId})
     >;
+typedef $$TaskReminderRuleRowsTableCreateCompanionBuilder =
+    TaskReminderRuleRowsCompanion Function({
+      required String id,
+      required String taskId,
+      required String trigger,
+      Value<bool> enabled,
+      Value<String> privacyMode,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$TaskReminderRuleRowsTableUpdateCompanionBuilder =
+    TaskReminderRuleRowsCompanion Function({
+      Value<String> id,
+      Value<String> taskId,
+      Value<String> trigger,
+      Value<bool> enabled,
+      Value<String> privacyMode,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+final class $$TaskReminderRuleRowsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TaskReminderRuleRowsTable,
+          TaskReminderRuleRow
+        > {
+  $$TaskReminderRuleRowsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaskRowsTable _taskIdTable(_$AppDatabase db) =>
+      db.taskRows.createAlias('task_reminder_rules__task_id__tasks__id');
+
+  $$TaskRowsTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<String>('task_id')!;
+
+    final manager = $$TaskRowsTableTableManager(
+      $_db,
+      $_db.taskRows,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TaskReminderRuleRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskReminderRuleRowsTable> {
+  $$TaskReminderRuleRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trigger => $composableBuilder(
+    column: $table.trigger,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get privacyMode => $composableBuilder(
+    column: $table.privacyMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaskRowsTableFilterComposer get taskId {
+    final $$TaskRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskReminderRuleRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskReminderRuleRowsTable> {
+  $$TaskReminderRuleRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trigger => $composableBuilder(
+    column: $table.trigger,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get privacyMode => $composableBuilder(
+    column: $table.privacyMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaskRowsTableOrderingComposer get taskId {
+    final $$TaskRowsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskReminderRuleRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskReminderRuleRowsTable> {
+  $$TaskReminderRuleRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get trigger =>
+      $composableBuilder(column: $table.trigger, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<String> get privacyMode => $composableBuilder(
+    column: $table.privacyMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  $$TaskRowsTableAnnotationComposer get taskId {
+    final $$TaskRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskReminderRuleRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskReminderRuleRowsTable,
+          TaskReminderRuleRow,
+          $$TaskReminderRuleRowsTableFilterComposer,
+          $$TaskReminderRuleRowsTableOrderingComposer,
+          $$TaskReminderRuleRowsTableAnnotationComposer,
+          $$TaskReminderRuleRowsTableCreateCompanionBuilder,
+          $$TaskReminderRuleRowsTableUpdateCompanionBuilder,
+          (TaskReminderRuleRow, $$TaskReminderRuleRowsTableReferences),
+          TaskReminderRuleRow,
+          PrefetchHooks Function({bool taskId})
+        > {
+  $$TaskReminderRuleRowsTableTableManager(
+    _$AppDatabase db,
+    $TaskReminderRuleRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskReminderRuleRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaskReminderRuleRowsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TaskReminderRuleRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<String> trigger = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<String> privacyMode = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaskReminderRuleRowsCompanion(
+                id: id,
+                taskId: taskId,
+                trigger: trigger,
+                enabled: enabled,
+                privacyMode: privacyMode,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taskId,
+                required String trigger,
+                Value<bool> enabled = const Value.absent(),
+                Value<String> privacyMode = const Value.absent(),
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => TaskReminderRuleRowsCompanion.insert(
+                id: id,
+                taskId: taskId,
+                trigger: trigger,
+                enabled: enabled,
+                privacyMode: privacyMode,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaskReminderRuleRowsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable:
+                                    $$TaskReminderRuleRowsTableReferences
+                                        ._taskIdTable(db),
+                                referencedColumn:
+                                    $$TaskReminderRuleRowsTableReferences
+                                        ._taskIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaskReminderRuleRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskReminderRuleRowsTable,
+      TaskReminderRuleRow,
+      $$TaskReminderRuleRowsTableFilterComposer,
+      $$TaskReminderRuleRowsTableOrderingComposer,
+      $$TaskReminderRuleRowsTableAnnotationComposer,
+      $$TaskReminderRuleRowsTableCreateCompanionBuilder,
+      $$TaskReminderRuleRowsTableUpdateCompanionBuilder,
+      (TaskReminderRuleRow, $$TaskReminderRuleRowsTableReferences),
+      TaskReminderRuleRow,
+      PrefetchHooks Function({bool taskId})
+    >;
 typedef $$NotificationScheduleRowsTableCreateCompanionBuilder =
     NotificationScheduleRowsCompanion Function({
       required String scheduleId,
@@ -6668,6 +7659,8 @@ class $AppDatabaseManager {
         _db,
         _db.installmentPaymentRows,
       );
+  $$TaskReminderRuleRowsTableTableManager get taskReminderRuleRows =>
+      $$TaskReminderRuleRowsTableTableManager(_db, _db.taskReminderRuleRows);
   $$NotificationScheduleRowsTableTableManager get notificationScheduleRows =>
       $$NotificationScheduleRowsTableTableManager(
         _db,

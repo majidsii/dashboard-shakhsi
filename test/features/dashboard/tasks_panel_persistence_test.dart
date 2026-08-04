@@ -4,6 +4,8 @@ import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/dashboard/presentation/widgets/tasks_panel.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +14,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late _MemoryTaskRepository repository;
+  late _MemoryTaskReminderRepository reminderRepository;
   late ProviderContainer container;
 
   setUp(() {
     repository = _MemoryTaskRepository();
+    reminderRepository = _MemoryTaskReminderRepository();
     container = ProviderContainer(
       overrides: <Override>[
         taskRepositoryProvider.overrideWithValue(repository),
+        taskReminderRepositoryProvider.overrideWithValue(reminderRepository),
       ],
     );
   });
@@ -623,4 +628,38 @@ final class _MemoryTaskRepository implements TaskRepository {
   }
 
   Future<void> close() => _controller.close();
+}
+
+final class _MemoryTaskReminderRepository implements TaskReminderRepository {
+  final Map<String, List<TaskReminderRule>> _items =
+      <String, List<TaskReminderRule>>{};
+
+  @override
+  Stream<List<TaskReminderRule>> watchByTask(String taskId) {
+    return Stream<List<TaskReminderRule>>.value(
+      List<TaskReminderRule>.unmodifiable(
+        _items[taskId] ?? const <TaskReminderRule>[],
+      ),
+    );
+  }
+
+  @override
+  Future<List<TaskReminderRule>> getByTask(String taskId) async {
+    return List<TaskReminderRule>.unmodifiable(
+      _items[taskId] ?? const <TaskReminderRule>[],
+    );
+  }
+
+  @override
+  Future<void> replaceForTask(
+    String taskId,
+    List<TaskReminderRule> expected,
+  ) async {
+    _items[taskId] = List<TaskReminderRule>.from(expected);
+  }
+
+  @override
+  Future<void> deleteByTask(String taskId) async {
+    _items.remove(taskId);
+  }
 }

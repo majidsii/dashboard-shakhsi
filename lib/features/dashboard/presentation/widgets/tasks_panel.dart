@@ -8,6 +8,7 @@ import 'package:dashboard_shakhsi/core/date_time/persian_date_label.dart';
 import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_board_operations.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_kanban_board.dart';
@@ -276,7 +277,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
               ],
             ),
           ],
-        ] else
+        ] else if (_viewMode == TaskViewMode.kanban)
           TaskKanbanBoard(
             tasks: visibleBoardTasks,
             allTasks: tasks,
@@ -335,7 +336,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
   }
 
   Future<void> _addTaskWithDetails() async {
-    final result = await showTaskDetailsDialog(
+    final result = await showTaskDetailsEditorDialog(
       context: context,
       mode: TaskDetailsDialogMode.create,
       nextId: _idGenerator.next,
@@ -343,13 +344,21 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     if (!mounted || result == null) return;
 
     final repository = ref.read(taskRepositoryProvider);
-    await repository.create(result);
+    await repository.create(result.task);
     await repository.transition(
-      id: result.id,
+      id: result.task.id,
       status: TaskStatus.planned,
       targetPosition: 0,
-      changedAtUtc: result.updatedAtUtc,
+      changedAtUtc: result.task.updatedAtUtc,
     );
+    if (result.reminderRules.isNotEmpty) {
+      final persisted = await repository.getById(result.task.id);
+      if (persisted != null) {
+        await ref
+            .read(taskReminderRulesServiceProvider)
+            .replaceForTask(task: persisted, rules: result.reminderRules);
+      }
+    }
   }
 
   Future<void> _toggleTask(TaskItem task) {
@@ -378,14 +387,30 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
   }
 
   Future<void> _editTask(TaskItem task) async {
-    final result = await showTaskDetailsDialog(
+    final initialReminderRules = await ref
+        .read(taskReminderRepositoryProvider)
+        .getByTask(task.id);
+    if (!mounted) return;
+
+    final result = await showTaskDetailsEditorDialog(
       context: context,
       mode: TaskDetailsDialogMode.edit,
       initialTask: task,
+      initialReminderRules: initialReminderRules,
+      nextId: _idGenerator.next,
     );
-    if (!mounted || result == null || result == task) return;
+    if (!mounted || result == null) return;
 
-    await ref.read(taskRepositoryProvider).update(result);
+    final repository = ref.read(taskRepositoryProvider);
+    await repository.update(result.task);
+    if (!_sameReminderRules(initialReminderRules, result.reminderRules)) {
+      final persisted = await repository.getById(result.task.id);
+      if (persisted != null) {
+        await ref
+            .read(taskReminderRulesServiceProvider)
+            .replaceForTask(task: persisted, rules: result.reminderRules);
+      }
+    }
   }
 
   Future<void> _removeTask(TaskItem task) async {
@@ -1423,6 +1448,26 @@ _PriorityVisual _priorityVisual(BuildContext context, int priority) {
       soft: Colors.transparent,
     ),
   };
+}
+
+bool _sameReminderRules(
+  List<TaskReminderRule> left,
+  List<TaskReminderRule> right,
+) {
+  if (left.length != right.length) return false;
+  final rightByTrigger = <Object, TaskReminderRule>{
+    for (final rule in right) rule.trigger: rule,
+  };
+  for (final rule in left) {
+    final other = rightByTrigger[rule.trigger];
+    if (other == null ||
+        other.id != rule.id ||
+        other.enabled != rule.enabled ||
+        other.privacyMode != rule.privacyMode) {
+      return false;
+    }
+  }
+  return true;
 }
 
 String _normalize(String value) {

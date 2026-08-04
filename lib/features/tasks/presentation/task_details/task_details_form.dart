@@ -4,6 +4,7 @@ import 'package:dashboard_shakhsi/app/widgets/original_glass.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_draft.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_duration_field.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_jalali_date_time_field.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_reminder_rules_field.dart';
 import 'package:flutter/material.dart';
 
 final class TaskDetailsForm extends StatefulWidget {
@@ -164,12 +165,30 @@ final class TaskDetailsFormState extends State<TaskDetailsForm> {
               onChanged: (value) {
                 setState(() => _draft.dueLocal = value);
                 _clearError(TaskDetailsField.dueAt);
+                _clearError(TaskDetailsField.reminders);
               },
             ),
           ),
           const SizedBox(height: 17),
           FocusTraversalOrder(
             order: const NumericFocusOrder(6),
+            child: TaskReminderRulesField(
+              dueLocal: _draft.dueLocal,
+              items: _draft.reminders,
+              errorText: _errors[TaskDetailsField.reminders],
+              onChanged: (items) {
+                setState(() {
+                  _draft.reminders
+                    ..clear()
+                    ..addAll(items);
+                });
+                _clearError(TaskDetailsField.reminders);
+              },
+            ),
+          ),
+          const SizedBox(height: 17),
+          FocusTraversalOrder(
+            order: const NumericFocusOrder(7),
             child: TaskDurationField(
               hours: _draft.estimatedHours,
               minutes: _draft.estimatedMinutes,
@@ -250,5 +269,6 @@ TaskDetailsDraft _copyDraft(TaskDetailsDraft source) {
     dueLocal: source.dueLocal,
     estimatedHours: source.estimatedHours,
     estimatedMinutes: source.estimatedMinutes,
+    reminders: source.reminders.map((item) => item.copyWith()).toList(),
   );
 }
