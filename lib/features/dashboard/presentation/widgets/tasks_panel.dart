@@ -9,6 +9,9 @@ import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_board_operations.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_kanban_board.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_view_mode.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_planning_labels.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +29,12 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
   final TextEditingController _searchController = TextEditingController();
   static const IdGenerator _idGenerator = UuidV7IdGenerator();
   final Set<String> _removingTaskIds = <String>{};
+  final Set<String> _movingTaskIds = <String>{};
 
   int _priority = 0;
   int _filter = 0;
   String _sort = 'new';
+  TaskViewMode _viewMode = TaskViewMode.list;
 
   @override
   void dispose() {
@@ -52,6 +57,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         .where((task) => task.isActive && task.priority == 3)
         .length;
     final visibleTasks = _filteredTasks(panelTasks);
+    final visibleBoardTasks = _searchedBoardTasks(tasks);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,6 +121,14 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
           sort: _sort,
           onSortChanged: (value) => setState(() => _sort = value),
           onSearchChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: _TaskViewModeToggle(
+            mode: _viewMode,
+            onChanged: (mode) => setState(() => _viewMode = mode),
+          ),
         ),
         const SizedBox(height: 12),
         LayoutBuilder(
@@ -180,87 +194,98 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
           },
         ),
         const SizedBox(height: 14),
-        _TaskFilterPills(
-          selected: _filter,
-          total: panelTasks.length,
-          active: activeCount,
-          high: panelTasks.where((task) => task.priority == 3).length,
-          done: doneCount,
-          onSelected: (value) => setState(() => _filter = value),
-        ),
-        const SizedBox(height: 14),
-        if (visibleTasks.isEmpty)
-          _EmptyTasks(
-            hasTasks: panelTasks.isNotEmpty,
-            hasQuery: _searchController.text.trim().isNotEmpty,
-            filter: _filter,
-          )
-        else
-          ...visibleTasks.indexed.map(
-            (entry) => Padding(
-              padding: const EdgeInsets.only(bottom: 9),
-              child: _TaskRow(
-                key: ValueKey<String>(entry.$2.id),
-                task: entry.$2,
-                removing: _removingTaskIds.contains(entry.$2.id),
-                onToggle: () => unawaited(_toggleTask(entry.$2)),
-                onPriority: () => unawaited(_changePriority(entry.$2)),
-                onEdit: () => unawaited(_editTask(entry.$2)),
-                onDelete: () => unawaited(_removeTask(entry.$2)),
-              ),
-            ),
+        if (_viewMode == TaskViewMode.list) ...<Widget>[
+          _TaskFilterPills(
+            selected: _filter,
+            total: panelTasks.length,
+            active: activeCount,
+            high: panelTasks.where((task) => task.priority == 3).length,
+            done: doneCount,
+            onSelected: (value) => setState(() => _filter = value),
           ),
-        if (panelTasks.isNotEmpty) ...<Widget>[
-          const SizedBox(height: 9),
-          Container(height: 1, color: palette.line),
           const SizedBox(height: 14),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  '${_fa(activeCount)} فعال · ${_fa(doneCount)} انجام‌شده',
-                  style: TextStyle(
-                    color: palette.muted,
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w500,
-                  ),
+          if (visibleTasks.isEmpty)
+            _EmptyTasks(
+              hasTasks: panelTasks.isNotEmpty,
+              hasQuery: _searchController.text.trim().isNotEmpty,
+              filter: _filter,
+            )
+          else
+            ...visibleTasks.indexed.map(
+              (entry) => Padding(
+                padding: const EdgeInsets.only(bottom: 9),
+                child: _TaskRow(
+                  key: ValueKey<String>(entry.$2.id),
+                  task: entry.$2,
+                  removing: _removingTaskIds.contains(entry.$2.id),
+                  onToggle: () => unawaited(_toggleTask(entry.$2)),
+                  onPriority: () => unawaited(_changePriority(entry.$2)),
+                  onEdit: () => unawaited(_editTask(entry.$2)),
+                  onDelete: () => unawaited(_removeTask(entry.$2)),
                 ),
               ),
-              Visibility(
-                visible: doneCount > 0,
-                maintainAnimation: true,
-                maintainSize: true,
-                maintainState: true,
-                child: OriginalPressable(
-                  onPressed: doneCount == 0
-                      ? null
-                      : () => unawaited(
-                          ref.read(taskRepositoryProvider).deleteCompleted(),
-                        ),
-                  pressedScale: .96,
-                  borderRadius: BorderRadius.circular(
-                    OriginalDesignTokens.pillRadius,
-                  ),
-                  semanticLabel: 'پاک کردن انجام‌شده‌ها',
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 7,
+            ),
+          if (panelTasks.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 9),
+            Container(height: 1, color: palette.line),
+            const SizedBox(height: 14),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    '${_fa(activeCount)} فعال · ${_fa(doneCount)} انجام‌شده',
+                    style: TextStyle(
+                      color: palette.muted,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w500,
                     ),
-                    child: Text(
-                      'پاک کردن انجام‌شده‌ها',
-                      style: TextStyle(
-                        color: palette.muted,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Visibility(
+                  visible: doneCount > 0,
+                  maintainAnimation: true,
+                  maintainSize: true,
+                  maintainState: true,
+                  child: OriginalPressable(
+                    onPressed: doneCount == 0
+                        ? null
+                        : () => unawaited(
+                            ref.read(taskRepositoryProvider).deleteCompleted(),
+                          ),
+                    pressedScale: .96,
+                    borderRadius: BorderRadius.circular(
+                      OriginalDesignTokens.pillRadius,
+                    ),
+                    semanticLabel: 'پاک کردن انجام‌شده‌ها',
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
+                      child: Text(
+                        'پاک کردن انجام‌شده‌ها',
+                        style: TextStyle(
+                          color: palette.muted,
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          ],
+        ] else
+          TaskKanbanBoard(
+            tasks: visibleBoardTasks,
+            allTasks: tasks,
+            busyTaskIds: _movingTaskIds,
+            onMove: (request) => _moveBoardTask(request, tasks),
+            onEdit: (task) => unawaited(_editTask(task)),
+            onPriority: (task) => unawaited(_changePriority(task)),
+            onDelete: (task) => unawaited(_removeTask(task)),
           ),
-        ],
       ],
     );
   }
@@ -377,6 +402,39 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     }
   }
 
+  Future<void> _moveBoardTask(
+    TaskBoardMoveRequest request,
+    List<TaskItem> tasks,
+  ) async {
+    if (_movingTaskIds.contains(request.taskId)) return;
+    setState(() => _movingTaskIds.add(request.taskId));
+
+    try {
+      final operations = TaskBoardOperations(
+        repository: ref.read(taskRepositoryProvider),
+        nowUtc: () => DateTime.now().toUtc(),
+      );
+      await operations.move(tasks: tasks, request: request);
+    } finally {
+      if (mounted) {
+        setState(() => _movingTaskIds.remove(request.taskId));
+      }
+    }
+  }
+
+  List<TaskItem> _searchedBoardTasks(List<TaskItem> tasks) {
+    final query = _normalize(_searchController.text.trim());
+    if (query.isEmpty) return List<TaskItem>.from(tasks);
+
+    return tasks
+        .where((task) {
+          final description = task.description ?? '';
+          return _normalize(task.title).contains(query) ||
+              _normalize(description).contains(query);
+        })
+        .toList(growable: false);
+  }
+
   List<TaskItem> _filteredTasks(List<TaskItem> tasks) {
     final query = _normalize(_searchController.text.trim());
     final result = tasks.where((task) {
@@ -402,6 +460,23 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
       return b.createdAt.compareTo(a.createdAt);
     });
     return result;
+  }
+}
+
+final class _TaskViewModeToggle extends StatelessWidget {
+  const _TaskViewModeToggle({required this.mode, required this.onChanged});
+
+  final TaskViewMode mode;
+  final ValueChanged<TaskViewMode> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return OriginalPills(
+      items: const <String>['فهرست', 'کانبان'],
+      selected: mode.index,
+      compact: true,
+      onSelected: (index) => onChanged(TaskViewMode.values[index]),
+    );
   }
 }
 
