@@ -1,14 +1,14 @@
 # Phase 2 Tasks v2, Reminder, and Recurrence — Design
 
-Date: 2026-08-02  
-Status: Approved for implementation; Task 2.1 implemented  
-Phase: 2 — Planning and Execution  
+Date: 2026-08-02
+Status: Approved for implementation; Tasks 2.1–2.3 implemented
+Phase: 2 — Planning and Execution
 Baseline: Phase 1 complete; 1005 project tests passing
 
 ## Implementation status
 
 - Task 2.1 — Task Status, Display Number, and Per-Status Position: **Implemented** ([checkpoint](../checkpoints/2026-08-02-task-2-1-status-ordering-checkpoint.md))
-- Tasks 2.2–2.11: **Pending**
+- Tasks 2.4–2.11: **Pending**
 - Phase 2 overall: **In progress**
 
 ## Objective
@@ -353,8 +353,8 @@ Task domain data remains independent of dashboard layout state.
 ## Phase 2 task map
 
 1. **Task 2.1 — Task Status, Display Number, and Per-Status Position** — **Implemented** ([checkpoint](../checkpoints/2026-08-02-task-2-1-status-ordering-checkpoint.md))
-2. **Task 2.2 — Description, Start/Due Time, and Estimated Duration**
-3. **Task 2.3 — Atomic Board Operations, List, and Kanban Views**
+2. **Task 2.2 — Description, Start/Due Time, and Estimated Duration** — **Implemented** ([checkpoint](../checkpoints/2026-08-04-task-2-2-planning-fields-checkpoint.md))
+3. **Task 2.3 — Atomic Board Operations, List, and Kanban Views** — **Implemented** ([checkpoint](../checkpoints/2026-08-04-task-2-3-board-list-kanban-checkpoint.md))
 4. **Task 2.4 — Task Reminder Rules and Notification Projection**
 5. **Task 2.5 — Shared Recurrence Domain and Occurrence Engine**
 6. **Task 2.6 — Recurring Tasks, Exceptions, and Calendar View**
