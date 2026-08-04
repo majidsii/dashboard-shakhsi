@@ -9,6 +9,8 @@ import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_planning_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -117,33 +119,61 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         const SizedBox(height: 12),
         LayoutBuilder(
           builder: (context, constraints) {
-            final narrow = constraints.maxWidth < 480;
+            final narrow = constraints.maxWidth < 560;
+            final quickAdd = Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Expanded(
+                  child: OriginalTextField(
+                    controller: _newTaskController,
+                    hintText: 'یک کار جدید بنویسید…',
+                    pill: true,
+                    onSubmitted: (_) => unawaited(_addTask()),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _PriorityButton(
+                  priority: _priority,
+                  hideLabel: narrow,
+                  onTap: () => setState(() => _priority = (_priority + 1) % 4),
+                ),
+                const SizedBox(width: 8),
+                OriginalPrimaryButton(
+                  square: true,
+                  icon: Icons.add_rounded,
+                  onPressed: () => unawaited(_addTask()),
+                ),
+              ],
+            );
+
+            final detailedAction = OriginalGhostButton(
+              label: 'افزودن با جزئیات',
+              icon: Icons.tune_rounded,
+              onPressed: () => unawaited(_addTaskWithDetails()),
+            );
+
+            if (narrow) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  SizedBox(height: 48, child: quickAdd),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: detailedAction,
+                  ),
+                ],
+              );
+            }
+
             return SizedBox(
               height: 48,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Expanded(
-                    child: OriginalTextField(
-                      controller: _newTaskController,
-                      hintText: 'یک کار جدید بنویسید…',
-                      pill: true,
-                      onSubmitted: (_) => unawaited(_addTask()),
-                    ),
-                  ),
+                  Expanded(child: quickAdd),
                   const SizedBox(width: 8),
-                  _PriorityButton(
-                    priority: _priority,
-                    hideLabel: narrow,
-                    onTap: () =>
-                        setState(() => _priority = (_priority + 1) % 4),
-                  ),
-                  const SizedBox(width: 8),
-                  OriginalPrimaryButton(
-                    square: true,
-                    icon: Icons.add_rounded,
-                    onPressed: () => unawaited(_addTask()),
-                  ),
+                  detailedAction,
                 ],
               ),
             );
@@ -175,7 +205,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
                 removing: _removingTaskIds.contains(entry.$2.id),
                 onToggle: () => unawaited(_toggleTask(entry.$2)),
                 onPriority: () => unawaited(_changePriority(entry.$2)),
-                onEdit: (value) => unawaited(_editTask(entry.$2, value)),
+                onEdit: () => unawaited(_editTask(entry.$2)),
                 onDelete: () => unawaited(_removeTask(entry.$2)),
               ),
             ),
@@ -279,6 +309,24 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     }
   }
 
+  Future<void> _addTaskWithDetails() async {
+    final result = await showTaskDetailsDialog(
+      context: context,
+      mode: TaskDetailsDialogMode.create,
+      nextId: _idGenerator.next,
+    );
+    if (!mounted || result == null) return;
+
+    final repository = ref.read(taskRepositoryProvider);
+    await repository.create(result);
+    await repository.transition(
+      id: result.id,
+      status: TaskStatus.planned,
+      targetPosition: 0,
+      changedAtUtc: result.updatedAtUtc,
+    );
+  }
+
   Future<void> _toggleTask(TaskItem task) {
     final targetStatus = task.status == TaskStatus.completed
         ? TaskStatus.planned
@@ -304,15 +352,15 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         );
   }
 
-  Future<void> _editTask(TaskItem task, String value) async {
-    final title = value.trim();
-    if (title.isEmpty || title == task.title) return;
+  Future<void> _editTask(TaskItem task) async {
+    final result = await showTaskDetailsDialog(
+      context: context,
+      mode: TaskDetailsDialogMode.edit,
+      initialTask: task,
+    );
+    if (!mounted || result == null || result == task) return;
 
-    await ref
-        .read(taskRepositoryProvider)
-        .update(
-          task.copyWith(title: title, updatedAtUtc: DateTime.now().toUtc()),
-        );
+    await ref.read(taskRepositoryProvider).update(result);
   }
 
   Future<void> _removeTask(TaskItem task) async {
@@ -763,7 +811,7 @@ final class _TaskFilterPills extends StatelessWidget {
   }
 }
 
-final class _TaskRow extends StatefulWidget {
+final class _TaskRow extends StatelessWidget {
   const _TaskRow({
     required this.task,
     required this.removing,
@@ -778,68 +826,18 @@ final class _TaskRow extends StatefulWidget {
   final bool removing;
   final VoidCallback onToggle;
   final VoidCallback onPriority;
-  final ValueChanged<String> onEdit;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
-
-  @override
-  State<_TaskRow> createState() => _TaskRowState();
-}
-
-final class _TaskRowState extends State<_TaskRow> {
-  late final TextEditingController _editController;
-  late final FocusNode _editFocusNode;
-  bool _editing = false;
-  bool _finishingEdit = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _editController = TextEditingController(text: widget.task.title);
-    _editFocusNode = FocusNode();
-  }
-
-  @override
-  void didUpdateWidget(covariant _TaskRow oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!_editing && oldWidget.task.title != widget.task.title) {
-      _editController.text = widget.task.title;
-    }
-  }
-
-  @override
-  void dispose() {
-    _editController.dispose();
-    _editFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _startEditing() {
-    if (_editing) return;
-    _editController.text = widget.task.title;
-    setState(() => _editing = true);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _editFocusNode.requestFocus();
-      _editController.selection = TextSelection.collapsed(
-        offset: _editController.text.length,
-      );
-    });
-  }
-
-  void _finishEditing({required bool save}) {
-    if (!_editing || _finishingEdit) return;
-    _finishingEdit = true;
-    if (save) widget.onEdit(_editController.text);
-    _editFocusNode.unfocus();
-    if (mounted) setState(() => _editing = false);
-    _finishingEdit = false;
-  }
 
   @override
   Widget build(BuildContext context) {
     final palette = OriginalPalette.of(context);
-    final task = widget.task;
     final priority = _priorityVisual(context, task.priority);
+    final planningLabels = <String>[
+      ?taskStartLabel(task),
+      ?taskDueLabel(task),
+      ?taskEstimatedDurationLabel(task),
+    ];
 
     final row = DecoratedBox(
       decoration: BoxDecoration(
@@ -878,73 +876,75 @@ final class _TaskRowState extends State<_TaskRow> {
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 12, 12),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _TaskCheck(done: task.done, onPressed: widget.onToggle),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: _TaskCheck(done: task.done, onPressed: onToggle),
+                  ),
                   const SizedBox(width: 11),
-                  _TaskNumber(displayNumber: task.displayNumber),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: _TaskNumber(displayNumber: task.displayNumber),
+                  ),
                   const SizedBox(width: 9),
                   Expanded(
-                    child: _editing
-                        ? TextField(
-                            controller: _editController,
-                            focusNode: _editFocusNode,
-                            textInputAction: TextInputAction.done,
-                            onSubmitted: (_) => _finishEditing(save: true),
-                            onTapOutside: (_) => _finishEditing(save: true),
-                            cursorColor: palette.accent,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onDoubleTap: onEdit,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            task.title,
                             style: TextStyle(
-                              color: palette.ink,
+                              color: task.done ? palette.faint : palette.ink,
                               fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: 'ویرایش کار',
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 1,
-                              ),
-                              border: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: palette.accent,
-                                  width: 2,
-                                ),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: palette.accent,
-                                  width: 2,
-                                ),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: palette.accent,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          )
-                        : GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onDoubleTap: _startEditing,
-                            child: Text(
-                              task.title,
-                              style: TextStyle(
-                                color: task.done ? palette.faint : palette.ink,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                decoration: task.done
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                                decorationThickness: 1.5,
-                              ),
+                              fontWeight: FontWeight.w600,
+                              decoration: task.done
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                              decorationThickness: 1.5,
                             ),
                           ),
+                          if (task.description
+                              case final description?) ...<Widget>[
+                            const SizedBox(height: 4),
+                            Text(
+                              description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: palette.muted,
+                                fontSize: 12.5,
+                                height: 1.45,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                          if (planningLabels.isNotEmpty) ...<Widget>[
+                            const SizedBox(height: 7),
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 5,
+                              children: <Widget>[
+                                for (final label in planningLabels)
+                                  _TaskPlanningChip(label: label),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 7),
-                  _PriorityChip(
-                    priority: task.priority,
-                    done: task.done,
-                    onPressed: widget.onPriority,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: _PriorityChip(
+                      priority: task.priority,
+                      done: task.done,
+                      onPressed: onPriority,
+                    ),
                   ),
                   const SizedBox(width: 2),
                   _TaskActionButton(
@@ -952,14 +952,14 @@ final class _TaskRowState extends State<_TaskRow> {
                     icon: Icons.edit_outlined,
                     hoverColor: palette.accentSoft,
                     hoverIconColor: palette.accent,
-                    onPressed: _startEditing,
+                    onPressed: onEdit,
                   ),
                   _TaskActionButton(
                     semanticLabel: 'حذف کار',
                     icon: Icons.delete_outline_rounded,
                     hoverColor: palette.expenseSoft,
                     hoverIconColor: palette.expense,
-                    onPressed: widget.onDelete,
+                    onPressed: onDelete,
                   ),
                 ],
               ),
@@ -975,9 +975,9 @@ final class _TaskRowState extends State<_TaskRow> {
       curve: const Cubic(.32, 1.35, .4, 1),
       builder: (context, value, child) {
         final opacity = value.clamp(0.0, 1.0).toDouble();
-        final removalProgress = widget.removing ? 1.0 : 0.0;
+        final removalProgress = removing ? 1.0 : 0.0;
         return AnimatedOpacity(
-          opacity: widget.removing ? 0 : 1,
+          opacity: removing ? 0 : 1,
           duration: const Duration(milliseconds: 250),
           curve: Curves.ease,
           child: AnimatedSlide(
@@ -995,6 +995,35 @@ final class _TaskRowState extends State<_TaskRow> {
         );
       },
       child: row,
+    );
+  }
+}
+
+final class _TaskPlanningChip extends StatelessWidget {
+  const _TaskPlanningChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = OriginalPalette.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: palette.inner,
+        borderRadius: BorderRadius.circular(OriginalDesignTokens.pillRadius),
+        border: Border.all(color: palette.hair),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: palette.muted,
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
     );
   }
 }
