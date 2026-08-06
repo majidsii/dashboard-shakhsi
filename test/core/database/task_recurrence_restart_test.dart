@@ -85,7 +85,7 @@ void main() {
 
         final second = AppDatabase(NativeDatabase(file));
         try {
-          expect(second.schemaVersion, 6);
+          expect(second.schemaVersion, 7);
           final restored = await DriftTaskRecurrenceRepository(
             second,
           ).getByTask('restart-task');

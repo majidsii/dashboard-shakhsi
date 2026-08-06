@@ -1,14 +1,29 @@
 // Task 2.2 Heavy UI RED
 import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
 import 'package:dashboard_shakhsi/app/widgets/original_controls.dart';
+import 'package:dashboard_shakhsi/core/database/app_database.dart';
+import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
+import '../../../../support/test_database.dart';
+
 void main() {
+  late AppDatabase database;
+
+  setUp(() {
+    database = openTestDatabase();
+  });
+
+  tearDown(() async {
+    await database.close();
+  });
+
   Finder textFieldWithHint(String hint) {
     return find.byWidgetPredicate(
       (widget) => widget is TextField && widget.decoration?.hintText == hint,
@@ -74,31 +89,34 @@ void main() {
     String Function()? nextId,
     double width = 900,
   }) {
-    return MaterialApp(
-      theme: OriginalTheme.light(),
-      home: Scaffold(
-        body: Directionality(
-          textDirection: TextDirection.rtl,
-          child: SizedBox(
-            width: width,
-            child: Builder(
-              builder: (context) {
-                return Center(
-                  child: TextButton(
-                    onPressed: () async {
-                      final result = await showTaskDetailsDialog(
-                        context: context,
-                        mode: mode,
-                        initialTask: initialTask,
-                        now: now,
-                        nextId: nextId,
-                      );
-                      onResult(result);
-                    },
-                    child: const Text('باز کردن فرم'),
-                  ),
-                );
-              },
+    return ProviderScope(
+      overrides: <Override>[appDatabaseProvider.overrideWithValue(database)],
+      child: MaterialApp(
+        theme: OriginalTheme.light(),
+        home: Scaffold(
+          body: Directionality(
+            textDirection: TextDirection.rtl,
+            child: SizedBox(
+              width: width,
+              child: Builder(
+                builder: (context) {
+                  return Center(
+                    child: TextButton(
+                      onPressed: () async {
+                        final result = await showTaskDetailsDialog(
+                          context: context,
+                          mode: mode,
+                          initialTask: initialTask,
+                          now: now,
+                          nextId: nextId,
+                        );
+                        onResult(result);
+                      },
+                      child: const Text('باز کردن فرم'),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),

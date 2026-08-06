@@ -13,7 +13,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 void main() {
   test(
-    'schema version four upgrades through reminder and recurrence schema six',
+    'schema version four upgrades through reminder and recurrence schema seven',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'dashboard-task-reminder-migration-',
@@ -22,13 +22,14 @@ void main() {
 
       try {
         final created = AppDatabase(NativeDatabase(file));
-        expect(created.schemaVersion, 6);
+        expect(created.schemaVersion, 7);
         await created.select(created.taskReminderRuleRows).get();
         await created.close();
 
         final raw = sqlite.sqlite3.open(file.path);
         try {
           raw.execute('DROP TABLE task_reminder_rules');
+          raw.execute('DROP TABLE task_time_entries');
           raw.execute('PRAGMA user_version = 4');
         } finally {
           raw.close();
@@ -36,11 +37,11 @@ void main() {
 
         final upgraded = AppDatabase(NativeDatabase(file));
         try {
-          expect(upgraded.schemaVersion, 6);
+          expect(upgraded.schemaVersion, 7);
           final versionRows = await upgraded
               .customSelect('PRAGMA user_version')
               .get();
-          expect(versionRows.single.read<int>('user_version'), 6);
+          expect(versionRows.single.read<int>('user_version'), 7);
 
           final taskRepository = DriftTaskRepository(upgraded);
           final reminderRepository = DriftTaskReminderRepository(upgraded);

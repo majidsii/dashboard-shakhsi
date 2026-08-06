@@ -20,6 +20,7 @@ import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_vi
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_calendar/task_calendar_board.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_planning_labels.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_timer/task_timer_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -163,6 +164,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
           ),
         ),
         const SizedBox(height: 12),
+        TaskActiveTimerStrip(tasks: tasks),
         LayoutBuilder(
           builder: (context, constraints) {
             final narrow = constraints.maxWidth < 560;
@@ -1155,6 +1157,13 @@ final class _TaskRow extends StatelessWidget {
                               ],
                             ),
                           ],
+                          Padding(
+                            padding: const EdgeInsets.only(top: 7),
+                            child: Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: TaskTimeTotalBadge(taskId: task.id),
+                            ),
+                          ),
                         ],
                       ),
                     ),

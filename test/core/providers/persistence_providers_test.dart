@@ -10,9 +10,11 @@ import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart'
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_recurrence_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_time_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/reminder_aware_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_time_entry.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -51,6 +53,10 @@ void main() {
       container.read(taskRecurrenceRepositoryProvider),
       isA<DriftTaskRecurrenceRepository>(),
     );
+    expect(
+      container.read(taskTimeRepositoryProvider),
+      isA<DriftTaskTimeRepository>(),
+    );
     expect(financeRepository, isA<DriftFinanceRepository>());
     expect(identical(container.read(appDatabaseProvider), database), isTrue);
   });
@@ -81,6 +87,44 @@ void main() {
     final items = await nextItems;
     expect(items.single.title, 'تسک ذخیره‌شده');
   });
+
+  test(
+    'timer providers emit persisted active and task-scoped entries',
+    () async {
+      final now = DateTime.utc(2026, 8, 6, 8);
+      await container
+          .read(taskRepositoryProvider)
+          .create(
+            TaskItem(
+              id: 'timer-provider-task',
+              displayNumber: 1,
+              title: 'تایمر Provider',
+              priority: 1,
+              status: TaskStatus.planned,
+              positionInStatus: 0,
+              createdAtUtc: now,
+              updatedAtUtc: now,
+            ),
+          );
+      final activeFuture = _waitForData<TaskTimeEntry?>(
+        container,
+        activeTaskTimerProvider,
+        (entry) => entry?.taskId == 'timer-provider-task',
+      );
+      final entriesFuture = _waitForData<List<TaskTimeEntry>>(
+        container,
+        taskTimeEntriesByTaskProvider('timer-provider-task'),
+        (entries) => entries.length == 1,
+      );
+
+      await container
+          .read(taskTimerServiceProvider)
+          .start('timer-provider-task');
+
+      expect((await activeFuture)!.taskId, 'timer-provider-task');
+      expect((await entriesFuture).single.isRunning, isTrue);
+    },
+  );
 
   test('financeTransactionsProvider emits repository data', () async {
     final now = DateTime.utc(2026, 7, 26, 11);

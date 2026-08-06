@@ -230,6 +230,8 @@ tests = "\n".join(read(relative) for relative in test_files)
 need(
     "schema version four upgrades to reminder schema version five" in tests
     or "schema version four upgrades through reminder and recurrence schema six"
+    in tests
+    or "schema version four upgrades through reminder and recurrence schema seven"
     in tests,
     "focused reminder migration coverage missing",
 )

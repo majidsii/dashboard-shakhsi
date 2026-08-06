@@ -15,8 +15,8 @@ void main() {
     await database.close();
   });
 
-  test('schema version six creates all persistence tables', () async {
-    expect(database.schemaVersion, 6);
+  test('schema version seven creates all persistence tables', () async {
+    expect(database.schemaVersion, 7);
 
     final rows = await database
         .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
@@ -36,6 +36,7 @@ void main() {
         'task_recurrence_rules',
         'task_recurrence_exceptions',
         'task_occurrence_completions',
+        'task_time_entries',
         'notification_schedules',
       }),
     );

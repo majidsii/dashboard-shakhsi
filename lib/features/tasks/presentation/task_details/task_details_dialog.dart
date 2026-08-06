@@ -198,6 +198,7 @@ final class _TaskDetailsDialogShellState
                                 titleHint: _isCreate
                                     ? 'عنوان کار'
                                     : 'ویرایش کار',
+                                taskId: widget.initialTask?.id,
                                 onSubmit: () => unawaited(_save()),
                               ),
                             ),

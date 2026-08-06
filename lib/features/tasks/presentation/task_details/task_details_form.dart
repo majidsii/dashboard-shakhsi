@@ -6,6 +6,7 @@ import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_jalali_date_time_field.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_recurrence_field.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_reminder_rules_field.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_timer/task_timer_panel.dart';
 import 'package:flutter/material.dart';
 
 final class TaskDetailsForm extends StatefulWidget {
@@ -13,12 +14,14 @@ final class TaskDetailsForm extends StatefulWidget {
     required this.initialDraft,
     required this.titleHint,
     required this.onSubmit,
+    this.taskId,
     super.key,
   });
 
   final TaskDetailsDraft initialDraft;
   final String titleHint;
   final VoidCallback onSubmit;
+  final String? taskId;
 
   @override
   TaskDetailsFormState createState() => TaskDetailsFormState();
@@ -226,6 +229,13 @@ final class TaskDetailsFormState extends State<TaskDetailsForm> {
               },
             ),
           ),
+          if (widget.taskId case final taskId?) ...<Widget>[
+            const SizedBox(height: 17),
+            TaskTimerPanel(
+              key: const ValueKey<String>('task-details-timer-panel'),
+              taskId: taskId,
+            ),
+          ],
         ],
       ),
     );

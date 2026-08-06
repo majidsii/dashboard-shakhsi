@@ -5161,6 +5161,745 @@ class TaskOccurrenceCompletionRowsCompanion
   }
 }
 
+class $TaskTimeEntryRowsTable extends TaskTimeEntryRows
+    with TableInfo<$TaskTimeEntryRowsTable, TaskTimeEntryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskTimeEntryRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tasks (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtUtcMeta = const VerificationMeta(
+    'startedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAtUtc = GeneratedColumn<DateTime>(
+    'started_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastResumedAtUtcMeta = const VerificationMeta(
+    'lastResumedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastResumedAtUtc =
+      GeneratedColumn<DateTime>(
+        'last_resumed_at_utc',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _endedAtUtcMeta = const VerificationMeta(
+    'endedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endedAtUtc = GeneratedColumn<DateTime>(
+    'ended_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _accumulatedSecondsMeta =
+      const VerificationMeta('accumulatedSeconds');
+  @override
+  late final GeneratedColumn<int> accumulatedSeconds = GeneratedColumn<int>(
+    'accumulated_seconds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activeSlotMeta = const VerificationMeta(
+    'activeSlot',
+  );
+  @override
+  late final GeneratedColumn<int> activeSlot = GeneratedColumn<int>(
+    'active_slot',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taskId,
+    source,
+    state,
+    startedAtUtc,
+    lastResumedAtUtc,
+    endedAtUtc,
+    accumulatedSeconds,
+    activeSlot,
+    note,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_time_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskTimeEntryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    if (data.containsKey('started_at_utc')) {
+      context.handle(
+        _startedAtUtcMeta,
+        startedAtUtc.isAcceptableOrUnknown(
+          data['started_at_utc']!,
+          _startedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtUtcMeta);
+    }
+    if (data.containsKey('last_resumed_at_utc')) {
+      context.handle(
+        _lastResumedAtUtcMeta,
+        lastResumedAtUtc.isAcceptableOrUnknown(
+          data['last_resumed_at_utc']!,
+          _lastResumedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('ended_at_utc')) {
+      context.handle(
+        _endedAtUtcMeta,
+        endedAtUtc.isAcceptableOrUnknown(
+          data['ended_at_utc']!,
+          _endedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('accumulated_seconds')) {
+      context.handle(
+        _accumulatedSecondsMeta,
+        accumulatedSeconds.isAcceptableOrUnknown(
+          data['accumulated_seconds']!,
+          _accumulatedSecondsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_accumulatedSecondsMeta);
+    }
+    if (data.containsKey('active_slot')) {
+      context.handle(
+        _activeSlotMeta,
+        activeSlot.isAcceptableOrUnknown(data['active_slot']!, _activeSlotMeta),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaskTimeEntryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskTimeEntryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      startedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at_utc'],
+      )!,
+      lastResumedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_resumed_at_utc'],
+      ),
+      endedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ended_at_utc'],
+      ),
+      accumulatedSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}accumulated_seconds'],
+      )!,
+      activeSlot: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}active_slot'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskTimeEntryRowsTable createAlias(String alias) {
+    return $TaskTimeEntryRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TaskTimeEntryRow extends DataClass
+    implements Insertable<TaskTimeEntryRow> {
+  final String id;
+  final String taskId;
+  final String source;
+  final String state;
+  final DateTime startedAtUtc;
+  final DateTime? lastResumedAtUtc;
+  final DateTime? endedAtUtc;
+  final int accumulatedSeconds;
+  final int? activeSlot;
+  final String? note;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const TaskTimeEntryRow({
+    required this.id,
+    required this.taskId,
+    required this.source,
+    required this.state,
+    required this.startedAtUtc,
+    this.lastResumedAtUtc,
+    this.endedAtUtc,
+    required this.accumulatedSeconds,
+    this.activeSlot,
+    this.note,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['task_id'] = Variable<String>(taskId);
+    map['source'] = Variable<String>(source);
+    map['state'] = Variable<String>(state);
+    map['started_at_utc'] = Variable<DateTime>(startedAtUtc);
+    if (!nullToAbsent || lastResumedAtUtc != null) {
+      map['last_resumed_at_utc'] = Variable<DateTime>(lastResumedAtUtc);
+    }
+    if (!nullToAbsent || endedAtUtc != null) {
+      map['ended_at_utc'] = Variable<DateTime>(endedAtUtc);
+    }
+    map['accumulated_seconds'] = Variable<int>(accumulatedSeconds);
+    if (!nullToAbsent || activeSlot != null) {
+      map['active_slot'] = Variable<int>(activeSlot);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  TaskTimeEntryRowsCompanion toCompanion(bool nullToAbsent) {
+    return TaskTimeEntryRowsCompanion(
+      id: Value(id),
+      taskId: Value(taskId),
+      source: Value(source),
+      state: Value(state),
+      startedAtUtc: Value(startedAtUtc),
+      lastResumedAtUtc: lastResumedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastResumedAtUtc),
+      endedAtUtc: endedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endedAtUtc),
+      accumulatedSeconds: Value(accumulatedSeconds),
+      activeSlot: activeSlot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activeSlot),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory TaskTimeEntryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskTimeEntryRow(
+      id: serializer.fromJson<String>(json['id']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      source: serializer.fromJson<String>(json['source']),
+      state: serializer.fromJson<String>(json['state']),
+      startedAtUtc: serializer.fromJson<DateTime>(json['startedAtUtc']),
+      lastResumedAtUtc: serializer.fromJson<DateTime?>(
+        json['lastResumedAtUtc'],
+      ),
+      endedAtUtc: serializer.fromJson<DateTime?>(json['endedAtUtc']),
+      accumulatedSeconds: serializer.fromJson<int>(json['accumulatedSeconds']),
+      activeSlot: serializer.fromJson<int?>(json['activeSlot']),
+      note: serializer.fromJson<String?>(json['note']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taskId': serializer.toJson<String>(taskId),
+      'source': serializer.toJson<String>(source),
+      'state': serializer.toJson<String>(state),
+      'startedAtUtc': serializer.toJson<DateTime>(startedAtUtc),
+      'lastResumedAtUtc': serializer.toJson<DateTime?>(lastResumedAtUtc),
+      'endedAtUtc': serializer.toJson<DateTime?>(endedAtUtc),
+      'accumulatedSeconds': serializer.toJson<int>(accumulatedSeconds),
+      'activeSlot': serializer.toJson<int?>(activeSlot),
+      'note': serializer.toJson<String?>(note),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  TaskTimeEntryRow copyWith({
+    String? id,
+    String? taskId,
+    String? source,
+    String? state,
+    DateTime? startedAtUtc,
+    Value<DateTime?> lastResumedAtUtc = const Value.absent(),
+    Value<DateTime?> endedAtUtc = const Value.absent(),
+    int? accumulatedSeconds,
+    Value<int?> activeSlot = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => TaskTimeEntryRow(
+    id: id ?? this.id,
+    taskId: taskId ?? this.taskId,
+    source: source ?? this.source,
+    state: state ?? this.state,
+    startedAtUtc: startedAtUtc ?? this.startedAtUtc,
+    lastResumedAtUtc: lastResumedAtUtc.present
+        ? lastResumedAtUtc.value
+        : this.lastResumedAtUtc,
+    endedAtUtc: endedAtUtc.present ? endedAtUtc.value : this.endedAtUtc,
+    accumulatedSeconds: accumulatedSeconds ?? this.accumulatedSeconds,
+    activeSlot: activeSlot.present ? activeSlot.value : this.activeSlot,
+    note: note.present ? note.value : this.note,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  TaskTimeEntryRow copyWithCompanion(TaskTimeEntryRowsCompanion data) {
+    return TaskTimeEntryRow(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      source: data.source.present ? data.source.value : this.source,
+      state: data.state.present ? data.state.value : this.state,
+      startedAtUtc: data.startedAtUtc.present
+          ? data.startedAtUtc.value
+          : this.startedAtUtc,
+      lastResumedAtUtc: data.lastResumedAtUtc.present
+          ? data.lastResumedAtUtc.value
+          : this.lastResumedAtUtc,
+      endedAtUtc: data.endedAtUtc.present
+          ? data.endedAtUtc.value
+          : this.endedAtUtc,
+      accumulatedSeconds: data.accumulatedSeconds.present
+          ? data.accumulatedSeconds.value
+          : this.accumulatedSeconds,
+      activeSlot: data.activeSlot.present
+          ? data.activeSlot.value
+          : this.activeSlot,
+      note: data.note.present ? data.note.value : this.note,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskTimeEntryRow(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('source: $source, ')
+          ..write('state: $state, ')
+          ..write('startedAtUtc: $startedAtUtc, ')
+          ..write('lastResumedAtUtc: $lastResumedAtUtc, ')
+          ..write('endedAtUtc: $endedAtUtc, ')
+          ..write('accumulatedSeconds: $accumulatedSeconds, ')
+          ..write('activeSlot: $activeSlot, ')
+          ..write('note: $note, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    taskId,
+    source,
+    state,
+    startedAtUtc,
+    lastResumedAtUtc,
+    endedAtUtc,
+    accumulatedSeconds,
+    activeSlot,
+    note,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskTimeEntryRow &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.source == this.source &&
+          other.state == this.state &&
+          other.startedAtUtc == this.startedAtUtc &&
+          other.lastResumedAtUtc == this.lastResumedAtUtc &&
+          other.endedAtUtc == this.endedAtUtc &&
+          other.accumulatedSeconds == this.accumulatedSeconds &&
+          other.activeSlot == this.activeSlot &&
+          other.note == this.note &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class TaskTimeEntryRowsCompanion extends UpdateCompanion<TaskTimeEntryRow> {
+  final Value<String> id;
+  final Value<String> taskId;
+  final Value<String> source;
+  final Value<String> state;
+  final Value<DateTime> startedAtUtc;
+  final Value<DateTime?> lastResumedAtUtc;
+  final Value<DateTime?> endedAtUtc;
+  final Value<int> accumulatedSeconds;
+  final Value<int?> activeSlot;
+  final Value<String?> note;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const TaskTimeEntryRowsCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.source = const Value.absent(),
+    this.state = const Value.absent(),
+    this.startedAtUtc = const Value.absent(),
+    this.lastResumedAtUtc = const Value.absent(),
+    this.endedAtUtc = const Value.absent(),
+    this.accumulatedSeconds = const Value.absent(),
+    this.activeSlot = const Value.absent(),
+    this.note = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskTimeEntryRowsCompanion.insert({
+    required String id,
+    required String taskId,
+    required String source,
+    required String state,
+    required DateTime startedAtUtc,
+    this.lastResumedAtUtc = const Value.absent(),
+    this.endedAtUtc = const Value.absent(),
+    required int accumulatedSeconds,
+    this.activeSlot = const Value.absent(),
+    this.note = const Value.absent(),
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taskId = Value(taskId),
+       source = Value(source),
+       state = Value(state),
+       startedAtUtc = Value(startedAtUtc),
+       accumulatedSeconds = Value(accumulatedSeconds),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<TaskTimeEntryRow> custom({
+    Expression<String>? id,
+    Expression<String>? taskId,
+    Expression<String>? source,
+    Expression<String>? state,
+    Expression<DateTime>? startedAtUtc,
+    Expression<DateTime>? lastResumedAtUtc,
+    Expression<DateTime>? endedAtUtc,
+    Expression<int>? accumulatedSeconds,
+    Expression<int>? activeSlot,
+    Expression<String>? note,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (source != null) 'source': source,
+      if (state != null) 'state': state,
+      if (startedAtUtc != null) 'started_at_utc': startedAtUtc,
+      if (lastResumedAtUtc != null) 'last_resumed_at_utc': lastResumedAtUtc,
+      if (endedAtUtc != null) 'ended_at_utc': endedAtUtc,
+      if (accumulatedSeconds != null) 'accumulated_seconds': accumulatedSeconds,
+      if (activeSlot != null) 'active_slot': activeSlot,
+      if (note != null) 'note': note,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskTimeEntryRowsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taskId,
+    Value<String>? source,
+    Value<String>? state,
+    Value<DateTime>? startedAtUtc,
+    Value<DateTime?>? lastResumedAtUtc,
+    Value<DateTime?>? endedAtUtc,
+    Value<int>? accumulatedSeconds,
+    Value<int?>? activeSlot,
+    Value<String?>? note,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return TaskTimeEntryRowsCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      source: source ?? this.source,
+      state: state ?? this.state,
+      startedAtUtc: startedAtUtc ?? this.startedAtUtc,
+      lastResumedAtUtc: lastResumedAtUtc ?? this.lastResumedAtUtc,
+      endedAtUtc: endedAtUtc ?? this.endedAtUtc,
+      accumulatedSeconds: accumulatedSeconds ?? this.accumulatedSeconds,
+      activeSlot: activeSlot ?? this.activeSlot,
+      note: note ?? this.note,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (startedAtUtc.present) {
+      map['started_at_utc'] = Variable<DateTime>(startedAtUtc.value);
+    }
+    if (lastResumedAtUtc.present) {
+      map['last_resumed_at_utc'] = Variable<DateTime>(lastResumedAtUtc.value);
+    }
+    if (endedAtUtc.present) {
+      map['ended_at_utc'] = Variable<DateTime>(endedAtUtc.value);
+    }
+    if (accumulatedSeconds.present) {
+      map['accumulated_seconds'] = Variable<int>(accumulatedSeconds.value);
+    }
+    if (activeSlot.present) {
+      map['active_slot'] = Variable<int>(activeSlot.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskTimeEntryRowsCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('source: $source, ')
+          ..write('state: $state, ')
+          ..write('startedAtUtc: $startedAtUtc, ')
+          ..write('lastResumedAtUtc: $lastResumedAtUtc, ')
+          ..write('endedAtUtc: $endedAtUtc, ')
+          ..write('accumulatedSeconds: $accumulatedSeconds, ')
+          ..write('activeSlot: $activeSlot, ')
+          ..write('note: $note, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $NotificationScheduleRowsTable extends NotificationScheduleRows
     with TableInfo<$NotificationScheduleRowsTable, NotificationScheduleRow> {
   @override
@@ -5823,6 +6562,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $TaskRecurrenceExceptionRowsTable(this);
   late final $TaskOccurrenceCompletionRowsTable taskOccurrenceCompletionRows =
       $TaskOccurrenceCompletionRowsTable(this);
+  late final $TaskTimeEntryRowsTable taskTimeEntryRows =
+      $TaskTimeEntryRowsTable(this);
   late final $NotificationScheduleRowsTable notificationScheduleRows =
       $NotificationScheduleRowsTable(this);
   @override
@@ -5840,6 +6581,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     taskRecurrenceRuleRows,
     taskRecurrenceExceptionRows,
     taskOccurrenceCompletionRows,
+    taskTimeEntryRows,
     notificationScheduleRows,
   ];
   @override
@@ -5889,6 +6631,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       result: [
         TableUpdate('task_occurrence_completions', kind: UpdateKind.delete),
       ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tasks',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('task_time_entries', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -6028,6 +6777,27 @@ final class $$TaskRowsTableReferences
 
     final cache = $_typedResult.readTableOrNull(
       _taskOccurrenceCompletionRowsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$TaskTimeEntryRowsTable, List<TaskTimeEntryRow>>
+  _taskTimeEntryRowsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.taskTimeEntryRows,
+        aliasName: 'tasks__id__task_time_entries__task_id',
+      );
+
+  $$TaskTimeEntryRowsTableProcessedTableManager get taskTimeEntryRowsRefs {
+    final manager = $$TaskTimeEntryRowsTableTableManager(
+      $_db,
+      $_db.taskTimeEntryRows,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _taskTimeEntryRowsRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -6220,6 +6990,31 @@ class $$TaskRowsTableFilterComposer
                     $removeJoinBuilderFromRootComposer,
               ),
         );
+    return f(composer);
+  }
+
+  Expression<bool> taskTimeEntryRowsRefs(
+    Expression<bool> Function($$TaskTimeEntryRowsTableFilterComposer f) f,
+  ) {
+    final $$TaskTimeEntryRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taskTimeEntryRows,
+      getReferencedColumn: (t) => t.taskId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskTimeEntryRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskTimeEntryRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -6482,6 +7277,32 @@ class $$TaskRowsTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> taskTimeEntryRowsRefs<T extends Object>(
+    Expression<T> Function($$TaskTimeEntryRowsTableAnnotationComposer a) f,
+  ) {
+    final $$TaskTimeEntryRowsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskTimeEntryRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskTimeEntryRowsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.taskTimeEntryRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TaskRowsTableTableManager
@@ -6502,6 +7323,7 @@ class $$TaskRowsTableTableManager
             bool taskRecurrenceRuleRowsRefs,
             bool taskRecurrenceExceptionRowsRefs,
             bool taskOccurrenceCompletionRowsRefs,
+            bool taskTimeEntryRowsRefs,
           })
         > {
   $$TaskRowsTableTableManager(_$AppDatabase db, $TaskRowsTable table)
@@ -6597,6 +7419,7 @@ class $$TaskRowsTableTableManager
                 taskRecurrenceRuleRowsRefs = false,
                 taskRecurrenceExceptionRowsRefs = false,
                 taskOccurrenceCompletionRowsRefs = false,
+                taskTimeEntryRowsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -6607,6 +7430,7 @@ class $$TaskRowsTableTableManager
                       db.taskRecurrenceExceptionRows,
                     if (taskOccurrenceCompletionRowsRefs)
                       db.taskOccurrenceCompletionRows,
+                    if (taskTimeEntryRowsRefs) db.taskTimeEntryRows,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -6695,6 +7519,27 @@ class $$TaskRowsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (taskTimeEntryRowsRefs)
+                        await $_getPrefetchedData<
+                          TaskRow,
+                          $TaskRowsTable,
+                          TaskTimeEntryRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaskRowsTableReferences
+                              ._taskTimeEntryRowsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaskRowsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taskTimeEntryRowsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taskId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6720,6 +7565,7 @@ typedef $$TaskRowsTableProcessedTableManager =
         bool taskRecurrenceRuleRowsRefs,
         bool taskRecurrenceExceptionRowsRefs,
         bool taskOccurrenceCompletionRowsRefs,
+        bool taskTimeEntryRowsRefs,
       })
     >;
 typedef $$FinanceTransactionRowsTableCreateCompanionBuilder =
@@ -9979,6 +10825,486 @@ typedef $$TaskOccurrenceCompletionRowsTableProcessedTableManager =
       TaskOccurrenceCompletionRow,
       PrefetchHooks Function({bool taskId})
     >;
+typedef $$TaskTimeEntryRowsTableCreateCompanionBuilder =
+    TaskTimeEntryRowsCompanion Function({
+      required String id,
+      required String taskId,
+      required String source,
+      required String state,
+      required DateTime startedAtUtc,
+      Value<DateTime?> lastResumedAtUtc,
+      Value<DateTime?> endedAtUtc,
+      required int accumulatedSeconds,
+      Value<int?> activeSlot,
+      Value<String?> note,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$TaskTimeEntryRowsTableUpdateCompanionBuilder =
+    TaskTimeEntryRowsCompanion Function({
+      Value<String> id,
+      Value<String> taskId,
+      Value<String> source,
+      Value<String> state,
+      Value<DateTime> startedAtUtc,
+      Value<DateTime?> lastResumedAtUtc,
+      Value<DateTime?> endedAtUtc,
+      Value<int> accumulatedSeconds,
+      Value<int?> activeSlot,
+      Value<String?> note,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+final class $$TaskTimeEntryRowsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TaskTimeEntryRowsTable,
+          TaskTimeEntryRow
+        > {
+  $$TaskTimeEntryRowsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaskRowsTable _taskIdTable(_$AppDatabase db) =>
+      db.taskRows.createAlias('task_time_entries__task_id__tasks__id');
+
+  $$TaskRowsTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<String>('task_id')!;
+
+    final manager = $$TaskRowsTableTableManager(
+      $_db,
+      $_db.taskRows,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TaskTimeEntryRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskTimeEntryRowsTable> {
+  $$TaskTimeEntryRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAtUtc => $composableBuilder(
+    column: $table.startedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastResumedAtUtc => $composableBuilder(
+    column: $table.lastResumedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endedAtUtc => $composableBuilder(
+    column: $table.endedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get accumulatedSeconds => $composableBuilder(
+    column: $table.accumulatedSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get activeSlot => $composableBuilder(
+    column: $table.activeSlot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaskRowsTableFilterComposer get taskId {
+    final $$TaskRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskTimeEntryRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskTimeEntryRowsTable> {
+  $$TaskTimeEntryRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAtUtc => $composableBuilder(
+    column: $table.startedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastResumedAtUtc => $composableBuilder(
+    column: $table.lastResumedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endedAtUtc => $composableBuilder(
+    column: $table.endedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get accumulatedSeconds => $composableBuilder(
+    column: $table.accumulatedSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get activeSlot => $composableBuilder(
+    column: $table.activeSlot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaskRowsTableOrderingComposer get taskId {
+    final $$TaskRowsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskTimeEntryRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskTimeEntryRowsTable> {
+  $$TaskTimeEntryRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAtUtc => $composableBuilder(
+    column: $table.startedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastResumedAtUtc => $composableBuilder(
+    column: $table.lastResumedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get endedAtUtc => $composableBuilder(
+    column: $table.endedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get accumulatedSeconds => $composableBuilder(
+    column: $table.accumulatedSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get activeSlot => $composableBuilder(
+    column: $table.activeSlot,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  $$TaskRowsTableAnnotationComposer get taskId {
+    final $$TaskRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskTimeEntryRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskTimeEntryRowsTable,
+          TaskTimeEntryRow,
+          $$TaskTimeEntryRowsTableFilterComposer,
+          $$TaskTimeEntryRowsTableOrderingComposer,
+          $$TaskTimeEntryRowsTableAnnotationComposer,
+          $$TaskTimeEntryRowsTableCreateCompanionBuilder,
+          $$TaskTimeEntryRowsTableUpdateCompanionBuilder,
+          (TaskTimeEntryRow, $$TaskTimeEntryRowsTableReferences),
+          TaskTimeEntryRow,
+          PrefetchHooks Function({bool taskId})
+        > {
+  $$TaskTimeEntryRowsTableTableManager(
+    _$AppDatabase db,
+    $TaskTimeEntryRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskTimeEntryRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaskTimeEntryRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaskTimeEntryRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<DateTime> startedAtUtc = const Value.absent(),
+                Value<DateTime?> lastResumedAtUtc = const Value.absent(),
+                Value<DateTime?> endedAtUtc = const Value.absent(),
+                Value<int> accumulatedSeconds = const Value.absent(),
+                Value<int?> activeSlot = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaskTimeEntryRowsCompanion(
+                id: id,
+                taskId: taskId,
+                source: source,
+                state: state,
+                startedAtUtc: startedAtUtc,
+                lastResumedAtUtc: lastResumedAtUtc,
+                endedAtUtc: endedAtUtc,
+                accumulatedSeconds: accumulatedSeconds,
+                activeSlot: activeSlot,
+                note: note,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taskId,
+                required String source,
+                required String state,
+                required DateTime startedAtUtc,
+                Value<DateTime?> lastResumedAtUtc = const Value.absent(),
+                Value<DateTime?> endedAtUtc = const Value.absent(),
+                required int accumulatedSeconds,
+                Value<int?> activeSlot = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => TaskTimeEntryRowsCompanion.insert(
+                id: id,
+                taskId: taskId,
+                source: source,
+                state: state,
+                startedAtUtc: startedAtUtc,
+                lastResumedAtUtc: lastResumedAtUtc,
+                endedAtUtc: endedAtUtc,
+                accumulatedSeconds: accumulatedSeconds,
+                activeSlot: activeSlot,
+                note: note,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaskTimeEntryRowsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable:
+                                    $$TaskTimeEntryRowsTableReferences
+                                        ._taskIdTable(db),
+                                referencedColumn:
+                                    $$TaskTimeEntryRowsTableReferences
+                                        ._taskIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaskTimeEntryRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskTimeEntryRowsTable,
+      TaskTimeEntryRow,
+      $$TaskTimeEntryRowsTableFilterComposer,
+      $$TaskTimeEntryRowsTableOrderingComposer,
+      $$TaskTimeEntryRowsTableAnnotationComposer,
+      $$TaskTimeEntryRowsTableCreateCompanionBuilder,
+      $$TaskTimeEntryRowsTableUpdateCompanionBuilder,
+      (TaskTimeEntryRow, $$TaskTimeEntryRowsTableReferences),
+      TaskTimeEntryRow,
+      PrefetchHooks Function({bool taskId})
+    >;
 typedef $$NotificationScheduleRowsTableCreateCompanionBuilder =
     NotificationScheduleRowsCompanion Function({
       required String scheduleId,
@@ -10346,6 +11672,8 @@ class $AppDatabaseManager {
         _db,
         _db.taskOccurrenceCompletionRows,
       );
+  $$TaskTimeEntryRowsTableTableManager get taskTimeEntryRows =>
+      $$TaskTimeEntryRowsTableTableManager(_db, _db.taskTimeEntryRows);
   $$NotificationScheduleRowsTableTableManager get notificationScheduleRows =>
       $$NotificationScheduleRowsTableTableManager(
         _db,

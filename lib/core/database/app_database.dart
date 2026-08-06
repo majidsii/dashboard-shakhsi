@@ -249,6 +249,47 @@ class TaskOccurrenceCompletionRows extends Table {
   };
 }
 
+class TaskTimeEntryRows extends Table {
+  @override
+  String get tableName => 'task_time_entries';
+
+  TextColumn get id => text()();
+  TextColumn get taskId =>
+      text().references(TaskRows, #id, onDelete: KeyAction.cascade)();
+  TextColumn get source => text()();
+  TextColumn get state => text()();
+  DateTimeColumn get startedAtUtc => dateTime()();
+  DateTimeColumn get lastResumedAtUtc => dateTime().nullable()();
+  DateTimeColumn get endedAtUtc => dateTime().nullable()();
+  IntColumn get accumulatedSeconds => integer()();
+  IntColumn get activeSlot => integer().nullable().unique()();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    "CHECK (source IN ('timer', 'manual'))",
+    "CHECK (state IN ('running', 'paused', 'stopped'))",
+    'CHECK (accumulated_seconds >= 0)',
+    'CHECK (active_slot IS NULL OR active_slot = 1)',
+    'CHECK (ended_at_utc IS NULL OR ended_at_utc > started_at_utc)',
+    'CHECK (updated_at_utc >= created_at_utc)',
+    "CHECK ((state = 'running' AND source = 'timer' "
+        'AND last_resumed_at_utc IS NOT NULL AND ended_at_utc IS NULL '
+        'AND active_slot = 1) OR '
+        "(state = 'paused' AND source = 'timer' "
+        'AND last_resumed_at_utc IS NULL AND ended_at_utc IS NULL '
+        'AND active_slot = 1) OR '
+        "(state = 'stopped' AND last_resumed_at_utc IS NULL "
+        'AND ended_at_utc IS NOT NULL AND active_slot IS NULL '
+        'AND accumulated_seconds > 0))',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
 class NotificationScheduleRows extends Table {
   @override
   String get tableName => 'notification_schedules';
@@ -289,6 +330,7 @@ class NotificationScheduleRows extends Table {
     TaskRecurrenceRuleRows,
     TaskRecurrenceExceptionRows,
     TaskOccurrenceCompletionRows,
+    TaskTimeEntryRows,
     NotificationScheduleRows,
   ],
 )
@@ -297,7 +339,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -397,6 +439,9 @@ final class AppDatabase extends _$AppDatabase {
         await migrator.createTable(taskRecurrenceRuleRows);
         await migrator.createTable(taskRecurrenceExceptionRows);
         await migrator.createTable(taskOccurrenceCompletionRows);
+      }
+      if (from < 7) {
+        await migrator.createTable(taskTimeEntryRows);
       }
     },
     beforeOpen: (OpeningDetails details) async {

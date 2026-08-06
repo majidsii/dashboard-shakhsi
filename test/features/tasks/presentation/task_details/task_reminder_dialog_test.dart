@@ -1,15 +1,30 @@
 import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
 import 'package:dashboard_shakhsi/app/widgets/original_controls.dart';
+import 'package:dashboard_shakhsi/core/database/app_database.dart';
 import 'package:dashboard_shakhsi/core/notifications/notification_request.dart';
+import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_trigger.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../support/test_database.dart';
+
 void main() {
+  late AppDatabase database;
+
+  setUp(() {
+    database = openTestDatabase();
+  });
+
+  tearDown(() async {
+    await database.close();
+  });
+
   testWidgets('editor dialog returns task and canonical reminder rules', (
     tester,
   ) async {
@@ -36,24 +51,27 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: OriginalTheme.light(),
-        home: Builder(
-          builder: (context) {
-            return TextButton(
-              onPressed: () async {
-                result = await showTaskDetailsEditorDialog(
-                  context: context,
-                  mode: TaskDetailsDialogMode.edit,
-                  initialTask: task,
-                  initialReminderRules: <TaskReminderRule>[existing],
-                  now: () => DateTime.utc(2026, 8, 4, 12),
-                  nextId: () => 'rule-${++id}',
-                );
-              },
-              child: const Text('باز کردن'),
-            );
-          },
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
+        child: MaterialApp(
+          theme: OriginalTheme.light(),
+          home: Builder(
+            builder: (context) {
+              return TextButton(
+                onPressed: () async {
+                  result = await showTaskDetailsEditorDialog(
+                    context: context,
+                    mode: TaskDetailsDialogMode.edit,
+                    initialTask: task,
+                    initialReminderRules: <TaskReminderRule>[existing],
+                    now: () => DateTime.utc(2026, 8, 4, 12),
+                    nextId: () => 'rule-${++id}',
+                  );
+                },
+                child: const Text('باز کردن'),
+              );
+            },
+          ),
         ),
       ),
     );

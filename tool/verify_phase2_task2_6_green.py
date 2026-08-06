@@ -96,7 +96,7 @@ schema_match = re.search(
     database,
 )
 need(schema_match is not None, "schema version is missing")
-need(int(schema_match.group(1)) == 6, "Task 2.6 schema version must be 6")
+need(int(schema_match.group(1)) >= 6, "schema regressed below Task 2.6 version 6")
 for token in (
     "class TaskRecurrenceRuleRows extends Table",
     "class TaskRecurrenceExceptionRows extends Table",
@@ -378,7 +378,7 @@ focused_files = (
 )
 tests = "\n".join(read(relative) for relative in focused_files)
 for token in (
-    "schema version five upgrades to recurring task schema six",
+    "schema version five upgrades to recurring task schema seven",
     "recurrence state survives restart with stable occurrence identity",
     "persists rule, exception, and independent completion",
     "projects recurring move and completion by original identity",

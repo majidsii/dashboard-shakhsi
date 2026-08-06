@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 void main() {
-  test('schema version five upgrades to recurring task schema six', () async {
+  test('schema version five upgrades to recurring task schema seven', () async {
     final directory = await Directory.systemTemp.createTemp(
       'dashboard-task-recurrence-migration-',
     );
@@ -21,13 +21,14 @@ void main() {
 
     try {
       final created = AppDatabase(NativeDatabase(file));
-      expect(created.schemaVersion, 6);
+      expect(created.schemaVersion, 7);
       await created.select(created.taskRecurrenceRuleRows).get();
       await created.close();
 
       final raw = sqlite.sqlite3.open(file.path);
       try {
         raw.execute('DROP TABLE task_occurrence_completions');
+        raw.execute('DROP TABLE task_time_entries');
         raw.execute('DROP TABLE task_recurrence_exceptions');
         raw.execute('DROP TABLE task_recurrence_rules');
         raw.execute('PRAGMA user_version = 5');
@@ -37,11 +38,11 @@ void main() {
 
       final upgraded = AppDatabase(NativeDatabase(file));
       try {
-        expect(upgraded.schemaVersion, 6);
+        expect(upgraded.schemaVersion, 7);
         final versionRows = await upgraded
             .customSelect('PRAGMA user_version')
             .get();
-        expect(versionRows.single.read<int>('user_version'), 6);
+        expect(versionRows.single.read<int>('user_version'), 7);
 
         final taskRepository = DriftTaskRepository(upgraded);
         final recurrenceRepository = DriftTaskRecurrenceRepository(upgraded);

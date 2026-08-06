@@ -25,9 +25,11 @@ import 'package:dashboard_shakhsi/features/tasks/application/task_occurrence_pro
 import 'package:dashboard_shakhsi/features/tasks/application/task_recurrence_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_projection_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_rules_service.dart';
+import 'package:dashboard_shakhsi/features/tasks/application/task_timer_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_recurrence_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_time_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/reminder_aware_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_occurrence_completion.dart';
@@ -37,6 +39,8 @@ import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dar
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_time_entry.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_time_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final appClockProvider = Provider<AppClock>((ref) {
@@ -111,6 +115,31 @@ final taskRepositoryProvider = Provider<TaskRepository>((ref) {
     reminderRepository: ref.watch(taskReminderRepositoryProvider),
     projection: () => ref.read(taskReminderProjectionServiceProvider),
   );
+});
+
+final taskTimeRepositoryProvider = Provider<TaskTimeRepository>((ref) {
+  return DriftTaskTimeRepository(ref.watch(appDatabaseProvider));
+});
+
+final taskTimerServiceProvider = Provider<TaskTimerService>((ref) {
+  return TaskTimerService(
+    repository: ref.watch(taskTimeRepositoryProvider),
+    clock: ref.watch(appClockProvider),
+    nextId: const UuidV7IdGenerator().next,
+  );
+});
+
+final taskTimeEntriesProvider = StreamProvider<List<TaskTimeEntry>>((ref) {
+  return ref.watch(taskTimeRepositoryProvider).watchAll();
+});
+
+final taskTimeEntriesByTaskProvider =
+    StreamProvider.family<List<TaskTimeEntry>, String>((ref, taskId) {
+      return ref.watch(taskTimeRepositoryProvider).watchByTask(taskId);
+    });
+
+final activeTaskTimerProvider = StreamProvider<TaskTimeEntry?>((ref) {
+  return ref.watch(taskTimeRepositoryProvider).watchActive();
 });
 
 final financeRepositoryProvider = Provider<FinanceRepository>((ref) {
