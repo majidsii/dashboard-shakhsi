@@ -1,0 +1,1 @@
+enum RecurrenceInvalidDatePolicy { skipPeriod, clampToLastDay }
