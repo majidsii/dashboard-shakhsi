@@ -3925,6 +3925,1242 @@ class TaskReminderRuleRowsCompanion
   }
 }
 
+class $TaskRecurrenceRuleRowsTable extends TaskRecurrenceRuleRows
+    with TableInfo<$TaskRecurrenceRuleRowsTable, TaskRecurrenceRuleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskRecurrenceRuleRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'UNIQUE REFERENCES tasks (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _ruleJsonMeta = const VerificationMeta(
+    'ruleJson',
+  );
+  @override
+  late final GeneratedColumn<String> ruleJson = GeneratedColumn<String>(
+    'rule_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taskId,
+    ruleJson,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_recurrence_rules';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskRecurrenceRuleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('rule_json')) {
+      context.handle(
+        _ruleJsonMeta,
+        ruleJson.isAcceptableOrUnknown(data['rule_json']!, _ruleJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ruleJsonMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaskRecurrenceRuleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskRecurrenceRuleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      ruleJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rule_json'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskRecurrenceRuleRowsTable createAlias(String alias) {
+    return $TaskRecurrenceRuleRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TaskRecurrenceRuleRow extends DataClass
+    implements Insertable<TaskRecurrenceRuleRow> {
+  final String id;
+  final String taskId;
+  final String ruleJson;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const TaskRecurrenceRuleRow({
+    required this.id,
+    required this.taskId,
+    required this.ruleJson,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['task_id'] = Variable<String>(taskId);
+    map['rule_json'] = Variable<String>(ruleJson);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  TaskRecurrenceRuleRowsCompanion toCompanion(bool nullToAbsent) {
+    return TaskRecurrenceRuleRowsCompanion(
+      id: Value(id),
+      taskId: Value(taskId),
+      ruleJson: Value(ruleJson),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory TaskRecurrenceRuleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskRecurrenceRuleRow(
+      id: serializer.fromJson<String>(json['id']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      ruleJson: serializer.fromJson<String>(json['ruleJson']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taskId': serializer.toJson<String>(taskId),
+      'ruleJson': serializer.toJson<String>(ruleJson),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  TaskRecurrenceRuleRow copyWith({
+    String? id,
+    String? taskId,
+    String? ruleJson,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => TaskRecurrenceRuleRow(
+    id: id ?? this.id,
+    taskId: taskId ?? this.taskId,
+    ruleJson: ruleJson ?? this.ruleJson,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  TaskRecurrenceRuleRow copyWithCompanion(
+    TaskRecurrenceRuleRowsCompanion data,
+  ) {
+    return TaskRecurrenceRuleRow(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      ruleJson: data.ruleJson.present ? data.ruleJson.value : this.ruleJson,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskRecurrenceRuleRow(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('ruleJson: $ruleJson, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, taskId, ruleJson, createdAtUtc, updatedAtUtc);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskRecurrenceRuleRow &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.ruleJson == this.ruleJson &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class TaskRecurrenceRuleRowsCompanion
+    extends UpdateCompanion<TaskRecurrenceRuleRow> {
+  final Value<String> id;
+  final Value<String> taskId;
+  final Value<String> ruleJson;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const TaskRecurrenceRuleRowsCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.ruleJson = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskRecurrenceRuleRowsCompanion.insert({
+    required String id,
+    required String taskId,
+    required String ruleJson,
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taskId = Value(taskId),
+       ruleJson = Value(ruleJson),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<TaskRecurrenceRuleRow> custom({
+    Expression<String>? id,
+    Expression<String>? taskId,
+    Expression<String>? ruleJson,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (ruleJson != null) 'rule_json': ruleJson,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskRecurrenceRuleRowsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taskId,
+    Value<String>? ruleJson,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return TaskRecurrenceRuleRowsCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      ruleJson: ruleJson ?? this.ruleJson,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (ruleJson.present) {
+      map['rule_json'] = Variable<String>(ruleJson.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskRecurrenceRuleRowsCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('ruleJson: $ruleJson, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaskRecurrenceExceptionRowsTable extends TaskRecurrenceExceptionRows
+    with
+        TableInfo<
+          $TaskRecurrenceExceptionRowsTable,
+          TaskRecurrenceExceptionRow
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskRecurrenceExceptionRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tasks (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _originalLocalKeyMeta = const VerificationMeta(
+    'originalLocalKey',
+  );
+  @override
+  late final GeneratedColumn<String> originalLocalKey = GeneratedColumn<String>(
+    'original_local_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exceptionJsonMeta = const VerificationMeta(
+    'exceptionJson',
+  );
+  @override
+  late final GeneratedColumn<String> exceptionJson = GeneratedColumn<String>(
+    'exception_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taskId,
+    originalLocalKey,
+    exceptionJson,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_recurrence_exceptions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskRecurrenceExceptionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('original_local_key')) {
+      context.handle(
+        _originalLocalKeyMeta,
+        originalLocalKey.isAcceptableOrUnknown(
+          data['original_local_key']!,
+          _originalLocalKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originalLocalKeyMeta);
+    }
+    if (data.containsKey('exception_json')) {
+      context.handle(
+        _exceptionJsonMeta,
+        exceptionJson.isAcceptableOrUnknown(
+          data['exception_json']!,
+          _exceptionJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exceptionJsonMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {taskId, originalLocalKey},
+  ];
+  @override
+  TaskRecurrenceExceptionRow map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskRecurrenceExceptionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      originalLocalKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_local_key'],
+      )!,
+      exceptionJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exception_json'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskRecurrenceExceptionRowsTable createAlias(String alias) {
+    return $TaskRecurrenceExceptionRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TaskRecurrenceExceptionRow extends DataClass
+    implements Insertable<TaskRecurrenceExceptionRow> {
+  final String id;
+  final String taskId;
+  final String originalLocalKey;
+  final String exceptionJson;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const TaskRecurrenceExceptionRow({
+    required this.id,
+    required this.taskId,
+    required this.originalLocalKey,
+    required this.exceptionJson,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['task_id'] = Variable<String>(taskId);
+    map['original_local_key'] = Variable<String>(originalLocalKey);
+    map['exception_json'] = Variable<String>(exceptionJson);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  TaskRecurrenceExceptionRowsCompanion toCompanion(bool nullToAbsent) {
+    return TaskRecurrenceExceptionRowsCompanion(
+      id: Value(id),
+      taskId: Value(taskId),
+      originalLocalKey: Value(originalLocalKey),
+      exceptionJson: Value(exceptionJson),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory TaskRecurrenceExceptionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskRecurrenceExceptionRow(
+      id: serializer.fromJson<String>(json['id']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      originalLocalKey: serializer.fromJson<String>(json['originalLocalKey']),
+      exceptionJson: serializer.fromJson<String>(json['exceptionJson']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'taskId': serializer.toJson<String>(taskId),
+      'originalLocalKey': serializer.toJson<String>(originalLocalKey),
+      'exceptionJson': serializer.toJson<String>(exceptionJson),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  TaskRecurrenceExceptionRow copyWith({
+    String? id,
+    String? taskId,
+    String? originalLocalKey,
+    String? exceptionJson,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => TaskRecurrenceExceptionRow(
+    id: id ?? this.id,
+    taskId: taskId ?? this.taskId,
+    originalLocalKey: originalLocalKey ?? this.originalLocalKey,
+    exceptionJson: exceptionJson ?? this.exceptionJson,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  TaskRecurrenceExceptionRow copyWithCompanion(
+    TaskRecurrenceExceptionRowsCompanion data,
+  ) {
+    return TaskRecurrenceExceptionRow(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      originalLocalKey: data.originalLocalKey.present
+          ? data.originalLocalKey.value
+          : this.originalLocalKey,
+      exceptionJson: data.exceptionJson.present
+          ? data.exceptionJson.value
+          : this.exceptionJson,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskRecurrenceExceptionRow(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('originalLocalKey: $originalLocalKey, ')
+          ..write('exceptionJson: $exceptionJson, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    taskId,
+    originalLocalKey,
+    exceptionJson,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskRecurrenceExceptionRow &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.originalLocalKey == this.originalLocalKey &&
+          other.exceptionJson == this.exceptionJson &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class TaskRecurrenceExceptionRowsCompanion
+    extends UpdateCompanion<TaskRecurrenceExceptionRow> {
+  final Value<String> id;
+  final Value<String> taskId;
+  final Value<String> originalLocalKey;
+  final Value<String> exceptionJson;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const TaskRecurrenceExceptionRowsCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.originalLocalKey = const Value.absent(),
+    this.exceptionJson = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskRecurrenceExceptionRowsCompanion.insert({
+    required String id,
+    required String taskId,
+    required String originalLocalKey,
+    required String exceptionJson,
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       taskId = Value(taskId),
+       originalLocalKey = Value(originalLocalKey),
+       exceptionJson = Value(exceptionJson),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<TaskRecurrenceExceptionRow> custom({
+    Expression<String>? id,
+    Expression<String>? taskId,
+    Expression<String>? originalLocalKey,
+    Expression<String>? exceptionJson,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (originalLocalKey != null) 'original_local_key': originalLocalKey,
+      if (exceptionJson != null) 'exception_json': exceptionJson,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskRecurrenceExceptionRowsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? taskId,
+    Value<String>? originalLocalKey,
+    Value<String>? exceptionJson,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return TaskRecurrenceExceptionRowsCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      originalLocalKey: originalLocalKey ?? this.originalLocalKey,
+      exceptionJson: exceptionJson ?? this.exceptionJson,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (originalLocalKey.present) {
+      map['original_local_key'] = Variable<String>(originalLocalKey.value);
+    }
+    if (exceptionJson.present) {
+      map['exception_json'] = Variable<String>(exceptionJson.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskRecurrenceExceptionRowsCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('originalLocalKey: $originalLocalKey, ')
+          ..write('exceptionJson: $exceptionJson, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaskOccurrenceCompletionRowsTable extends TaskOccurrenceCompletionRows
+    with
+        TableInfo<
+          $TaskOccurrenceCompletionRowsTable,
+          TaskOccurrenceCompletionRow
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskOccurrenceCompletionRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tasks (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _originalLocalKeyMeta = const VerificationMeta(
+    'originalLocalKey',
+  );
+  @override
+  late final GeneratedColumn<String> originalLocalKey = GeneratedColumn<String>(
+    'original_local_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completedAtUtcMeta = const VerificationMeta(
+    'completedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAtUtc =
+      GeneratedColumn<DateTime>(
+        'completed_at_utc',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    taskId,
+    originalLocalKey,
+    completedAtUtc,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_occurrence_completions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskOccurrenceCompletionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('original_local_key')) {
+      context.handle(
+        _originalLocalKeyMeta,
+        originalLocalKey.isAcceptableOrUnknown(
+          data['original_local_key']!,
+          _originalLocalKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originalLocalKeyMeta);
+    }
+    if (data.containsKey('completed_at_utc')) {
+      context.handle(
+        _completedAtUtcMeta,
+        completedAtUtc.isAcceptableOrUnknown(
+          data['completed_at_utc']!,
+          _completedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_completedAtUtcMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {taskId, originalLocalKey};
+  @override
+  TaskOccurrenceCompletionRow map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskOccurrenceCompletionRow(
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      originalLocalKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_local_key'],
+      )!,
+      completedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at_utc'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskOccurrenceCompletionRowsTable createAlias(String alias) {
+    return $TaskOccurrenceCompletionRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TaskOccurrenceCompletionRow extends DataClass
+    implements Insertable<TaskOccurrenceCompletionRow> {
+  final String taskId;
+  final String originalLocalKey;
+  final DateTime completedAtUtc;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const TaskOccurrenceCompletionRow({
+    required this.taskId,
+    required this.originalLocalKey,
+    required this.completedAtUtc,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['task_id'] = Variable<String>(taskId);
+    map['original_local_key'] = Variable<String>(originalLocalKey);
+    map['completed_at_utc'] = Variable<DateTime>(completedAtUtc);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  TaskOccurrenceCompletionRowsCompanion toCompanion(bool nullToAbsent) {
+    return TaskOccurrenceCompletionRowsCompanion(
+      taskId: Value(taskId),
+      originalLocalKey: Value(originalLocalKey),
+      completedAtUtc: Value(completedAtUtc),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory TaskOccurrenceCompletionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskOccurrenceCompletionRow(
+      taskId: serializer.fromJson<String>(json['taskId']),
+      originalLocalKey: serializer.fromJson<String>(json['originalLocalKey']),
+      completedAtUtc: serializer.fromJson<DateTime>(json['completedAtUtc']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'taskId': serializer.toJson<String>(taskId),
+      'originalLocalKey': serializer.toJson<String>(originalLocalKey),
+      'completedAtUtc': serializer.toJson<DateTime>(completedAtUtc),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  TaskOccurrenceCompletionRow copyWith({
+    String? taskId,
+    String? originalLocalKey,
+    DateTime? completedAtUtc,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => TaskOccurrenceCompletionRow(
+    taskId: taskId ?? this.taskId,
+    originalLocalKey: originalLocalKey ?? this.originalLocalKey,
+    completedAtUtc: completedAtUtc ?? this.completedAtUtc,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  TaskOccurrenceCompletionRow copyWithCompanion(
+    TaskOccurrenceCompletionRowsCompanion data,
+  ) {
+    return TaskOccurrenceCompletionRow(
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      originalLocalKey: data.originalLocalKey.present
+          ? data.originalLocalKey.value
+          : this.originalLocalKey,
+      completedAtUtc: data.completedAtUtc.present
+          ? data.completedAtUtc.value
+          : this.completedAtUtc,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskOccurrenceCompletionRow(')
+          ..write('taskId: $taskId, ')
+          ..write('originalLocalKey: $originalLocalKey, ')
+          ..write('completedAtUtc: $completedAtUtc, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    taskId,
+    originalLocalKey,
+    completedAtUtc,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskOccurrenceCompletionRow &&
+          other.taskId == this.taskId &&
+          other.originalLocalKey == this.originalLocalKey &&
+          other.completedAtUtc == this.completedAtUtc &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class TaskOccurrenceCompletionRowsCompanion
+    extends UpdateCompanion<TaskOccurrenceCompletionRow> {
+  final Value<String> taskId;
+  final Value<String> originalLocalKey;
+  final Value<DateTime> completedAtUtc;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const TaskOccurrenceCompletionRowsCompanion({
+    this.taskId = const Value.absent(),
+    this.originalLocalKey = const Value.absent(),
+    this.completedAtUtc = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskOccurrenceCompletionRowsCompanion.insert({
+    required String taskId,
+    required String originalLocalKey,
+    required DateTime completedAtUtc,
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : taskId = Value(taskId),
+       originalLocalKey = Value(originalLocalKey),
+       completedAtUtc = Value(completedAtUtc),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<TaskOccurrenceCompletionRow> custom({
+    Expression<String>? taskId,
+    Expression<String>? originalLocalKey,
+    Expression<DateTime>? completedAtUtc,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (taskId != null) 'task_id': taskId,
+      if (originalLocalKey != null) 'original_local_key': originalLocalKey,
+      if (completedAtUtc != null) 'completed_at_utc': completedAtUtc,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskOccurrenceCompletionRowsCompanion copyWith({
+    Value<String>? taskId,
+    Value<String>? originalLocalKey,
+    Value<DateTime>? completedAtUtc,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return TaskOccurrenceCompletionRowsCompanion(
+      taskId: taskId ?? this.taskId,
+      originalLocalKey: originalLocalKey ?? this.originalLocalKey,
+      completedAtUtc: completedAtUtc ?? this.completedAtUtc,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (originalLocalKey.present) {
+      map['original_local_key'] = Variable<String>(originalLocalKey.value);
+    }
+    if (completedAtUtc.present) {
+      map['completed_at_utc'] = Variable<DateTime>(completedAtUtc.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskOccurrenceCompletionRowsCompanion(')
+          ..write('taskId: $taskId, ')
+          ..write('originalLocalKey: $originalLocalKey, ')
+          ..write('completedAtUtc: $completedAtUtc, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $NotificationScheduleRowsTable extends NotificationScheduleRows
     with TableInfo<$NotificationScheduleRowsTable, NotificationScheduleRow> {
   @override
@@ -4581,6 +5817,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $InstallmentPaymentRowsTable(this);
   late final $TaskReminderRuleRowsTable taskReminderRuleRows =
       $TaskReminderRuleRowsTable(this);
+  late final $TaskRecurrenceRuleRowsTable taskRecurrenceRuleRows =
+      $TaskRecurrenceRuleRowsTable(this);
+  late final $TaskRecurrenceExceptionRowsTable taskRecurrenceExceptionRows =
+      $TaskRecurrenceExceptionRowsTable(this);
+  late final $TaskOccurrenceCompletionRowsTable taskOccurrenceCompletionRows =
+      $TaskOccurrenceCompletionRowsTable(this);
   late final $NotificationScheduleRowsTable notificationScheduleRows =
       $NotificationScheduleRowsTable(this);
   @override
@@ -4595,6 +5837,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     installmentPlanRows,
     installmentPaymentRows,
     taskReminderRuleRows,
+    taskRecurrenceRuleRows,
+    taskRecurrenceExceptionRows,
+    taskOccurrenceCompletionRows,
     notificationScheduleRows,
   ];
   @override
@@ -4619,6 +5864,31 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('task_reminder_rules', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tasks',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('task_recurrence_rules', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tasks',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('task_recurrence_exceptions', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'tasks',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('task_occurrence_completions', kind: UpdateKind.delete),
+      ],
     ),
   ]);
 }
@@ -4683,6 +5953,81 @@ final class $$TaskRowsTableReferences
 
     final cache = $_typedResult.readTableOrNull(
       _taskReminderRuleRowsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TaskRecurrenceRuleRowsTable,
+    List<TaskRecurrenceRuleRow>
+  >
+  _taskRecurrenceRuleRowsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.taskRecurrenceRuleRows,
+        aliasName: 'tasks__id__task_recurrence_rules__task_id',
+      );
+
+  $$TaskRecurrenceRuleRowsTableProcessedTableManager
+  get taskRecurrenceRuleRowsRefs {
+    final manager = $$TaskRecurrenceRuleRowsTableTableManager(
+      $_db,
+      $_db.taskRecurrenceRuleRows,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _taskRecurrenceRuleRowsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TaskRecurrenceExceptionRowsTable,
+    List<TaskRecurrenceExceptionRow>
+  >
+  _taskRecurrenceExceptionRowsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.taskRecurrenceExceptionRows,
+        aliasName: 'tasks__id__task_recurrence_exceptions__task_id',
+      );
+
+  $$TaskRecurrenceExceptionRowsTableProcessedTableManager
+  get taskRecurrenceExceptionRowsRefs {
+    final manager = $$TaskRecurrenceExceptionRowsTableTableManager(
+      $_db,
+      $_db.taskRecurrenceExceptionRows,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _taskRecurrenceExceptionRowsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TaskOccurrenceCompletionRowsTable,
+    List<TaskOccurrenceCompletionRow>
+  >
+  _taskOccurrenceCompletionRowsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.taskOccurrenceCompletionRows,
+        aliasName: 'tasks__id__task_occurrence_completions__task_id',
+      );
+
+  $$TaskOccurrenceCompletionRowsTableProcessedTableManager
+  get taskOccurrenceCompletionRowsRefs {
+    final manager = $$TaskOccurrenceCompletionRowsTableTableManager(
+      $_db,
+      $_db.taskOccurrenceCompletionRows,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _taskOccurrenceCompletionRowsRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -4791,6 +6136,90 @@ class $$TaskRowsTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> taskRecurrenceRuleRowsRefs(
+    Expression<bool> Function($$TaskRecurrenceRuleRowsTableFilterComposer f) f,
+  ) {
+    final $$TaskRecurrenceRuleRowsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskRecurrenceRuleRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskRecurrenceRuleRowsTableFilterComposer(
+                $db: $db,
+                $table: $db.taskRecurrenceRuleRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> taskRecurrenceExceptionRowsRefs(
+    Expression<bool> Function(
+      $$TaskRecurrenceExceptionRowsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$TaskRecurrenceExceptionRowsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskRecurrenceExceptionRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskRecurrenceExceptionRowsTableFilterComposer(
+                $db: $db,
+                $table: $db.taskRecurrenceExceptionRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> taskOccurrenceCompletionRowsRefs(
+    Expression<bool> Function(
+      $$TaskOccurrenceCompletionRowsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$TaskOccurrenceCompletionRowsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskOccurrenceCompletionRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskOccurrenceCompletionRowsTableFilterComposer(
+                $db: $db,
+                $table: $db.taskOccurrenceCompletionRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -4969,6 +6398,90 @@ class $$TaskRowsTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> taskRecurrenceRuleRowsRefs<T extends Object>(
+    Expression<T> Function($$TaskRecurrenceRuleRowsTableAnnotationComposer a) f,
+  ) {
+    final $$TaskRecurrenceRuleRowsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskRecurrenceRuleRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskRecurrenceRuleRowsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.taskRecurrenceRuleRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> taskRecurrenceExceptionRowsRefs<T extends Object>(
+    Expression<T> Function(
+      $$TaskRecurrenceExceptionRowsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$TaskRecurrenceExceptionRowsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskRecurrenceExceptionRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskRecurrenceExceptionRowsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.taskRecurrenceExceptionRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> taskOccurrenceCompletionRowsRefs<T extends Object>(
+    Expression<T> Function(
+      $$TaskOccurrenceCompletionRowsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$TaskOccurrenceCompletionRowsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.taskOccurrenceCompletionRows,
+          getReferencedColumn: (t) => t.taskId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TaskOccurrenceCompletionRowsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.taskOccurrenceCompletionRows,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TaskRowsTableTableManager
@@ -4984,7 +6497,12 @@ class $$TaskRowsTableTableManager
           $$TaskRowsTableUpdateCompanionBuilder,
           (TaskRow, $$TaskRowsTableReferences),
           TaskRow,
-          PrefetchHooks Function({bool taskReminderRuleRowsRefs})
+          PrefetchHooks Function({
+            bool taskReminderRuleRowsRefs,
+            bool taskRecurrenceRuleRowsRefs,
+            bool taskRecurrenceExceptionRowsRefs,
+            bool taskOccurrenceCompletionRowsRefs,
+          })
         > {
   $$TaskRowsTableTableManager(_$AppDatabase db, $TaskRowsTable table)
     : super(
@@ -5073,37 +6591,114 @@ class $$TaskRowsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({taskReminderRuleRowsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (taskReminderRuleRowsRefs) db.taskReminderRuleRows,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (taskReminderRuleRowsRefs)
-                    await $_getPrefetchedData<
-                      TaskRow,
-                      $TaskRowsTable,
-                      TaskReminderRuleRow
-                    >(
-                      currentTable: table,
-                      referencedTable: $$TaskRowsTableReferences
-                          ._taskReminderRuleRowsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$TaskRowsTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).taskReminderRuleRowsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.taskId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({
+                taskReminderRuleRowsRefs = false,
+                taskRecurrenceRuleRowsRefs = false,
+                taskRecurrenceExceptionRowsRefs = false,
+                taskOccurrenceCompletionRowsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (taskReminderRuleRowsRefs) db.taskReminderRuleRows,
+                    if (taskRecurrenceRuleRowsRefs) db.taskRecurrenceRuleRows,
+                    if (taskRecurrenceExceptionRowsRefs)
+                      db.taskRecurrenceExceptionRows,
+                    if (taskOccurrenceCompletionRowsRefs)
+                      db.taskOccurrenceCompletionRows,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (taskReminderRuleRowsRefs)
+                        await $_getPrefetchedData<
+                          TaskRow,
+                          $TaskRowsTable,
+                          TaskReminderRuleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaskRowsTableReferences
+                              ._taskReminderRuleRowsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaskRowsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taskReminderRuleRowsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taskId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (taskRecurrenceRuleRowsRefs)
+                        await $_getPrefetchedData<
+                          TaskRow,
+                          $TaskRowsTable,
+                          TaskRecurrenceRuleRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaskRowsTableReferences
+                              ._taskRecurrenceRuleRowsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaskRowsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taskRecurrenceRuleRowsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taskId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (taskRecurrenceExceptionRowsRefs)
+                        await $_getPrefetchedData<
+                          TaskRow,
+                          $TaskRowsTable,
+                          TaskRecurrenceExceptionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaskRowsTableReferences
+                              ._taskRecurrenceExceptionRowsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaskRowsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taskRecurrenceExceptionRowsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taskId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (taskOccurrenceCompletionRowsRefs)
+                        await $_getPrefetchedData<
+                          TaskRow,
+                          $TaskRowsTable,
+                          TaskOccurrenceCompletionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TaskRowsTableReferences
+                              ._taskOccurrenceCompletionRowsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TaskRowsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).taskOccurrenceCompletionRowsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taskId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -5120,7 +6715,12 @@ typedef $$TaskRowsTableProcessedTableManager =
       $$TaskRowsTableUpdateCompanionBuilder,
       (TaskRow, $$TaskRowsTableReferences),
       TaskRow,
-      PrefetchHooks Function({bool taskReminderRuleRowsRefs})
+      PrefetchHooks Function({
+        bool taskReminderRuleRowsRefs,
+        bool taskRecurrenceRuleRowsRefs,
+        bool taskRecurrenceExceptionRowsRefs,
+        bool taskOccurrenceCompletionRowsRefs,
+      })
     >;
 typedef $$FinanceTransactionRowsTableCreateCompanionBuilder =
     FinanceTransactionRowsCompanion Function({
@@ -7311,6 +8911,1074 @@ typedef $$TaskReminderRuleRowsTableProcessedTableManager =
       TaskReminderRuleRow,
       PrefetchHooks Function({bool taskId})
     >;
+typedef $$TaskRecurrenceRuleRowsTableCreateCompanionBuilder =
+    TaskRecurrenceRuleRowsCompanion Function({
+      required String id,
+      required String taskId,
+      required String ruleJson,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$TaskRecurrenceRuleRowsTableUpdateCompanionBuilder =
+    TaskRecurrenceRuleRowsCompanion Function({
+      Value<String> id,
+      Value<String> taskId,
+      Value<String> ruleJson,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+final class $$TaskRecurrenceRuleRowsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TaskRecurrenceRuleRowsTable,
+          TaskRecurrenceRuleRow
+        > {
+  $$TaskRecurrenceRuleRowsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaskRowsTable _taskIdTable(_$AppDatabase db) =>
+      db.taskRows.createAlias('task_recurrence_rules__task_id__tasks__id');
+
+  $$TaskRowsTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<String>('task_id')!;
+
+    final manager = $$TaskRowsTableTableManager(
+      $_db,
+      $_db.taskRows,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TaskRecurrenceRuleRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskRecurrenceRuleRowsTable> {
+  $$TaskRecurrenceRuleRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ruleJson => $composableBuilder(
+    column: $table.ruleJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaskRowsTableFilterComposer get taskId {
+    final $$TaskRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskRecurrenceRuleRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskRecurrenceRuleRowsTable> {
+  $$TaskRecurrenceRuleRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ruleJson => $composableBuilder(
+    column: $table.ruleJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaskRowsTableOrderingComposer get taskId {
+    final $$TaskRowsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskRecurrenceRuleRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskRecurrenceRuleRowsTable> {
+  $$TaskRecurrenceRuleRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get ruleJson =>
+      $composableBuilder(column: $table.ruleJson, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  $$TaskRowsTableAnnotationComposer get taskId {
+    final $$TaskRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskRecurrenceRuleRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskRecurrenceRuleRowsTable,
+          TaskRecurrenceRuleRow,
+          $$TaskRecurrenceRuleRowsTableFilterComposer,
+          $$TaskRecurrenceRuleRowsTableOrderingComposer,
+          $$TaskRecurrenceRuleRowsTableAnnotationComposer,
+          $$TaskRecurrenceRuleRowsTableCreateCompanionBuilder,
+          $$TaskRecurrenceRuleRowsTableUpdateCompanionBuilder,
+          (TaskRecurrenceRuleRow, $$TaskRecurrenceRuleRowsTableReferences),
+          TaskRecurrenceRuleRow,
+          PrefetchHooks Function({bool taskId})
+        > {
+  $$TaskRecurrenceRuleRowsTableTableManager(
+    _$AppDatabase db,
+    $TaskRecurrenceRuleRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskRecurrenceRuleRowsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TaskRecurrenceRuleRowsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TaskRecurrenceRuleRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<String> ruleJson = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaskRecurrenceRuleRowsCompanion(
+                id: id,
+                taskId: taskId,
+                ruleJson: ruleJson,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taskId,
+                required String ruleJson,
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => TaskRecurrenceRuleRowsCompanion.insert(
+                id: id,
+                taskId: taskId,
+                ruleJson: ruleJson,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaskRecurrenceRuleRowsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable:
+                                    $$TaskRecurrenceRuleRowsTableReferences
+                                        ._taskIdTable(db),
+                                referencedColumn:
+                                    $$TaskRecurrenceRuleRowsTableReferences
+                                        ._taskIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaskRecurrenceRuleRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskRecurrenceRuleRowsTable,
+      TaskRecurrenceRuleRow,
+      $$TaskRecurrenceRuleRowsTableFilterComposer,
+      $$TaskRecurrenceRuleRowsTableOrderingComposer,
+      $$TaskRecurrenceRuleRowsTableAnnotationComposer,
+      $$TaskRecurrenceRuleRowsTableCreateCompanionBuilder,
+      $$TaskRecurrenceRuleRowsTableUpdateCompanionBuilder,
+      (TaskRecurrenceRuleRow, $$TaskRecurrenceRuleRowsTableReferences),
+      TaskRecurrenceRuleRow,
+      PrefetchHooks Function({bool taskId})
+    >;
+typedef $$TaskRecurrenceExceptionRowsTableCreateCompanionBuilder =
+    TaskRecurrenceExceptionRowsCompanion Function({
+      required String id,
+      required String taskId,
+      required String originalLocalKey,
+      required String exceptionJson,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$TaskRecurrenceExceptionRowsTableUpdateCompanionBuilder =
+    TaskRecurrenceExceptionRowsCompanion Function({
+      Value<String> id,
+      Value<String> taskId,
+      Value<String> originalLocalKey,
+      Value<String> exceptionJson,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+final class $$TaskRecurrenceExceptionRowsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TaskRecurrenceExceptionRowsTable,
+          TaskRecurrenceExceptionRow
+        > {
+  $$TaskRecurrenceExceptionRowsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaskRowsTable _taskIdTable(_$AppDatabase db) =>
+      db.taskRows.createAlias('task_recurrence_exceptions__task_id__tasks__id');
+
+  $$TaskRowsTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<String>('task_id')!;
+
+    final manager = $$TaskRowsTableTableManager(
+      $_db,
+      $_db.taskRows,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TaskRecurrenceExceptionRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskRecurrenceExceptionRowsTable> {
+  $$TaskRecurrenceExceptionRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originalLocalKey => $composableBuilder(
+    column: $table.originalLocalKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exceptionJson => $composableBuilder(
+    column: $table.exceptionJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaskRowsTableFilterComposer get taskId {
+    final $$TaskRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskRecurrenceExceptionRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskRecurrenceExceptionRowsTable> {
+  $$TaskRecurrenceExceptionRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originalLocalKey => $composableBuilder(
+    column: $table.originalLocalKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exceptionJson => $composableBuilder(
+    column: $table.exceptionJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaskRowsTableOrderingComposer get taskId {
+    final $$TaskRowsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskRecurrenceExceptionRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskRecurrenceExceptionRowsTable> {
+  $$TaskRecurrenceExceptionRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get originalLocalKey => $composableBuilder(
+    column: $table.originalLocalKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get exceptionJson => $composableBuilder(
+    column: $table.exceptionJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  $$TaskRowsTableAnnotationComposer get taskId {
+    final $$TaskRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskRecurrenceExceptionRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskRecurrenceExceptionRowsTable,
+          TaskRecurrenceExceptionRow,
+          $$TaskRecurrenceExceptionRowsTableFilterComposer,
+          $$TaskRecurrenceExceptionRowsTableOrderingComposer,
+          $$TaskRecurrenceExceptionRowsTableAnnotationComposer,
+          $$TaskRecurrenceExceptionRowsTableCreateCompanionBuilder,
+          $$TaskRecurrenceExceptionRowsTableUpdateCompanionBuilder,
+          (
+            TaskRecurrenceExceptionRow,
+            $$TaskRecurrenceExceptionRowsTableReferences,
+          ),
+          TaskRecurrenceExceptionRow,
+          PrefetchHooks Function({bool taskId})
+        > {
+  $$TaskRecurrenceExceptionRowsTableTableManager(
+    _$AppDatabase db,
+    $TaskRecurrenceExceptionRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskRecurrenceExceptionRowsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TaskRecurrenceExceptionRowsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TaskRecurrenceExceptionRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<String> originalLocalKey = const Value.absent(),
+                Value<String> exceptionJson = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaskRecurrenceExceptionRowsCompanion(
+                id: id,
+                taskId: taskId,
+                originalLocalKey: originalLocalKey,
+                exceptionJson: exceptionJson,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String taskId,
+                required String originalLocalKey,
+                required String exceptionJson,
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => TaskRecurrenceExceptionRowsCompanion.insert(
+                id: id,
+                taskId: taskId,
+                originalLocalKey: originalLocalKey,
+                exceptionJson: exceptionJson,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaskRecurrenceExceptionRowsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable:
+                                    $$TaskRecurrenceExceptionRowsTableReferences
+                                        ._taskIdTable(db),
+                                referencedColumn:
+                                    $$TaskRecurrenceExceptionRowsTableReferences
+                                        ._taskIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaskRecurrenceExceptionRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskRecurrenceExceptionRowsTable,
+      TaskRecurrenceExceptionRow,
+      $$TaskRecurrenceExceptionRowsTableFilterComposer,
+      $$TaskRecurrenceExceptionRowsTableOrderingComposer,
+      $$TaskRecurrenceExceptionRowsTableAnnotationComposer,
+      $$TaskRecurrenceExceptionRowsTableCreateCompanionBuilder,
+      $$TaskRecurrenceExceptionRowsTableUpdateCompanionBuilder,
+      (
+        TaskRecurrenceExceptionRow,
+        $$TaskRecurrenceExceptionRowsTableReferences,
+      ),
+      TaskRecurrenceExceptionRow,
+      PrefetchHooks Function({bool taskId})
+    >;
+typedef $$TaskOccurrenceCompletionRowsTableCreateCompanionBuilder =
+    TaskOccurrenceCompletionRowsCompanion Function({
+      required String taskId,
+      required String originalLocalKey,
+      required DateTime completedAtUtc,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$TaskOccurrenceCompletionRowsTableUpdateCompanionBuilder =
+    TaskOccurrenceCompletionRowsCompanion Function({
+      Value<String> taskId,
+      Value<String> originalLocalKey,
+      Value<DateTime> completedAtUtc,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+final class $$TaskOccurrenceCompletionRowsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TaskOccurrenceCompletionRowsTable,
+          TaskOccurrenceCompletionRow
+        > {
+  $$TaskOccurrenceCompletionRowsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TaskRowsTable _taskIdTable(_$AppDatabase db) => db.taskRows
+      .createAlias('task_occurrence_completions__task_id__tasks__id');
+
+  $$TaskRowsTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<String>('task_id')!;
+
+    final manager = $$TaskRowsTableTableManager(
+      $_db,
+      $_db.taskRows,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TaskOccurrenceCompletionRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskOccurrenceCompletionRowsTable> {
+  $$TaskOccurrenceCompletionRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get originalLocalKey => $composableBuilder(
+    column: $table.originalLocalKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAtUtc => $composableBuilder(
+    column: $table.completedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TaskRowsTableFilterComposer get taskId {
+    final $$TaskRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskOccurrenceCompletionRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskOccurrenceCompletionRowsTable> {
+  $$TaskOccurrenceCompletionRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get originalLocalKey => $composableBuilder(
+    column: $table.originalLocalKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAtUtc => $composableBuilder(
+    column: $table.completedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TaskRowsTableOrderingComposer get taskId {
+    final $$TaskRowsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableOrderingComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskOccurrenceCompletionRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskOccurrenceCompletionRowsTable> {
+  $$TaskOccurrenceCompletionRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get originalLocalKey => $composableBuilder(
+    column: $table.originalLocalKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get completedAtUtc => $composableBuilder(
+    column: $table.completedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  $$TaskRowsTableAnnotationComposer get taskId {
+    final $$TaskRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.taskRows,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TaskRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taskRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskOccurrenceCompletionRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskOccurrenceCompletionRowsTable,
+          TaskOccurrenceCompletionRow,
+          $$TaskOccurrenceCompletionRowsTableFilterComposer,
+          $$TaskOccurrenceCompletionRowsTableOrderingComposer,
+          $$TaskOccurrenceCompletionRowsTableAnnotationComposer,
+          $$TaskOccurrenceCompletionRowsTableCreateCompanionBuilder,
+          $$TaskOccurrenceCompletionRowsTableUpdateCompanionBuilder,
+          (
+            TaskOccurrenceCompletionRow,
+            $$TaskOccurrenceCompletionRowsTableReferences,
+          ),
+          TaskOccurrenceCompletionRow,
+          PrefetchHooks Function({bool taskId})
+        > {
+  $$TaskOccurrenceCompletionRowsTableTableManager(
+    _$AppDatabase db,
+    $TaskOccurrenceCompletionRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskOccurrenceCompletionRowsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TaskOccurrenceCompletionRowsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TaskOccurrenceCompletionRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> taskId = const Value.absent(),
+                Value<String> originalLocalKey = const Value.absent(),
+                Value<DateTime> completedAtUtc = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaskOccurrenceCompletionRowsCompanion(
+                taskId: taskId,
+                originalLocalKey: originalLocalKey,
+                completedAtUtc: completedAtUtc,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String taskId,
+                required String originalLocalKey,
+                required DateTime completedAtUtc,
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => TaskOccurrenceCompletionRowsCompanion.insert(
+                taskId: taskId,
+                originalLocalKey: originalLocalKey,
+                completedAtUtc: completedAtUtc,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TaskOccurrenceCompletionRowsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable:
+                                    $$TaskOccurrenceCompletionRowsTableReferences
+                                        ._taskIdTable(db),
+                                referencedColumn:
+                                    $$TaskOccurrenceCompletionRowsTableReferences
+                                        ._taskIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaskOccurrenceCompletionRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskOccurrenceCompletionRowsTable,
+      TaskOccurrenceCompletionRow,
+      $$TaskOccurrenceCompletionRowsTableFilterComposer,
+      $$TaskOccurrenceCompletionRowsTableOrderingComposer,
+      $$TaskOccurrenceCompletionRowsTableAnnotationComposer,
+      $$TaskOccurrenceCompletionRowsTableCreateCompanionBuilder,
+      $$TaskOccurrenceCompletionRowsTableUpdateCompanionBuilder,
+      (
+        TaskOccurrenceCompletionRow,
+        $$TaskOccurrenceCompletionRowsTableReferences,
+      ),
+      TaskOccurrenceCompletionRow,
+      PrefetchHooks Function({bool taskId})
+    >;
 typedef $$NotificationScheduleRowsTableCreateCompanionBuilder =
     NotificationScheduleRowsCompanion Function({
       required String scheduleId,
@@ -7661,6 +10329,23 @@ class $AppDatabaseManager {
       );
   $$TaskReminderRuleRowsTableTableManager get taskReminderRuleRows =>
       $$TaskReminderRuleRowsTableTableManager(_db, _db.taskReminderRuleRows);
+  $$TaskRecurrenceRuleRowsTableTableManager get taskRecurrenceRuleRows =>
+      $$TaskRecurrenceRuleRowsTableTableManager(
+        _db,
+        _db.taskRecurrenceRuleRows,
+      );
+  $$TaskRecurrenceExceptionRowsTableTableManager
+  get taskRecurrenceExceptionRows =>
+      $$TaskRecurrenceExceptionRowsTableTableManager(
+        _db,
+        _db.taskRecurrenceExceptionRows,
+      );
+  $$TaskOccurrenceCompletionRowsTableTableManager
+  get taskOccurrenceCompletionRows =>
+      $$TaskOccurrenceCompletionRowsTableTableManager(
+        _db,
+        _db.taskOccurrenceCompletionRows,
+      );
   $$NotificationScheduleRowsTableTableManager get notificationScheduleRows =>
       $$NotificationScheduleRowsTableTableManager(
         _db,

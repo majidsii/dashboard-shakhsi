@@ -1,11 +1,20 @@
 import 'package:dashboard_shakhsi/core/errors/app_failure.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_trigger.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_recurrence_draft.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_reminder_draft.dart';
 
-enum TaskDetailsField { title, startAt, dueAt, estimatedDuration, reminders }
+enum TaskDetailsField {
+  title,
+  startAt,
+  dueAt,
+  estimatedDuration,
+  reminders,
+  recurrence,
+}
 
 final class TaskDetailsDraft {
   TaskDetailsDraft({
@@ -17,9 +26,11 @@ final class TaskDetailsDraft {
     required this.estimatedHours,
     required this.estimatedMinutes,
     List<TaskReminderDraft>? reminders,
+    TaskRecurrenceDraft? recurrence,
   }) : reminders = List<TaskReminderDraft>.from(
          reminders ?? TaskReminderTrigger.values.map(TaskReminderDraft.empty),
-       );
+       ),
+       recurrence = recurrence ?? TaskRecurrenceDraft.disabled();
 
   factory TaskDetailsDraft.create({
     required DateTime nowLocal,
@@ -34,6 +45,7 @@ final class TaskDetailsDraft {
       estimatedHours: 0,
       estimatedMinutes: 0,
       reminders: taskReminderDraftsFromRules(const <TaskReminderRule>[]),
+      recurrence: TaskRecurrenceDraft.disabled(),
     );
   }
 
@@ -44,6 +56,7 @@ final class TaskDetailsDraft {
   factory TaskDetailsDraft.fromTaskWithReminderRules(
     TaskItem task, {
     List<TaskReminderRule> reminderRules = const <TaskReminderRule>[],
+    TaskRecurrenceRule? recurrenceRule,
   }) {
     final durationMinutes = task.estimatedDurationMinutes ?? 0;
 
@@ -56,6 +69,7 @@ final class TaskDetailsDraft {
       estimatedHours: durationMinutes ~/ 60,
       estimatedMinutes: durationMinutes % 60,
       reminders: taskReminderDraftsFromRules(reminderRules),
+      recurrence: TaskRecurrenceDraft.fromRule(recurrenceRule),
     );
   }
 
@@ -67,6 +81,7 @@ final class TaskDetailsDraft {
   int estimatedHours;
   int estimatedMinutes;
   final List<TaskReminderDraft> reminders;
+  TaskRecurrenceDraft recurrence;
 
   Map<TaskDetailsField, String> validate() {
     final errors = <TaskDetailsField, String>{};
@@ -101,6 +116,13 @@ final class TaskDetailsDraft {
     if (reminders.any((item) => item.selected) && dueLocal == null) {
       errors[TaskDetailsField.reminders] =
           'برای فعال‌کردن یادآور، ابتدا زمان سررسید را مشخص کنید.';
+    }
+
+    final recurrenceError = recurrence.validate(
+      anchorLocal: dueLocal ?? startLocal,
+    );
+    if (recurrenceError != null) {
+      errors[TaskDetailsField.recurrence] = recurrenceError;
     }
 
     return errors;
@@ -164,6 +186,20 @@ final class TaskDetailsDraft {
               nextId: nextId,
             ),
           ),
+    );
+  }
+
+  TaskRecurrenceRule? buildRecurrenceRule({
+    required String taskId,
+    required DateTime savedAtUtc,
+    required String Function() nextId,
+  }) {
+    _throwIfInvalid();
+    return recurrence.build(
+      taskId: taskId,
+      anchorLocal: dueLocal ?? startLocal,
+      savedAtUtc: savedAtUtc,
+      nextId: nextId,
     );
   }
 

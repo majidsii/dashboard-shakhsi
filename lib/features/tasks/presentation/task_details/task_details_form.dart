@@ -4,6 +4,7 @@ import 'package:dashboard_shakhsi/app/widgets/original_glass.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_draft.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_duration_field.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_jalali_date_time_field.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_recurrence_field.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_reminder_rules_field.dart';
 import 'package:flutter/material.dart';
 
@@ -152,6 +153,7 @@ final class TaskDetailsFormState extends State<TaskDetailsForm> {
                 setState(() => _draft.startLocal = value);
                 _clearError(TaskDetailsField.startAt);
                 _clearError(TaskDetailsField.dueAt);
+                _clearError(TaskDetailsField.recurrence);
               },
             ),
           ),
@@ -166,6 +168,7 @@ final class TaskDetailsFormState extends State<TaskDetailsForm> {
                 setState(() => _draft.dueLocal = value);
                 _clearError(TaskDetailsField.dueAt);
                 _clearError(TaskDetailsField.reminders);
+                _clearError(TaskDetailsField.recurrence);
               },
             ),
           ),
@@ -189,6 +192,19 @@ final class TaskDetailsFormState extends State<TaskDetailsForm> {
           const SizedBox(height: 17),
           FocusTraversalOrder(
             order: const NumericFocusOrder(7),
+            child: TaskRecurrenceField(
+              value: _draft.recurrence,
+              anchorLocal: _draft.dueLocal ?? _draft.startLocal,
+              errorText: _errors[TaskDetailsField.recurrence],
+              onChanged: (value) {
+                setState(() => _draft.recurrence = value);
+                _clearError(TaskDetailsField.recurrence);
+              },
+            ),
+          ),
+          const SizedBox(height: 17),
+          FocusTraversalOrder(
+            order: const NumericFocusOrder(8),
             child: TaskDurationField(
               hours: _draft.estimatedHours,
               minutes: _draft.estimatedMinutes,
@@ -270,5 +286,6 @@ TaskDetailsDraft _copyDraft(TaskDetailsDraft source) {
     estimatedHours: source.estimatedHours,
     estimatedMinutes: source.estimatedMinutes,
     reminders: source.reminders.map((item) => item.copyWith()).toList(),
+    recurrence: source.recurrence.copy(),
   );
 }

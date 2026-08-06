@@ -8,7 +8,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 void main() {
   test(
-    'version two migrates tasks deterministically through schema five',
+    'version two migrates tasks deterministically through schema six',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'dashboard-shakhsi-task-status-migration-',
@@ -20,12 +20,12 @@ void main() {
 
         final migrated = AppDatabase(NativeDatabase(file));
         try {
-          expect(migrated.schemaVersion, 5);
+          expect(migrated.schemaVersion, 6);
 
           final versionRows = await migrated
               .customSelect('PRAGMA user_version')
               .get();
-          expect(versionRows.single.read<int>('user_version'), 5);
+          expect(versionRows.single.read<int>('user_version'), 6);
 
           final rows = await migrated.select(migrated.taskRows).get();
           final byId = <String, TaskRow>{for (final row in rows) row.id: row};

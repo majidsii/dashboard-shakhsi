@@ -5,6 +5,7 @@ import 'package:dashboard_shakhsi/app/widgets/original_controls.dart';
 import 'package:dashboard_shakhsi/app/widgets/original_glass.dart';
 import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_draft.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_form.dart';
@@ -16,10 +17,12 @@ final class TaskDetailsDialogResult {
   const TaskDetailsDialogResult({
     required this.task,
     required this.reminderRules,
+    required this.recurrenceRule,
   });
 
   final TaskItem task;
   final List<TaskReminderRule> reminderRules;
+  final TaskRecurrenceRule? recurrenceRule;
 }
 
 Future<TaskItem?> showTaskDetailsDialog({
@@ -44,6 +47,7 @@ Future<TaskDetailsDialogResult?> showTaskDetailsEditorDialog({
   required TaskDetailsDialogMode mode,
   TaskItem? initialTask,
   List<TaskReminderRule> initialReminderRules = const <TaskReminderRule>[],
+  TaskRecurrenceRule? initialRecurrenceRule,
   DateTime Function()? now,
   String Function()? nextId,
 }) {
@@ -65,6 +69,7 @@ Future<TaskDetailsDialogResult?> showTaskDetailsEditorDialog({
         mode: mode,
         initialTask: initialTask,
         initialReminderRules: initialReminderRules,
+        initialRecurrenceRule: initialRecurrenceRule,
         now: nowSource,
         nextId: idSource,
       );
@@ -91,6 +96,7 @@ final class _TaskDetailsDialogShell extends StatefulWidget {
     required this.mode,
     required this.initialTask,
     required this.initialReminderRules,
+    required this.initialRecurrenceRule,
     required this.now,
     required this.nextId,
   });
@@ -98,6 +104,7 @@ final class _TaskDetailsDialogShell extends StatefulWidget {
   final TaskDetailsDialogMode mode;
   final TaskItem? initialTask;
   final List<TaskReminderRule> initialReminderRules;
+  final TaskRecurrenceRule? initialRecurrenceRule;
   final DateTime Function() now;
   final String Function() nextId;
 
@@ -124,6 +131,7 @@ final class _TaskDetailsDialogShellState
         : TaskDetailsDraft.fromTaskWithReminderRules(
             widget.initialTask!,
             reminderRules: widget.initialReminderRules,
+            recurrenceRule: widget.initialRecurrenceRule,
           );
 
     return Material(
@@ -259,11 +267,20 @@ final class _TaskDetailsDialogShellState
         savedAtUtc: savedAtUtc,
         nextId: widget.nextId,
       );
+      final recurrenceRule = form.draft.buildRecurrenceRule(
+        taskId: task.id,
+        savedAtUtc: savedAtUtc,
+        nextId: widget.nextId,
+      );
 
       if (!mounted) return;
-      Navigator.of(
-        context,
-      ).pop(TaskDetailsDialogResult(task: task, reminderRules: reminderRules));
+      Navigator.of(context).pop(
+        TaskDetailsDialogResult(
+          task: task,
+          reminderRules: reminderRules,
+          recurrenceRule: recurrenceRule,
+        ),
+      );
     } on Object catch (_) {
       if (!mounted) return;
       setState(() {

@@ -2,8 +2,14 @@ import 'dart:async';
 
 import 'package:dashboard_shakhsi/app/theme/original_theme.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
+import 'package:dashboard_shakhsi/core/recurrence/recurrence_local_date_time.dart';
 import 'package:dashboard_shakhsi/features/dashboard/presentation/widgets/tasks_panel.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_occurrence_completion.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_bundle.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_exception.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
@@ -15,15 +21,20 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late _MemoryTaskRepository repository;
   late _MemoryTaskReminderRepository reminderRepository;
+  late _MemoryTaskRecurrenceRepository recurrenceRepository;
   late ProviderContainer container;
 
   setUp(() {
     repository = _MemoryTaskRepository();
     reminderRepository = _MemoryTaskReminderRepository();
+    recurrenceRepository = _MemoryTaskRecurrenceRepository();
     container = ProviderContainer(
       overrides: <Override>[
         taskRepositoryProvider.overrideWithValue(repository),
         taskReminderRepositoryProvider.overrideWithValue(reminderRepository),
+        taskRecurrenceRepositoryProvider.overrideWithValue(
+          recurrenceRepository,
+        ),
       ],
     );
   });
@@ -662,4 +673,58 @@ final class _MemoryTaskReminderRepository implements TaskReminderRepository {
   Future<void> deleteByTask(String taskId) async {
     _items.remove(taskId);
   }
+}
+
+final class _MemoryTaskRecurrenceRepository
+    implements TaskRecurrenceRepository {
+  @override
+  Stream<List<TaskRecurrenceRule>> watchRules() {
+    return Stream<List<TaskRecurrenceRule>>.value(const <TaskRecurrenceRule>[]);
+  }
+
+  @override
+  Stream<List<TaskRecurrenceException>> watchExceptions() {
+    return Stream<List<TaskRecurrenceException>>.value(
+      const <TaskRecurrenceException>[],
+    );
+  }
+
+  @override
+  Stream<List<TaskOccurrenceCompletion>> watchCompletions() {
+    return Stream<List<TaskOccurrenceCompletion>>.value(
+      const <TaskOccurrenceCompletion>[],
+    );
+  }
+
+  @override
+  Future<TaskRecurrenceBundle> getByTask(String taskId) async {
+    return TaskRecurrenceBundle(taskId: taskId, rule: null);
+  }
+
+  @override
+  Future<void> replaceRule({
+    required String taskId,
+    required TaskRecurrenceRule? rule,
+  }) async {}
+
+  @override
+  Future<void> upsertException(TaskRecurrenceException exception) async {}
+
+  @override
+  Future<void> deleteException({
+    required String taskId,
+    required RecurrenceLocalDateTime originalLocalDateTime,
+  }) async {}
+
+  @override
+  Future<void> setCompletion(TaskOccurrenceCompletion completion) async {}
+
+  @override
+  Future<void> clearCompletion({
+    required String taskId,
+    required RecurrenceLocalDateTime originalLocalDateTime,
+  }) async {}
+
+  @override
+  Future<void> clearTask(String taskId) async {}
 }

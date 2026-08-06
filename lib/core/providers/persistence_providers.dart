@@ -1,5 +1,6 @@
 import 'package:dashboard_shakhsi/core/database/app_database.dart';
 import 'package:dashboard_shakhsi/core/date_time/app_clock.dart';
+import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/core/notifications/device_time_zone_source.dart';
 import 'package:dashboard_shakhsi/core/notifications/drift_notification_schedule_repository.dart';
 import 'package:dashboard_shakhsi/core/notifications/local_notification_plugin_config.dart';
@@ -20,12 +21,19 @@ import 'package:dashboard_shakhsi/features/finance/domain/debt.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/finance_repository.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/finance_transaction.dart';
 import 'package:dashboard_shakhsi/features/finance/domain/installment_plan.dart';
+import 'package:dashboard_shakhsi/features/tasks/application/task_occurrence_projector.dart';
+import 'package:dashboard_shakhsi/features/tasks/application/task_recurrence_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_projection_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_rules_service.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_recurrence_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/reminder_aware_task_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_occurrence_completion.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_exception.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
@@ -49,12 +57,28 @@ final taskReminderRepositoryProvider = Provider<TaskReminderRepository>((ref) {
   return DriftTaskReminderRepository(ref.watch(appDatabaseProvider));
 });
 
+final taskRecurrenceRepositoryProvider = Provider<TaskRecurrenceRepository>((
+  ref,
+) {
+  return DriftTaskRecurrenceRepository(ref.watch(appDatabaseProvider));
+});
+
+final taskOccurrenceProjectorProvider = Provider<TaskOccurrenceProjector>((
+  ref,
+) {
+  return const TaskOccurrenceProjector();
+});
+
 final taskReminderProjectionServiceProvider =
     Provider<TaskReminderProjectionService>((ref) {
       return TaskReminderProjectionService(
         reminderRepository: ref.watch(taskReminderRepositoryProvider),
         coordinator: ref.watch(notificationCoordinatorProvider),
         nowUtc: () => ref.read(appClockProvider).nowUtc(),
+        recurrenceRepository: ref.watch(taskRecurrenceRepositoryProvider),
+        occurrenceProjector: ref.watch(taskOccurrenceProjectorProvider),
+        floatingTimeZoneId: () =>
+            ref.read(deviceTimeZoneSourceProvider).localTimeZoneName(),
       );
     });
 
@@ -64,6 +88,20 @@ final taskReminderRulesServiceProvider = Provider<TaskReminderRulesService>((
   return TaskReminderRulesService(
     repository: ref.watch(taskReminderRepositoryProvider),
     projection: ref.watch(taskReminderProjectionServiceProvider),
+  );
+});
+
+final taskRecurrenceServiceProvider = Provider<TaskRecurrenceService>((ref) {
+  return TaskRecurrenceService(
+    repository: ref.watch(taskRecurrenceRepositoryProvider),
+    nowUtc: () => ref.read(appClockProvider).nowUtc(),
+    nextId: const UuidV7IdGenerator().next,
+    onChanged: (taskId) async {
+      final task = await ref.read(baseTaskRepositoryProvider).getById(taskId);
+      if (task != null) {
+        await ref.read(taskReminderProjectionServiceProvider).reproject(task);
+      }
+    },
   );
 });
 
@@ -97,6 +135,26 @@ final taskReminderRulesProvider =
     StreamProvider.family<List<TaskReminderRule>, String>((ref, taskId) {
       return ref.watch(taskReminderRepositoryProvider).watchByTask(taskId);
     });
+
+final taskRecurrenceRulesProvider = StreamProvider<List<TaskRecurrenceRule>>((
+  ref,
+) {
+  return ref.watch(taskRecurrenceRepositoryProvider).watchRules();
+});
+
+final taskRecurrenceExceptionsProvider =
+    StreamProvider<List<TaskRecurrenceException>>((ref) {
+      return ref.watch(taskRecurrenceRepositoryProvider).watchExceptions();
+    });
+
+final taskOccurrenceCompletionsProvider =
+    StreamProvider<List<TaskOccurrenceCompletion>>((ref) {
+      return ref.watch(taskRecurrenceRepositoryProvider).watchCompletions();
+    });
+
+final taskCalendarTimeZoneProvider = FutureProvider<String>((ref) {
+  return ref.watch(deviceTimeZoneSourceProvider).localTimeZoneName();
+});
 
 final taskItemsProvider = StreamProvider<List<TaskItem>>((ref) {
   return ref.watch(taskRepositoryProvider).watchAll();

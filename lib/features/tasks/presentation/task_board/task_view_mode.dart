@@ -1,1 +1,1 @@
-enum TaskViewMode { list, kanban }
+enum TaskViewMode { list, kanban, calendar }

@@ -176,6 +176,79 @@ class TaskReminderRuleRows extends Table {
   ];
 }
 
+class TaskRecurrenceRuleRows extends Table {
+  @override
+  String get tableName => 'task_recurrence_rules';
+
+  TextColumn get id => text()();
+  TextColumn get taskId =>
+      text().references(TaskRows, #id, onDelete: KeyAction.cascade).unique()();
+  TextColumn get ruleJson => text()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    'CHECK (length(rule_json) > 2)',
+    'CHECK (updated_at_utc >= created_at_utc)',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+class TaskRecurrenceExceptionRows extends Table {
+  @override
+  String get tableName => 'task_recurrence_exceptions';
+
+  TextColumn get id => text()();
+  TextColumn get taskId =>
+      text().references(TaskRows, #id, onDelete: KeyAction.cascade)();
+  TextColumn get originalLocalKey => text()();
+  TextColumn get exceptionJson => text()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    'CHECK (length(original_local_key) >= 16)',
+    'CHECK (length(exception_json) > 2)',
+    'CHECK (updated_at_utc >= created_at_utc)',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => <Set<Column<Object>>>[
+    <Column<Object>>{taskId, originalLocalKey},
+  ];
+}
+
+class TaskOccurrenceCompletionRows extends Table {
+  @override
+  String get tableName => 'task_occurrence_completions';
+
+  TextColumn get taskId =>
+      text().references(TaskRows, #id, onDelete: KeyAction.cascade)();
+  TextColumn get originalLocalKey => text()();
+  DateTimeColumn get completedAtUtc => dateTime()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    'CHECK (length(original_local_key) >= 16)',
+    'CHECK (updated_at_utc >= created_at_utc)',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{
+    taskId,
+    originalLocalKey,
+  };
+}
+
 class NotificationScheduleRows extends Table {
   @override
   String get tableName => 'notification_schedules';
@@ -213,6 +286,9 @@ class NotificationScheduleRows extends Table {
     InstallmentPlanRows,
     InstallmentPaymentRows,
     TaskReminderRuleRows,
+    TaskRecurrenceRuleRows,
+    TaskRecurrenceExceptionRows,
+    TaskOccurrenceCompletionRows,
     NotificationScheduleRows,
   ],
 )
@@ -221,7 +297,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -316,6 +392,11 @@ final class AppDatabase extends _$AppDatabase {
       }
       if (from < 5) {
         await migrator.createTable(taskReminderRuleRows);
+      }
+      if (from < 6) {
+        await migrator.createTable(taskRecurrenceRuleRows);
+        await migrator.createTable(taskRecurrenceExceptionRows);
+        await migrator.createTable(taskOccurrenceCompletionRows);
       }
     },
     beforeOpen: (OpeningDetails details) async {

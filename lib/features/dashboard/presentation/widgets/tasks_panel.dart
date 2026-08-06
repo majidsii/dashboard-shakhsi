@@ -7,12 +7,17 @@ import 'package:dashboard_shakhsi/app/widgets/original_glass.dart';
 import 'package:dashboard_shakhsi/core/date_time/persian_date_label.dart';
 import 'package:dashboard_shakhsi/core/ids/id_generator.dart';
 import 'package:dashboard_shakhsi/core/providers/persistence_providers.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_calendar_occurrence.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_occurrence_completion.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_exception.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_board_operations.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_kanban_board.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_view_mode.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_calendar/task_calendar_board.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_planning_labels.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +64,32 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
         .length;
     final visibleTasks = _filteredTasks(panelTasks);
     final visibleBoardTasks = _searchedBoardTasks(tasks);
+    final recurrenceRulesAsync = _viewMode == TaskViewMode.calendar
+        ? ref.watch(taskRecurrenceRulesProvider)
+        : null;
+    final recurrenceExceptionsAsync = _viewMode == TaskViewMode.calendar
+        ? ref.watch(taskRecurrenceExceptionsProvider)
+        : null;
+    final occurrenceCompletionsAsync = _viewMode == TaskViewMode.calendar
+        ? ref.watch(taskOccurrenceCompletionsProvider)
+        : null;
+    final calendarTimeZoneAsync = _viewMode == TaskViewMode.calendar
+        ? ref.watch(taskCalendarTimeZoneProvider)
+        : null;
+    final recurrenceRules =
+        recurrenceRulesAsync?.asData?.value ?? const <TaskRecurrenceRule>[];
+    final recurrenceExceptions =
+        recurrenceExceptionsAsync?.asData?.value ??
+        const <TaskRecurrenceException>[];
+    final occurrenceCompletions =
+        occurrenceCompletionsAsync?.asData?.value ??
+        const <TaskOccurrenceCompletion>[];
+    final calendarTimeZone = calendarTimeZoneAsync?.asData?.value ?? 'UTC';
+    final calendarReady =
+        recurrenceRulesAsync?.asData != null &&
+        recurrenceExceptionsAsync?.asData != null &&
+        occurrenceCompletionsAsync?.asData != null &&
+        calendarTimeZoneAsync?.asData != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -286,7 +317,28 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
             onEdit: (task) => unawaited(_editTask(task)),
             onPriority: (task) => unawaited(_changePriority(task)),
             onDelete: (task) => unawaited(_removeTask(task)),
-          ),
+          )
+        else if (_viewMode == TaskViewMode.calendar)
+          if (!calendarReady)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(28),
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else
+            TaskCalendarBoard(
+              tasks: tasks,
+              rules: recurrenceRules,
+              exceptions: recurrenceExceptions,
+              completions: occurrenceCompletions,
+              floatingTimeZoneId: calendarTimeZone,
+              onToggleCompleted: _toggleOccurrenceCompleted,
+              onSkip: _skipOccurrence,
+              onCancel: _cancelOccurrence,
+              onRestore: _restoreOccurrence,
+              onMove: _moveOccurrence,
+            ),
       ],
     );
   }
@@ -359,6 +411,14 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
             .replaceForTask(task: persisted, rules: result.reminderRules);
       }
     }
+    if (result.recurrenceRule != null) {
+      await ref
+          .read(taskRecurrenceServiceProvider)
+          .replaceRule(
+            taskId: result.task.id,
+            rule: result.recurrenceRule!.rule,
+          );
+    }
   }
 
   Future<void> _toggleTask(TaskItem task) {
@@ -390,6 +450,9 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     final initialReminderRules = await ref
         .read(taskReminderRepositoryProvider)
         .getByTask(task.id);
+    final initialRecurrence = await ref
+        .read(taskRecurrenceRepositoryProvider)
+        .getByTask(task.id);
     if (!mounted) return;
 
     final result = await showTaskDetailsEditorDialog(
@@ -397,6 +460,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
       mode: TaskDetailsDialogMode.edit,
       initialTask: task,
       initialReminderRules: initialReminderRules,
+      initialRecurrenceRule: initialRecurrence.rule,
       nextId: _idGenerator.next,
     );
     if (!mounted || result == null) return;
@@ -411,6 +475,64 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
             .replaceForTask(task: persisted, rules: result.reminderRules);
       }
     }
+    if (initialRecurrence.rule != null || result.recurrenceRule != null) {
+      await ref
+          .read(taskRecurrenceServiceProvider)
+          .replaceRule(
+            taskId: result.task.id,
+            rule: result.recurrenceRule?.rule,
+          );
+    }
+  }
+
+  Future<void> _toggleOccurrenceCompleted(TaskCalendarOccurrence occurrence) {
+    return ref
+        .read(taskRecurrenceServiceProvider)
+        .setCompleted(
+          taskId: occurrence.task.id,
+          originalLocalDateTime: occurrence.originalLocalDateTime,
+          completed: !occurrence.isCompleted,
+        );
+  }
+
+  Future<void> _skipOccurrence(TaskCalendarOccurrence occurrence) {
+    return ref
+        .read(taskRecurrenceServiceProvider)
+        .skip(
+          taskId: occurrence.task.id,
+          originalLocalDateTime: occurrence.originalLocalDateTime,
+        );
+  }
+
+  Future<void> _cancelOccurrence(TaskCalendarOccurrence occurrence) {
+    return ref
+        .read(taskRecurrenceServiceProvider)
+        .cancel(
+          taskId: occurrence.task.id,
+          originalLocalDateTime: occurrence.originalLocalDateTime,
+        );
+  }
+
+  Future<void> _restoreOccurrence(TaskCalendarOccurrence occurrence) {
+    return ref
+        .read(taskRecurrenceServiceProvider)
+        .restore(
+          taskId: occurrence.task.id,
+          originalLocalDateTime: occurrence.originalLocalDateTime,
+        );
+  }
+
+  Future<void> _moveOccurrence(
+    TaskCalendarOccurrence occurrence,
+    DateTime movedGregorianLocal,
+  ) {
+    return ref
+        .read(taskRecurrenceServiceProvider)
+        .moveToDeviceLocal(
+          taskId: occurrence.task.id,
+          originalLocalDateTime: occurrence.originalLocalDateTime,
+          movedGregorianLocal: movedGregorianLocal,
+        );
   }
 
   Future<void> _removeTask(TaskItem task) async {
@@ -497,7 +619,7 @@ final class _TaskViewModeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OriginalPills(
-      items: const <String>['فهرست', 'کانبان'],
+      items: const <String>['فهرست', 'کانبان', 'تقویم'],
       selected: mode.index,
       compact: true,
       onSelected: (index) => onChanged(TaskViewMode.values[index]),

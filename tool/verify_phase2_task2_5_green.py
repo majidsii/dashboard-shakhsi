@@ -60,20 +60,16 @@ resolver = read(
 )
 engine = read("lib/core/recurrence/recurrence_engine.dart")
 
-need(
-    re.search(r"int\s+get\s+schemaVersion\s*=>\s*5\s*;", database)
-    is not None,
-    "Task 2.5 must not change schema version 5",
+schema_match = re.search(
+    r"int\s+get\s+schemaVersion\s*=>\s*(\d+)\s*;",
+    database,
 )
-for forbidden in (
-    "class RecurrenceRuleRows",
-    "recurrence_rules",
-    "task_recurrence",
-):
-    need(
-        forbidden not in database,
-        f"Task 2.5 persistence boundary changed: {forbidden}",
-    )
+need(schema_match is not None, "schema version is missing")
+need(int(schema_match.group(1)) >= 5, "schema regressed below version 5")
+need(
+    "class RecurrenceRuleRows" not in database,
+    "shared recurrence must not own a generic persistence table",
+)
 need(
     "RecurrenceRule" not in task_item,
     "TaskItem must remain free of recurrence state",
@@ -242,7 +238,7 @@ result = subprocess.run(
 need(result.returncode == 0, f"git diff --check failed:\n{result.stdout}")
 
 print(
-    "OK: Task 2.5 adds a schema-neutral shared recurrence domain, "
+    "OK: Task 2.5 preserves a schema-neutral shared recurrence domain, "
     "Gregorian/Jalali adapters, fixed/floating IANA timezone resolution, "
     "first-valid DST-gap and first-instant overlap policy, deterministic "
     "daily/weekly/monthly/yearly expansion, inclusive termination, "

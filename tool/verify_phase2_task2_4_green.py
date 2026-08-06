@@ -58,11 +58,12 @@ panel = read(
     "lib/features/dashboard/presentation/widgets/tasks_panel.dart"
 )
 
-need(
-    re.search(r"int\s+get\s+schemaVersion\s*=>\s*5\s*;", database)
-    is not None,
-    "schema version 5 is missing",
+schema_match = re.search(
+    r"int\s+get\s+schemaVersion\s*=>\s*(\d+)\s*;",
+    database,
 )
+need(schema_match is not None, "schema version is missing")
+need(int(schema_match.group(1)) >= 5, "schema regressed below version 5")
 for token in (
     "class TaskReminderRuleRows extends Table",
     "task_reminder_rules",
@@ -226,8 +227,13 @@ test_files = (
     "test/core/database/task_reminder_schema_migration_test.dart",
 )
 tests = "\n".join(read(relative) for relative in test_files)
+need(
+    "schema version four upgrades to reminder schema version five" in tests
+    or "schema version four upgrades through reminder and recurrence schema six"
+    in tests,
+    "focused reminder migration coverage missing",
+)
 for token in (
-    "schema version four upgrades to reminder schema version five",
     "task deletion cascades reminder rules",
     "projects enabled future rules with stable identity and payload",
     "due edits and terminal transitions reproject the owner set",
@@ -238,7 +244,7 @@ for token in (
     need(token in tests, f"focused test coverage missing: {token}")
 
 print(
-    "OK: Task 2.4 defines independent persisted reminder rules on schema 5, "
+    "OK: Task 2.4 preserves independent persisted reminder rules from schema 5, "
     "stable task-owned notification projection, owner-scoped reconciliation, "
     "automatic due/status/delete reprojection, backward-compatible task "
     "editing, per-rule privacy, Liquid Glass reminder controls, migration "
