@@ -9,11 +9,11 @@
 >
 > `Read PROJECT_ROADMAP.md first. Treat it as the source of truth for scope, architecture, completed work, current task, verification gates, and handoff rules. Continue only from CURRENT TASK and do not redesign completed work unless there is verified evidence of a defect.`
 
-Last updated: **2026-08-07**  
-Current branch: `feat/v2-complete-dashboard`  
-Last known synced HEAD at handoff capture: `b556ea11fb04f253fb464c6f0f6abd458726b90a`  
-Project stack: Flutter desktop + Riverpod + Drift/SQLite  
-Current database schema: **7**  
+Last updated: **2026-08-07**
+Current branch: `feat/v2-complete-dashboard`
+Last known synced HEAD at handoff capture: `b556ea11fb04f253fb464c6f0f6abd458726b90a`
+Project stack: Flutter desktop + Riverpod + Drift/SQLite
+Current database schema: **7**
 Next proposed schema for Task 2.8: **8**
 
 ---
@@ -33,7 +33,7 @@ It must contain and continuously maintain:
 - commit/checkpoint discipline;
 - a concise handoff summary for the next session.
 
-This file is a **living source of truth**.  
+This file is a **living source of truth**.
 Every completed task must update this file before its final checkpoint commit.
 
 ---
