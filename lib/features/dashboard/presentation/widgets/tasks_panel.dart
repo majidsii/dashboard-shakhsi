@@ -14,12 +14,18 @@ import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_exceptio
 import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_status.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_template.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_board_operations.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_kanban_board.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_board/task_view_mode.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_calendar/task_calendar_board.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_dialog.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_details_draft.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_details/task_planning_labels.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_templates/task_template_draft.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_templates/task_template_editor_dialog.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_templates/task_template_manager_dialog.dart';
+import 'package:dashboard_shakhsi/features/tasks/presentation/task_templates/task_template_picker.dart';
 import 'package:dashboard_shakhsi/features/tasks/presentation/task_timer/task_timer_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -194,10 +200,19 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
               ],
             );
 
-            final detailedAction = OriginalGhostButton(
-              label: 'افزودن با جزئیات',
-              icon: Icons.tune_rounded,
-              onPressed: () => unawaited(_addTaskWithDetails()),
+            final detailedAction = Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                OriginalGhostButton(
+                  label: 'افزودن با جزئیات',
+                  icon: Icons.tune_rounded,
+                  onPressed: () => unawaited(_addTaskWithDetails()),
+                ),
+                const SizedBox(width: 4),
+                _TemplatePickerButton(
+                  onPressed: () => unawaited(_openTemplatePicker()),
+                ),
+              ],
             );
 
             if (narrow) {
@@ -389,10 +404,11 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
     }
   }
 
-  Future<void> _addTaskWithDetails() async {
+  Future<void> _addTaskWithDetails({TaskDetailsDraft? initialDraft}) async {
     final result = await showTaskDetailsEditorDialog(
       context: context,
       mode: TaskDetailsDialogMode.create,
+      initialCreateDraft: initialDraft,
       nextId: _idGenerator.next,
     );
     if (!mounted || result == null) return;
@@ -421,6 +437,191 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
             rule: result.recurrenceRule!.rule,
           );
     }
+  }
+
+  Future<void> _openTemplatePicker() async {
+    final templates = await ref.read(taskTemplateRepositoryProvider).getAll();
+    if (!mounted) return;
+
+    var manageRequested = false;
+    final selected = await showDialog<TaskTemplate>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('انتخاب قالب'),
+        content: SizedBox(
+          width: 620,
+          child: TaskTemplatePicker(
+            templates: templates,
+            onSelected: (template) => Navigator.of(dialogContext).pop(template),
+            onManage: () {
+              manageRequested = true;
+              Navigator.of(dialogContext).pop();
+            },
+          ),
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    if (manageRequested) {
+      await _openTemplateManager();
+      return;
+    }
+    if (selected == null) return;
+
+    final draft = ref
+        .read(taskTemplateMapperProvider)
+        .toTaskDetailsDraft(selected);
+    await _addTaskWithDetails(initialDraft: draft);
+  }
+
+  Future<void> _openTemplateManager() {
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800, maxHeight: 760),
+          child: Consumer(
+            builder: (context, dialogRef, _) {
+              final templatesAsync = dialogRef.watch(taskTemplatesProvider);
+              return templatesAsync.when(
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (_, _) => const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text('بارگذاری قالب‌ها انجام نشد.'),
+                ),
+                data: (templates) => TaskTemplateManagerDialog(
+                  templates: templates,
+                  onCreate: () => unawaited(_createCustomTemplate()),
+                  onEdit: (template) =>
+                      unawaited(_editCustomTemplate(template)),
+                  onDelete: (template) => ref
+                      .read(taskTemplateRepositoryProvider)
+                      .deleteCustom(template.id),
+                  onDuplicate: (template) async {
+                    await ref
+                        .read(taskTemplateRepositoryProvider)
+                        .duplicateAsCustom(
+                          sourceId: template.id,
+                          newId: _idGenerator.next(),
+                          savedAtUtc: DateTime.now().toUtc(),
+                        );
+                  },
+                  onSetHidden: (template, hidden) => ref
+                      .read(taskTemplateRepositoryProvider)
+                      .setHidden(
+                        id: template.id,
+                        hidden: hidden,
+                        changedAtUtc: DateTime.now().toUtc(),
+                      ),
+                  onReorder: (kind, orderedIds) => ref
+                      .read(taskTemplateRepositoryProvider)
+                      .reorderKind(
+                        kind: kind,
+                        orderedIds: orderedIds,
+                        changedAtUtc: DateTime.now().toUtc(),
+                      ),
+                  onRestoreSystemDefaults: () => ref
+                      .read(taskTemplateSynchronizerProvider)
+                      .restoreDefaults(nowUtc: DateTime.now().toUtc()),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _createCustomTemplate() async {
+    final draft = await showTaskTemplateEditorDialog(
+      context: context,
+      initialDraft: TaskTemplateDraft.create(),
+    );
+    if (!mounted || draft == null) return;
+
+    final now = DateTime.now().toUtc();
+    final template = draft.buildCustom(
+      id: _idGenerator.next(),
+      displayOrder: 0,
+      savedAtUtc: now,
+    );
+    await ref.read(taskTemplateRepositoryProvider).createCustom(template);
+  }
+
+  Future<void> _editCustomTemplate(TaskTemplate template) async {
+    final draft = await showTaskTemplateEditorDialog(
+      context: context,
+      initialDraft: TaskTemplateDraft.fromTemplate(template),
+    );
+    if (!mounted || draft == null) return;
+
+    final now = DateTime.now().toUtc();
+    final built = draft.buildCustom(
+      id: template.id,
+      displayOrder: template.displayOrder,
+      savedAtUtc: now,
+    );
+    final updated = TaskTemplate(
+      id: template.id,
+      kind: TaskTemplateKind.custom,
+      templateName: built.templateName,
+      initialTaskTitle: built.initialTaskTitle,
+      description: built.description,
+      priority: built.priority,
+      estimatedDurationMinutes: built.estimatedDurationMinutes,
+      reminderDefaults: built.reminderDefaults,
+      recurrenceDefault: built.recurrenceDefault,
+      hidden: template.hidden,
+      displayOrder: template.displayOrder,
+      createdAtUtc: template.createdAtUtc,
+      updatedAtUtc: now,
+    );
+    await ref.read(taskTemplateRepositoryProvider).updateCustom(updated);
+  }
+
+  Future<void> _saveTaskDraftAsTemplate(TaskDetailsDraft source) async {
+    final repository = ref.read(taskTemplateRepositoryProvider);
+    final existing = await repository.getAll();
+    final customCount = existing
+        .where((item) => item.kind == TaskTemplateKind.custom)
+        .length;
+    final now = DateTime.now().toUtc();
+    final id = _idGenerator.next();
+    final defaultName = source.title.trim().isEmpty
+        ? 'قالب کار'
+        : source.title.trim();
+
+    final provisional = ref
+        .read(taskTemplateMapperProvider)
+        .toCustomTemplate(
+          source: source,
+          id: id,
+          templateName: defaultName,
+          displayOrder: customCount,
+          savedAtUtc: now,
+        );
+
+    if (!mounted) return;
+    final edited = await showTaskTemplateEditorDialog(
+      context: context,
+      initialDraft: TaskTemplateDraft.fromTemplate(provisional),
+    );
+    if (!mounted || edited == null) return;
+
+    final savedAt = DateTime.now().toUtc();
+    await repository.createCustom(
+      edited.buildCustom(
+        id: id,
+        displayOrder: customCount,
+        savedAtUtc: savedAt,
+      ),
+    );
   }
 
   Future<void> _toggleTask(TaskItem task) {
@@ -463,6 +664,7 @@ final class _TasksPanelState extends ConsumerState<TasksPanel> {
       initialTask: task,
       initialReminderRules: initialReminderRules,
       initialRecurrenceRule: initialRecurrence.rule,
+      onSaveAsTemplate: _saveTaskDraftAsTemplate,
       nextId: _idGenerator.next,
     );
     if (!mounted || result == null) return;
@@ -878,6 +1080,35 @@ final class _RingPainter extends CustomPainter {
     return oldDelegate.progress != progress ||
         oldDelegate.color != color ||
         oldDelegate.track != track;
+  }
+}
+
+final class _TemplatePickerButton extends StatelessWidget {
+  const _TemplatePickerButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = OriginalPalette.of(context);
+    return OriginalFieldSurface(
+      radius: OriginalDesignTokens.pillRadius,
+      child: OriginalPressable(
+        semanticLabel: 'انتخاب قالب کار',
+        onPressed: onPressed,
+        pressedScale: .94,
+        borderRadius: BorderRadius.circular(OriginalDesignTokens.pillRadius),
+        child: SizedBox(
+          width: 42,
+          height: 40,
+          child: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: palette.muted,
+            size: 21,
+          ),
+        ),
+      ),
+    );
   }
 }
 

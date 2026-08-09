@@ -44,6 +44,7 @@ final class DashboardShakhsiApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(taskTemplateStartupProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       locale: const Locale('fa', 'IR'),

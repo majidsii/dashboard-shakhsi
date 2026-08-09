@@ -25,12 +25,16 @@ import 'package:dashboard_shakhsi/features/tasks/application/task_occurrence_pro
 import 'package:dashboard_shakhsi/features/tasks/application/task_recurrence_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_projection_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_reminder_rules_service.dart';
+import 'package:dashboard_shakhsi/features/tasks/application/task_template_mapper.dart';
 import 'package:dashboard_shakhsi/features/tasks/application/task_timer_service.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_recurrence_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/drift_task_template_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/drift_task_time_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/data/reminder_aware_task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/system_task_template_catalog.dart';
+import 'package:dashboard_shakhsi/features/tasks/data/task_template_synchronizer.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_item.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_occurrence_completion.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_exception.dart';
@@ -39,6 +43,8 @@ import 'package:dashboard_shakhsi/features/tasks/domain/task_recurrence_rule.dar
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_reminder_rule.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_repository.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_template.dart';
+import 'package:dashboard_shakhsi/features/tasks/domain/task_template_repository.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_time_entry.dart';
 import 'package:dashboard_shakhsi/features/tasks/domain/task_time_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,6 +146,39 @@ final taskTimeEntriesByTaskProvider =
 
 final activeTaskTimerProvider = StreamProvider<TaskTimeEntry?>((ref) {
   return ref.watch(taskTimeRepositoryProvider).watchActive();
+});
+
+final taskTemplateRepositoryProvider = Provider<TaskTemplateRepository>((ref) {
+  return DriftTaskTemplateRepository(ref.watch(appDatabaseProvider));
+});
+
+final systemTaskTemplateCatalogProvider = Provider<SystemTaskTemplateCatalog>((
+  ref,
+) {
+  return const SystemTaskTemplateCatalog();
+});
+
+final taskTemplateSynchronizerProvider = Provider<TaskTemplateSynchronizer>((
+  ref,
+) {
+  return TaskTemplateSynchronizer(
+    repository: ref.watch(taskTemplateRepositoryProvider),
+    catalog: ref.watch(systemTaskTemplateCatalogProvider),
+  );
+});
+
+final taskTemplateMapperProvider = Provider<TaskTemplateMapper>((ref) {
+  return const TaskTemplateMapper();
+});
+
+final taskTemplateStartupProvider = FutureProvider<void>((ref) async {
+  await ref
+      .watch(taskTemplateSynchronizerProvider)
+      .synchronize(nowUtc: ref.read(appClockProvider).nowUtc());
+});
+
+final taskTemplatesProvider = StreamProvider<List<TaskTemplate>>((ref) {
+  return ref.watch(taskTemplateRepositoryProvider).watchAll();
 });
 
 final financeRepositoryProvider = Provider<FinanceRepository>((ref) {

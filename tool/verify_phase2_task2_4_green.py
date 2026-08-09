@@ -232,6 +232,8 @@ need(
     or "schema version four upgrades through reminder and recurrence schema six"
     in tests
     or "schema version four upgrades through reminder and recurrence schema seven"
+    in tests
+    or "schema version four upgrades through reminder and recurrence schema eight"
     in tests,
     "focused reminder migration coverage missing",
 )

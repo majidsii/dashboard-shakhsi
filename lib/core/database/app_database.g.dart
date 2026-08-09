@@ -5900,6 +5900,891 @@ class TaskTimeEntryRowsCompanion extends UpdateCompanion<TaskTimeEntryRow> {
   }
 }
 
+class $TaskTemplateRowsTable extends TaskTemplateRows
+    with TableInfo<$TaskTemplateRowsTable, TaskTemplateRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskTemplateRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _templateKindMeta = const VerificationMeta(
+    'templateKind',
+  );
+  @override
+  late final GeneratedColumn<String> templateKind = GeneratedColumn<String>(
+    'template_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _systemKeyMeta = const VerificationMeta(
+    'systemKey',
+  );
+  @override
+  late final GeneratedColumn<String> systemKey = GeneratedColumn<String>(
+    'system_key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _templateNameMeta = const VerificationMeta(
+    'templateName',
+  );
+  @override
+  late final GeneratedColumn<String> templateName = GeneratedColumn<String>(
+    'template_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _initialTaskTitleMeta = const VerificationMeta(
+    'initialTaskTitle',
+  );
+  @override
+  late final GeneratedColumn<String> initialTaskTitle = GeneratedColumn<String>(
+    'initial_task_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
+  @override
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _estimatedDurationMinutesMeta =
+      const VerificationMeta('estimatedDurationMinutes');
+  @override
+  late final GeneratedColumn<int> estimatedDurationMinutes =
+      GeneratedColumn<int>(
+        'estimated_duration_minutes',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _reminderDefaultsJsonMeta =
+      const VerificationMeta('reminderDefaultsJson');
+  @override
+  late final GeneratedColumn<String> reminderDefaultsJson =
+      GeneratedColumn<String>(
+        'reminder_defaults_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _recurrenceDefaultJsonMeta =
+      const VerificationMeta('recurrenceDefaultJson');
+  @override
+  late final GeneratedColumn<String> recurrenceDefaultJson =
+      GeneratedColumn<String>(
+        'recurrence_default_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _hiddenMeta = const VerificationMeta('hidden');
+  @override
+  late final GeneratedColumn<bool> hidden = GeneratedColumn<bool>(
+    'hidden',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("hidden" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _displayOrderMeta = const VerificationMeta(
+    'displayOrder',
+  );
+  @override
+  late final GeneratedColumn<int> displayOrder = GeneratedColumn<int>(
+    'display_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    templateKind,
+    systemKey,
+    templateName,
+    initialTaskTitle,
+    description,
+    priority,
+    estimatedDurationMinutes,
+    reminderDefaultsJson,
+    recurrenceDefaultJson,
+    hidden,
+    displayOrder,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskTemplateRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('template_kind')) {
+      context.handle(
+        _templateKindMeta,
+        templateKind.isAcceptableOrUnknown(
+          data['template_kind']!,
+          _templateKindMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_templateKindMeta);
+    }
+    if (data.containsKey('system_key')) {
+      context.handle(
+        _systemKeyMeta,
+        systemKey.isAcceptableOrUnknown(data['system_key']!, _systemKeyMeta),
+      );
+    }
+    if (data.containsKey('template_name')) {
+      context.handle(
+        _templateNameMeta,
+        templateName.isAcceptableOrUnknown(
+          data['template_name']!,
+          _templateNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_templateNameMeta);
+    }
+    if (data.containsKey('initial_task_title')) {
+      context.handle(
+        _initialTaskTitleMeta,
+        initialTaskTitle.isAcceptableOrUnknown(
+          data['initial_task_title']!,
+          _initialTaskTitleMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_initialTaskTitleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
+    }
+    if (data.containsKey('estimated_duration_minutes')) {
+      context.handle(
+        _estimatedDurationMinutesMeta,
+        estimatedDurationMinutes.isAcceptableOrUnknown(
+          data['estimated_duration_minutes']!,
+          _estimatedDurationMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_defaults_json')) {
+      context.handle(
+        _reminderDefaultsJsonMeta,
+        reminderDefaultsJson.isAcceptableOrUnknown(
+          data['reminder_defaults_json']!,
+          _reminderDefaultsJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_reminderDefaultsJsonMeta);
+    }
+    if (data.containsKey('recurrence_default_json')) {
+      context.handle(
+        _recurrenceDefaultJsonMeta,
+        recurrenceDefaultJson.isAcceptableOrUnknown(
+          data['recurrence_default_json']!,
+          _recurrenceDefaultJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('hidden')) {
+      context.handle(
+        _hiddenMeta,
+        hidden.isAcceptableOrUnknown(data['hidden']!, _hiddenMeta),
+      );
+    }
+    if (data.containsKey('display_order')) {
+      context.handle(
+        _displayOrderMeta,
+        displayOrder.isAcceptableOrUnknown(
+          data['display_order']!,
+          _displayOrderMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayOrderMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {templateKind, displayOrder},
+  ];
+  @override
+  TaskTemplateRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskTemplateRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      templateKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_kind'],
+      )!,
+      systemKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}system_key'],
+      ),
+      templateName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_name'],
+      )!,
+      initialTaskTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}initial_task_title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
+      estimatedDurationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}estimated_duration_minutes'],
+      ),
+      reminderDefaultsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reminder_defaults_json'],
+      )!,
+      recurrenceDefaultJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurrence_default_json'],
+      ),
+      hidden: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}hidden'],
+      )!,
+      displayOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}display_order'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskTemplateRowsTable createAlias(String alias) {
+    return $TaskTemplateRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TaskTemplateRow extends DataClass implements Insertable<TaskTemplateRow> {
+  final String id;
+  final String templateKind;
+  final String? systemKey;
+  final String templateName;
+  final String initialTaskTitle;
+  final String? description;
+  final int priority;
+  final int? estimatedDurationMinutes;
+  final String reminderDefaultsJson;
+  final String? recurrenceDefaultJson;
+  final bool hidden;
+  final int displayOrder;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const TaskTemplateRow({
+    required this.id,
+    required this.templateKind,
+    this.systemKey,
+    required this.templateName,
+    required this.initialTaskTitle,
+    this.description,
+    required this.priority,
+    this.estimatedDurationMinutes,
+    required this.reminderDefaultsJson,
+    this.recurrenceDefaultJson,
+    required this.hidden,
+    required this.displayOrder,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['template_kind'] = Variable<String>(templateKind);
+    if (!nullToAbsent || systemKey != null) {
+      map['system_key'] = Variable<String>(systemKey);
+    }
+    map['template_name'] = Variable<String>(templateName);
+    map['initial_task_title'] = Variable<String>(initialTaskTitle);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['priority'] = Variable<int>(priority);
+    if (!nullToAbsent || estimatedDurationMinutes != null) {
+      map['estimated_duration_minutes'] = Variable<int>(
+        estimatedDurationMinutes,
+      );
+    }
+    map['reminder_defaults_json'] = Variable<String>(reminderDefaultsJson);
+    if (!nullToAbsent || recurrenceDefaultJson != null) {
+      map['recurrence_default_json'] = Variable<String>(recurrenceDefaultJson);
+    }
+    map['hidden'] = Variable<bool>(hidden);
+    map['display_order'] = Variable<int>(displayOrder);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  TaskTemplateRowsCompanion toCompanion(bool nullToAbsent) {
+    return TaskTemplateRowsCompanion(
+      id: Value(id),
+      templateKind: Value(templateKind),
+      systemKey: systemKey == null && nullToAbsent
+          ? const Value.absent()
+          : Value(systemKey),
+      templateName: Value(templateName),
+      initialTaskTitle: Value(initialTaskTitle),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      priority: Value(priority),
+      estimatedDurationMinutes: estimatedDurationMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimatedDurationMinutes),
+      reminderDefaultsJson: Value(reminderDefaultsJson),
+      recurrenceDefaultJson: recurrenceDefaultJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceDefaultJson),
+      hidden: Value(hidden),
+      displayOrder: Value(displayOrder),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory TaskTemplateRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskTemplateRow(
+      id: serializer.fromJson<String>(json['id']),
+      templateKind: serializer.fromJson<String>(json['templateKind']),
+      systemKey: serializer.fromJson<String?>(json['systemKey']),
+      templateName: serializer.fromJson<String>(json['templateName']),
+      initialTaskTitle: serializer.fromJson<String>(json['initialTaskTitle']),
+      description: serializer.fromJson<String?>(json['description']),
+      priority: serializer.fromJson<int>(json['priority']),
+      estimatedDurationMinutes: serializer.fromJson<int?>(
+        json['estimatedDurationMinutes'],
+      ),
+      reminderDefaultsJson: serializer.fromJson<String>(
+        json['reminderDefaultsJson'],
+      ),
+      recurrenceDefaultJson: serializer.fromJson<String?>(
+        json['recurrenceDefaultJson'],
+      ),
+      hidden: serializer.fromJson<bool>(json['hidden']),
+      displayOrder: serializer.fromJson<int>(json['displayOrder']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'templateKind': serializer.toJson<String>(templateKind),
+      'systemKey': serializer.toJson<String?>(systemKey),
+      'templateName': serializer.toJson<String>(templateName),
+      'initialTaskTitle': serializer.toJson<String>(initialTaskTitle),
+      'description': serializer.toJson<String?>(description),
+      'priority': serializer.toJson<int>(priority),
+      'estimatedDurationMinutes': serializer.toJson<int?>(
+        estimatedDurationMinutes,
+      ),
+      'reminderDefaultsJson': serializer.toJson<String>(reminderDefaultsJson),
+      'recurrenceDefaultJson': serializer.toJson<String?>(
+        recurrenceDefaultJson,
+      ),
+      'hidden': serializer.toJson<bool>(hidden),
+      'displayOrder': serializer.toJson<int>(displayOrder),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  TaskTemplateRow copyWith({
+    String? id,
+    String? templateKind,
+    Value<String?> systemKey = const Value.absent(),
+    String? templateName,
+    String? initialTaskTitle,
+    Value<String?> description = const Value.absent(),
+    int? priority,
+    Value<int?> estimatedDurationMinutes = const Value.absent(),
+    String? reminderDefaultsJson,
+    Value<String?> recurrenceDefaultJson = const Value.absent(),
+    bool? hidden,
+    int? displayOrder,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => TaskTemplateRow(
+    id: id ?? this.id,
+    templateKind: templateKind ?? this.templateKind,
+    systemKey: systemKey.present ? systemKey.value : this.systemKey,
+    templateName: templateName ?? this.templateName,
+    initialTaskTitle: initialTaskTitle ?? this.initialTaskTitle,
+    description: description.present ? description.value : this.description,
+    priority: priority ?? this.priority,
+    estimatedDurationMinutes: estimatedDurationMinutes.present
+        ? estimatedDurationMinutes.value
+        : this.estimatedDurationMinutes,
+    reminderDefaultsJson: reminderDefaultsJson ?? this.reminderDefaultsJson,
+    recurrenceDefaultJson: recurrenceDefaultJson.present
+        ? recurrenceDefaultJson.value
+        : this.recurrenceDefaultJson,
+    hidden: hidden ?? this.hidden,
+    displayOrder: displayOrder ?? this.displayOrder,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  TaskTemplateRow copyWithCompanion(TaskTemplateRowsCompanion data) {
+    return TaskTemplateRow(
+      id: data.id.present ? data.id.value : this.id,
+      templateKind: data.templateKind.present
+          ? data.templateKind.value
+          : this.templateKind,
+      systemKey: data.systemKey.present ? data.systemKey.value : this.systemKey,
+      templateName: data.templateName.present
+          ? data.templateName.value
+          : this.templateName,
+      initialTaskTitle: data.initialTaskTitle.present
+          ? data.initialTaskTitle.value
+          : this.initialTaskTitle,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      estimatedDurationMinutes: data.estimatedDurationMinutes.present
+          ? data.estimatedDurationMinutes.value
+          : this.estimatedDurationMinutes,
+      reminderDefaultsJson: data.reminderDefaultsJson.present
+          ? data.reminderDefaultsJson.value
+          : this.reminderDefaultsJson,
+      recurrenceDefaultJson: data.recurrenceDefaultJson.present
+          ? data.recurrenceDefaultJson.value
+          : this.recurrenceDefaultJson,
+      hidden: data.hidden.present ? data.hidden.value : this.hidden,
+      displayOrder: data.displayOrder.present
+          ? data.displayOrder.value
+          : this.displayOrder,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskTemplateRow(')
+          ..write('id: $id, ')
+          ..write('templateKind: $templateKind, ')
+          ..write('systemKey: $systemKey, ')
+          ..write('templateName: $templateName, ')
+          ..write('initialTaskTitle: $initialTaskTitle, ')
+          ..write('description: $description, ')
+          ..write('priority: $priority, ')
+          ..write('estimatedDurationMinutes: $estimatedDurationMinutes, ')
+          ..write('reminderDefaultsJson: $reminderDefaultsJson, ')
+          ..write('recurrenceDefaultJson: $recurrenceDefaultJson, ')
+          ..write('hidden: $hidden, ')
+          ..write('displayOrder: $displayOrder, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    templateKind,
+    systemKey,
+    templateName,
+    initialTaskTitle,
+    description,
+    priority,
+    estimatedDurationMinutes,
+    reminderDefaultsJson,
+    recurrenceDefaultJson,
+    hidden,
+    displayOrder,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskTemplateRow &&
+          other.id == this.id &&
+          other.templateKind == this.templateKind &&
+          other.systemKey == this.systemKey &&
+          other.templateName == this.templateName &&
+          other.initialTaskTitle == this.initialTaskTitle &&
+          other.description == this.description &&
+          other.priority == this.priority &&
+          other.estimatedDurationMinutes == this.estimatedDurationMinutes &&
+          other.reminderDefaultsJson == this.reminderDefaultsJson &&
+          other.recurrenceDefaultJson == this.recurrenceDefaultJson &&
+          other.hidden == this.hidden &&
+          other.displayOrder == this.displayOrder &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class TaskTemplateRowsCompanion extends UpdateCompanion<TaskTemplateRow> {
+  final Value<String> id;
+  final Value<String> templateKind;
+  final Value<String?> systemKey;
+  final Value<String> templateName;
+  final Value<String> initialTaskTitle;
+  final Value<String?> description;
+  final Value<int> priority;
+  final Value<int?> estimatedDurationMinutes;
+  final Value<String> reminderDefaultsJson;
+  final Value<String?> recurrenceDefaultJson;
+  final Value<bool> hidden;
+  final Value<int> displayOrder;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const TaskTemplateRowsCompanion({
+    this.id = const Value.absent(),
+    this.templateKind = const Value.absent(),
+    this.systemKey = const Value.absent(),
+    this.templateName = const Value.absent(),
+    this.initialTaskTitle = const Value.absent(),
+    this.description = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.estimatedDurationMinutes = const Value.absent(),
+    this.reminderDefaultsJson = const Value.absent(),
+    this.recurrenceDefaultJson = const Value.absent(),
+    this.hidden = const Value.absent(),
+    this.displayOrder = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskTemplateRowsCompanion.insert({
+    required String id,
+    required String templateKind,
+    this.systemKey = const Value.absent(),
+    required String templateName,
+    required String initialTaskTitle,
+    this.description = const Value.absent(),
+    required int priority,
+    this.estimatedDurationMinutes = const Value.absent(),
+    required String reminderDefaultsJson,
+    this.recurrenceDefaultJson = const Value.absent(),
+    this.hidden = const Value.absent(),
+    required int displayOrder,
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       templateKind = Value(templateKind),
+       templateName = Value(templateName),
+       initialTaskTitle = Value(initialTaskTitle),
+       priority = Value(priority),
+       reminderDefaultsJson = Value(reminderDefaultsJson),
+       displayOrder = Value(displayOrder),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<TaskTemplateRow> custom({
+    Expression<String>? id,
+    Expression<String>? templateKind,
+    Expression<String>? systemKey,
+    Expression<String>? templateName,
+    Expression<String>? initialTaskTitle,
+    Expression<String>? description,
+    Expression<int>? priority,
+    Expression<int>? estimatedDurationMinutes,
+    Expression<String>? reminderDefaultsJson,
+    Expression<String>? recurrenceDefaultJson,
+    Expression<bool>? hidden,
+    Expression<int>? displayOrder,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (templateKind != null) 'template_kind': templateKind,
+      if (systemKey != null) 'system_key': systemKey,
+      if (templateName != null) 'template_name': templateName,
+      if (initialTaskTitle != null) 'initial_task_title': initialTaskTitle,
+      if (description != null) 'description': description,
+      if (priority != null) 'priority': priority,
+      if (estimatedDurationMinutes != null)
+        'estimated_duration_minutes': estimatedDurationMinutes,
+      if (reminderDefaultsJson != null)
+        'reminder_defaults_json': reminderDefaultsJson,
+      if (recurrenceDefaultJson != null)
+        'recurrence_default_json': recurrenceDefaultJson,
+      if (hidden != null) 'hidden': hidden,
+      if (displayOrder != null) 'display_order': displayOrder,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskTemplateRowsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? templateKind,
+    Value<String?>? systemKey,
+    Value<String>? templateName,
+    Value<String>? initialTaskTitle,
+    Value<String?>? description,
+    Value<int>? priority,
+    Value<int?>? estimatedDurationMinutes,
+    Value<String>? reminderDefaultsJson,
+    Value<String?>? recurrenceDefaultJson,
+    Value<bool>? hidden,
+    Value<int>? displayOrder,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return TaskTemplateRowsCompanion(
+      id: id ?? this.id,
+      templateKind: templateKind ?? this.templateKind,
+      systemKey: systemKey ?? this.systemKey,
+      templateName: templateName ?? this.templateName,
+      initialTaskTitle: initialTaskTitle ?? this.initialTaskTitle,
+      description: description ?? this.description,
+      priority: priority ?? this.priority,
+      estimatedDurationMinutes:
+          estimatedDurationMinutes ?? this.estimatedDurationMinutes,
+      reminderDefaultsJson: reminderDefaultsJson ?? this.reminderDefaultsJson,
+      recurrenceDefaultJson:
+          recurrenceDefaultJson ?? this.recurrenceDefaultJson,
+      hidden: hidden ?? this.hidden,
+      displayOrder: displayOrder ?? this.displayOrder,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (templateKind.present) {
+      map['template_kind'] = Variable<String>(templateKind.value);
+    }
+    if (systemKey.present) {
+      map['system_key'] = Variable<String>(systemKey.value);
+    }
+    if (templateName.present) {
+      map['template_name'] = Variable<String>(templateName.value);
+    }
+    if (initialTaskTitle.present) {
+      map['initial_task_title'] = Variable<String>(initialTaskTitle.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
+    if (estimatedDurationMinutes.present) {
+      map['estimated_duration_minutes'] = Variable<int>(
+        estimatedDurationMinutes.value,
+      );
+    }
+    if (reminderDefaultsJson.present) {
+      map['reminder_defaults_json'] = Variable<String>(
+        reminderDefaultsJson.value,
+      );
+    }
+    if (recurrenceDefaultJson.present) {
+      map['recurrence_default_json'] = Variable<String>(
+        recurrenceDefaultJson.value,
+      );
+    }
+    if (hidden.present) {
+      map['hidden'] = Variable<bool>(hidden.value);
+    }
+    if (displayOrder.present) {
+      map['display_order'] = Variable<int>(displayOrder.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskTemplateRowsCompanion(')
+          ..write('id: $id, ')
+          ..write('templateKind: $templateKind, ')
+          ..write('systemKey: $systemKey, ')
+          ..write('templateName: $templateName, ')
+          ..write('initialTaskTitle: $initialTaskTitle, ')
+          ..write('description: $description, ')
+          ..write('priority: $priority, ')
+          ..write('estimatedDurationMinutes: $estimatedDurationMinutes, ')
+          ..write('reminderDefaultsJson: $reminderDefaultsJson, ')
+          ..write('recurrenceDefaultJson: $recurrenceDefaultJson, ')
+          ..write('hidden: $hidden, ')
+          ..write('displayOrder: $displayOrder, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $NotificationScheduleRowsTable extends NotificationScheduleRows
     with TableInfo<$NotificationScheduleRowsTable, NotificationScheduleRow> {
   @override
@@ -6564,6 +7449,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $TaskOccurrenceCompletionRowsTable(this);
   late final $TaskTimeEntryRowsTable taskTimeEntryRows =
       $TaskTimeEntryRowsTable(this);
+  late final $TaskTemplateRowsTable taskTemplateRows = $TaskTemplateRowsTable(
+    this,
+  );
   late final $NotificationScheduleRowsTable notificationScheduleRows =
       $NotificationScheduleRowsTable(this);
   @override
@@ -6582,6 +7470,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     taskRecurrenceExceptionRows,
     taskOccurrenceCompletionRows,
     taskTimeEntryRows,
+    taskTemplateRows,
     notificationScheduleRows,
   ];
   @override
@@ -11305,6 +12194,403 @@ typedef $$TaskTimeEntryRowsTableProcessedTableManager =
       TaskTimeEntryRow,
       PrefetchHooks Function({bool taskId})
     >;
+typedef $$TaskTemplateRowsTableCreateCompanionBuilder =
+    TaskTemplateRowsCompanion Function({
+      required String id,
+      required String templateKind,
+      Value<String?> systemKey,
+      required String templateName,
+      required String initialTaskTitle,
+      Value<String?> description,
+      required int priority,
+      Value<int?> estimatedDurationMinutes,
+      required String reminderDefaultsJson,
+      Value<String?> recurrenceDefaultJson,
+      Value<bool> hidden,
+      required int displayOrder,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$TaskTemplateRowsTableUpdateCompanionBuilder =
+    TaskTemplateRowsCompanion Function({
+      Value<String> id,
+      Value<String> templateKind,
+      Value<String?> systemKey,
+      Value<String> templateName,
+      Value<String> initialTaskTitle,
+      Value<String?> description,
+      Value<int> priority,
+      Value<int?> estimatedDurationMinutes,
+      Value<String> reminderDefaultsJson,
+      Value<String?> recurrenceDefaultJson,
+      Value<bool> hidden,
+      Value<int> displayOrder,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+class $$TaskTemplateRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskTemplateRowsTable> {
+  $$TaskTemplateRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateKind => $composableBuilder(
+    column: $table.templateKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get systemKey => $composableBuilder(
+    column: $table.systemKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateName => $composableBuilder(
+    column: $table.templateName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get initialTaskTitle => $composableBuilder(
+    column: $table.initialTaskTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get estimatedDurationMinutes => $composableBuilder(
+    column: $table.estimatedDurationMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reminderDefaultsJson => $composableBuilder(
+    column: $table.reminderDefaultsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recurrenceDefaultJson => $composableBuilder(
+    column: $table.recurrenceDefaultJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hidden => $composableBuilder(
+    column: $table.hidden,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TaskTemplateRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskTemplateRowsTable> {
+  $$TaskTemplateRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get templateKind => $composableBuilder(
+    column: $table.templateKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get systemKey => $composableBuilder(
+    column: $table.systemKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get templateName => $composableBuilder(
+    column: $table.templateName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get initialTaskTitle => $composableBuilder(
+    column: $table.initialTaskTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get estimatedDurationMinutes => $composableBuilder(
+    column: $table.estimatedDurationMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reminderDefaultsJson => $composableBuilder(
+    column: $table.reminderDefaultsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recurrenceDefaultJson => $composableBuilder(
+    column: $table.recurrenceDefaultJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hidden => $composableBuilder(
+    column: $table.hidden,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TaskTemplateRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskTemplateRowsTable> {
+  $$TaskTemplateRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get templateKind => $composableBuilder(
+    column: $table.templateKind,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get systemKey =>
+      $composableBuilder(column: $table.systemKey, builder: (column) => column);
+
+  GeneratedColumn<String> get templateName => $composableBuilder(
+    column: $table.templateName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get initialTaskTitle => $composableBuilder(
+    column: $table.initialTaskTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<int> get estimatedDurationMinutes => $composableBuilder(
+    column: $table.estimatedDurationMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reminderDefaultsJson => $composableBuilder(
+    column: $table.reminderDefaultsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recurrenceDefaultJson => $composableBuilder(
+    column: $table.recurrenceDefaultJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hidden =>
+      $composableBuilder(column: $table.hidden, builder: (column) => column);
+
+  GeneratedColumn<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+}
+
+class $$TaskTemplateRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskTemplateRowsTable,
+          TaskTemplateRow,
+          $$TaskTemplateRowsTableFilterComposer,
+          $$TaskTemplateRowsTableOrderingComposer,
+          $$TaskTemplateRowsTableAnnotationComposer,
+          $$TaskTemplateRowsTableCreateCompanionBuilder,
+          $$TaskTemplateRowsTableUpdateCompanionBuilder,
+          (
+            TaskTemplateRow,
+            BaseReferences<
+              _$AppDatabase,
+              $TaskTemplateRowsTable,
+              TaskTemplateRow
+            >,
+          ),
+          TaskTemplateRow,
+          PrefetchHooks Function()
+        > {
+  $$TaskTemplateRowsTableTableManager(
+    _$AppDatabase db,
+    $TaskTemplateRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskTemplateRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaskTemplateRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaskTemplateRowsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> templateKind = const Value.absent(),
+                Value<String?> systemKey = const Value.absent(),
+                Value<String> templateName = const Value.absent(),
+                Value<String> initialTaskTitle = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int> priority = const Value.absent(),
+                Value<int?> estimatedDurationMinutes = const Value.absent(),
+                Value<String> reminderDefaultsJson = const Value.absent(),
+                Value<String?> recurrenceDefaultJson = const Value.absent(),
+                Value<bool> hidden = const Value.absent(),
+                Value<int> displayOrder = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TaskTemplateRowsCompanion(
+                id: id,
+                templateKind: templateKind,
+                systemKey: systemKey,
+                templateName: templateName,
+                initialTaskTitle: initialTaskTitle,
+                description: description,
+                priority: priority,
+                estimatedDurationMinutes: estimatedDurationMinutes,
+                reminderDefaultsJson: reminderDefaultsJson,
+                recurrenceDefaultJson: recurrenceDefaultJson,
+                hidden: hidden,
+                displayOrder: displayOrder,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String templateKind,
+                Value<String?> systemKey = const Value.absent(),
+                required String templateName,
+                required String initialTaskTitle,
+                Value<String?> description = const Value.absent(),
+                required int priority,
+                Value<int?> estimatedDurationMinutes = const Value.absent(),
+                required String reminderDefaultsJson,
+                Value<String?> recurrenceDefaultJson = const Value.absent(),
+                Value<bool> hidden = const Value.absent(),
+                required int displayOrder,
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => TaskTemplateRowsCompanion.insert(
+                id: id,
+                templateKind: templateKind,
+                systemKey: systemKey,
+                templateName: templateName,
+                initialTaskTitle: initialTaskTitle,
+                description: description,
+                priority: priority,
+                estimatedDurationMinutes: estimatedDurationMinutes,
+                reminderDefaultsJson: reminderDefaultsJson,
+                recurrenceDefaultJson: recurrenceDefaultJson,
+                hidden: hidden,
+                displayOrder: displayOrder,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TaskTemplateRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskTemplateRowsTable,
+      TaskTemplateRow,
+      $$TaskTemplateRowsTableFilterComposer,
+      $$TaskTemplateRowsTableOrderingComposer,
+      $$TaskTemplateRowsTableAnnotationComposer,
+      $$TaskTemplateRowsTableCreateCompanionBuilder,
+      $$TaskTemplateRowsTableUpdateCompanionBuilder,
+      (
+        TaskTemplateRow,
+        BaseReferences<_$AppDatabase, $TaskTemplateRowsTable, TaskTemplateRow>,
+      ),
+      TaskTemplateRow,
+      PrefetchHooks Function()
+    >;
 typedef $$NotificationScheduleRowsTableCreateCompanionBuilder =
     NotificationScheduleRowsCompanion Function({
       required String scheduleId,
@@ -11674,6 +12960,8 @@ class $AppDatabaseManager {
       );
   $$TaskTimeEntryRowsTableTableManager get taskTimeEntryRows =>
       $$TaskTimeEntryRowsTableTableManager(_db, _db.taskTimeEntryRows);
+  $$TaskTemplateRowsTableTableManager get taskTemplateRows =>
+      $$TaskTemplateRowsTableTableManager(_db, _db.taskTemplateRows);
   $$NotificationScheduleRowsTableTableManager get notificationScheduleRows =>
       $$NotificationScheduleRowsTableTableManager(
         _db,

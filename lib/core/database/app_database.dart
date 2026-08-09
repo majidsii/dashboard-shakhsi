@@ -290,6 +290,48 @@ class TaskTimeEntryRows extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
+class TaskTemplateRows extends Table {
+  @override
+  String get tableName => 'task_templates';
+
+  TextColumn get id => text()();
+  TextColumn get templateKind => text()();
+  TextColumn get systemKey => text().nullable().unique()();
+  TextColumn get templateName => text()();
+  TextColumn get initialTaskTitle => text()();
+  TextColumn get description => text().nullable()();
+  IntColumn get priority => integer()();
+  IntColumn get estimatedDurationMinutes => integer().nullable()();
+  TextColumn get reminderDefaultsJson => text()();
+  TextColumn get recurrenceDefaultJson => text().nullable()();
+  BoolColumn get hidden => boolean().withDefault(const Constant(false))();
+  IntColumn get displayOrder => integer()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    "CHECK (template_kind IN ('system', 'custom'))",
+    'CHECK (length(trim(template_name)) > 0)',
+    "CHECK ((template_kind = 'system' AND system_key IS NOT NULL "
+        'AND length(trim(system_key)) > 0) OR '
+        "(template_kind = 'custom' AND system_key IS NULL))",
+    'CHECK (priority BETWEEN 0 AND 3)',
+    'CHECK (estimated_duration_minutes IS NULL '
+        'OR estimated_duration_minutes > 0)',
+    'CHECK (display_order >= 0)',
+    'CHECK (updated_at_utc >= created_at_utc)',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => <Set<Column<Object>>>[
+    <Column<Object>>{templateKind, displayOrder},
+  ];
+}
+
 class NotificationScheduleRows extends Table {
   @override
   String get tableName => 'notification_schedules';
@@ -331,6 +373,7 @@ class NotificationScheduleRows extends Table {
     TaskRecurrenceExceptionRows,
     TaskOccurrenceCompletionRows,
     TaskTimeEntryRows,
+    TaskTemplateRows,
     NotificationScheduleRows,
   ],
 )
@@ -339,7 +382,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? openDashboardDatabase());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -442,6 +485,9 @@ final class AppDatabase extends _$AppDatabase {
       }
       if (from < 7) {
         await migrator.createTable(taskTimeEntryRows);
+      }
+      if (from < 8) {
+        await migrator.createTable(taskTemplateRows);
       }
     },
     beforeOpen: (OpeningDetails details) async {

@@ -378,7 +378,9 @@ focused_files = (
 )
 tests = "\n".join(read(relative) for relative in focused_files)
 for token in (
-    "schema version five upgrades to recurring task schema seven",
+    ("schema version five upgrades to recurring task schema seven"
+     if "schema version five upgrades to recurring task schema seven" in tests
+     else "schema version five upgrades to recurring task schema eight"),
     "recurrence state survives restart with stable occurrence identity",
     "persists rule, exception, and independent completion",
     "projects recurring move and completion by original identity",

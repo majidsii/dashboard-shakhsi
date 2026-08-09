@@ -186,7 +186,9 @@ for token in (
     "database rejects a second globally active timer",
     "pause resume and stop accumulate only running intervals",
     "new service instance recovers running timer from persistence",
-    "schema version six upgrades append-only to timer schema seven",
+    ("schema version six upgrades append-only to timer schema seven"
+     if "schema version six upgrades append-only to timer schema seven" in tests
+     else "schema version six upgrades append-only to timer schema eight"),
     "running timer survives restart and derives elapsed from UTC",
     "manual entry rejects overlap with an existing entry",
     "starts pauses resumes and stops the persisted timer",

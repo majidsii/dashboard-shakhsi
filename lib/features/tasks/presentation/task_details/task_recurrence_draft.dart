@@ -28,6 +28,7 @@ final class TaskRecurrenceDraft {
     required this.endKind,
     required this.untilLocal,
     required this.afterCount,
+    this.relativeEndDaysAfterAnchor,
     this.existingId,
     this.existingCreatedAtUtc,
   }) : weeklyDays = Set<RecurrenceWeekday>.from(weeklyDays);
@@ -95,6 +96,7 @@ final class TaskRecurrenceDraft {
   RecurrenceEndKind endKind;
   DateTime? untilLocal;
   int afterCount;
+  int? relativeEndDaysAfterAnchor;
   final String? existingId;
   final DateTime? existingCreatedAtUtc;
 
@@ -114,9 +116,33 @@ final class TaskRecurrenceDraft {
       endKind: endKind,
       untilLocal: untilLocal,
       afterCount: afterCount,
+      relativeEndDaysAfterAnchor: relativeEndDaysAfterAnchor,
       existingId: existingId,
       existingCreatedAtUtc: existingCreatedAtUtc,
     );
+  }
+
+  DateTime? effectiveUntilLocal(DateTime? anchorLocal) {
+    if (endKind != RecurrenceEndKind.until) return untilLocal;
+    final days = relativeEndDaysAfterAnchor;
+    if (days == null) return untilLocal;
+    final anchor = anchorLocal;
+    if (anchor == null) return null;
+    return DateTime(
+      anchor.year,
+      anchor.month,
+      anchor.day + days,
+      anchor.hour,
+      anchor.minute,
+      anchor.second,
+      anchor.millisecond,
+      anchor.microsecond,
+    );
+  }
+
+  void setManualUntilLocal(DateTime? value) {
+    untilLocal = value;
+    relativeEndDaysAfterAnchor = null;
   }
 
   String? validate({required DateTime? anchorLocal}) {
@@ -144,7 +170,12 @@ final class TaskRecurrenceDraft {
     if (frequency == RecurrenceFrequency.yearly && _annualDates().isEmpty) {
       return 'حداقل یک تاریخ سالانه مانند 1/1 وارد کنید.';
     }
-    if (endKind == RecurrenceEndKind.until && untilLocal == null) {
+    final relativeDays = relativeEndDaysAfterAnchor;
+    if (relativeDays != null && relativeDays < 1) {
+      return 'فاصله پایان تکرار از زمان مبنا باید حداقل یک روز باشد.';
+    }
+    if (endKind == RecurrenceEndKind.until &&
+        effectiveUntilLocal(anchorLocal) == null) {
       return 'تاریخ پایان تکرار را مشخص کنید.';
     }
     if (endKind == RecurrenceEndKind.afterCount && afterCount < 1) {
@@ -170,7 +201,9 @@ final class TaskRecurrenceDraft {
     };
     final end = switch (endKind) {
       RecurrenceEndKind.never => const RecurrenceEnd.never(),
-      RecurrenceEndKind.until => RecurrenceEnd.until(untilLocal!.toUtc()),
+      RecurrenceEndKind.until => RecurrenceEnd.until(
+        effectiveUntilLocal(anchorLocal)!.toUtc(),
+      ),
       RecurrenceEndKind.afterCount => RecurrenceEnd.afterCount(afterCount),
     };
 

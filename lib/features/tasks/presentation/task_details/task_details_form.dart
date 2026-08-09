@@ -50,6 +50,12 @@ final class TaskDetailsFormState extends State<TaskDetailsForm> {
     super.dispose();
   }
 
+  TaskDetailsDraft snapshot() {
+    _draft.title = _titleController.text;
+    _draft.description = _descriptionController.text;
+    return _copyDraft(_draft);
+  }
+
   bool validate() {
     _draft.title = _titleController.text;
     _draft.description = _descriptionController.text;

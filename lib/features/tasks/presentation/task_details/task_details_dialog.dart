@@ -29,6 +29,8 @@ Future<TaskItem?> showTaskDetailsDialog({
   required BuildContext context,
   required TaskDetailsDialogMode mode,
   TaskItem? initialTask,
+  TaskDetailsDraft? initialCreateDraft,
+  Future<void> Function(TaskDetailsDraft draft)? onSaveAsTemplate,
   DateTime Function()? now,
   String Function()? nextId,
 }) async {
@@ -36,6 +38,8 @@ Future<TaskItem?> showTaskDetailsDialog({
     context: context,
     mode: mode,
     initialTask: initialTask,
+    initialCreateDraft: initialCreateDraft,
+    onSaveAsTemplate: onSaveAsTemplate,
     now: now,
     nextId: nextId,
   );
@@ -46,6 +50,8 @@ Future<TaskDetailsDialogResult?> showTaskDetailsEditorDialog({
   required BuildContext context,
   required TaskDetailsDialogMode mode,
   TaskItem? initialTask,
+  TaskDetailsDraft? initialCreateDraft,
+  Future<void> Function(TaskDetailsDraft draft)? onSaveAsTemplate,
   List<TaskReminderRule> initialReminderRules = const <TaskReminderRule>[],
   TaskRecurrenceRule? initialRecurrenceRule,
   DateTime Function()? now,
@@ -68,6 +74,8 @@ Future<TaskDetailsDialogResult?> showTaskDetailsEditorDialog({
       return _TaskDetailsDialogShell(
         mode: mode,
         initialTask: initialTask,
+        initialCreateDraft: initialCreateDraft,
+        onSaveAsTemplate: onSaveAsTemplate,
         initialReminderRules: initialReminderRules,
         initialRecurrenceRule: initialRecurrenceRule,
         now: nowSource,
@@ -95,6 +103,8 @@ final class _TaskDetailsDialogShell extends StatefulWidget {
   const _TaskDetailsDialogShell({
     required this.mode,
     required this.initialTask,
+    required this.initialCreateDraft,
+    required this.onSaveAsTemplate,
     required this.initialReminderRules,
     required this.initialRecurrenceRule,
     required this.now,
@@ -103,6 +113,8 @@ final class _TaskDetailsDialogShell extends StatefulWidget {
 
   final TaskDetailsDialogMode mode;
   final TaskItem? initialTask;
+  final TaskDetailsDraft? initialCreateDraft;
+  final Future<void> Function(TaskDetailsDraft draft)? onSaveAsTemplate;
   final List<TaskReminderRule> initialReminderRules;
   final TaskRecurrenceRule? initialRecurrenceRule;
   final DateTime Function() now;
@@ -118,6 +130,7 @@ final class _TaskDetailsDialogShellState
   final GlobalKey<TaskDetailsFormState> _formKey =
       GlobalKey<TaskDetailsFormState>();
   bool _saving = false;
+  bool _savingTemplate = false;
   String? _submitError;
 
   bool get _isCreate => widget.mode == TaskDetailsDialogMode.create;
@@ -127,7 +140,8 @@ final class _TaskDetailsDialogShellState
     final palette = OriginalPalette.of(context);
     final media = MediaQuery.of(context);
     final initialDraft = _isCreate
-        ? TaskDetailsDraft.create(nowLocal: widget.now().toLocal())
+        ? widget.initialCreateDraft ??
+              TaskDetailsDraft.create(nowLocal: widget.now().toLocal())
         : TaskDetailsDraft.fromTaskWithReminderRules(
             widget.initialTask!,
             reminderRules: widget.initialReminderRules,
@@ -175,14 +189,14 @@ final class _TaskDetailsDialogShellState
                           subtitle: _isCreate
                               ? 'زمان‌بندی و توضیحات را همان ابتدا ثبت کنید.'
                               : 'جزئیات کار را بدون تغییر وضعیت و ترتیب ویرایش کنید.',
-                          onClose: _saving
+                          onClose: _saving || _savingTemplate
                               ? null
                               : () => Navigator.of(context).pop(),
                         ),
                         Container(height: 1, color: palette.line),
                         Expanded(
                           child: AbsorbPointer(
-                            absorbing: _saving,
+                            absorbing: _saving || _savingTemplate,
                             child: SingleChildScrollView(
                               keyboardDismissBehavior:
                                   ScrollViewKeyboardDismissBehavior.onDrag,
@@ -222,13 +236,20 @@ final class _TaskDetailsDialogShellState
                         Container(height: 1, color: palette.line),
                         _DialogActions(
                           saving: _saving,
+                          savingTemplate: _savingTemplate,
                           primaryLabel: _isCreate
                               ? 'افزودن کار'
                               : 'ذخیره تغییرات',
-                          onCancel: _saving
+                          onCancel: _saving || _savingTemplate
                               ? null
                               : () => Navigator.of(context).pop(),
-                          onSave: _saving ? null : () => unawaited(_save()),
+                          onSave: _saving || _savingTemplate
+                              ? null
+                              : () => unawaited(_save()),
+                          onSaveAsTemplate:
+                              !_isCreate && widget.onSaveAsTemplate != null
+                              ? () => unawaited(_saveAsTemplate())
+                              : null,
                         ),
                       ],
                     ),
@@ -240,6 +261,30 @@ final class _TaskDetailsDialogShellState
         ),
       ),
     );
+  }
+
+  Future<void> _saveAsTemplate() async {
+    if (_saving || _savingTemplate) return;
+    final callback = widget.onSaveAsTemplate;
+    final form = _formKey.currentState;
+    if (callback == null || form == null || !form.validate()) return;
+
+    setState(() {
+      _savingTemplate = true;
+      _submitError = null;
+    });
+
+    try {
+      await callback(form.snapshot());
+      if (!mounted) return;
+      setState(() => _savingTemplate = false);
+    } on Object catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _savingTemplate = false;
+        _submitError = 'ذخیره قالب انجام نشد. دوباره تلاش کنید.';
+      });
+    }
   }
 
   Future<void> _save() async {
@@ -355,15 +400,19 @@ final class _DialogHeader extends StatelessWidget {
 final class _DialogActions extends StatelessWidget {
   const _DialogActions({
     required this.saving,
+    required this.savingTemplate,
     required this.primaryLabel,
     required this.onCancel,
     required this.onSave,
+    required this.onSaveAsTemplate,
   });
 
   final bool saving;
+  final bool savingTemplate;
   final String primaryLabel;
   final VoidCallback? onCancel;
   final VoidCallback? onSave;
+  final VoidCallback? onSaveAsTemplate;
 
   @override
   Widget build(BuildContext context) {
@@ -380,6 +429,14 @@ final class _DialogActions extends StatelessWidget {
             icon: Icons.close_rounded,
             onPressed: onCancel,
           ),
+          if (onSaveAsTemplate != null)
+            OriginalGhostButton(
+              label: savingTemplate
+                  ? 'در حال ذخیره قالب…'
+                  : 'ذخیره به‌عنوان قالب',
+              icon: Icons.bookmark_add_outlined,
+              onPressed: savingTemplate ? null : onSaveAsTemplate,
+            ),
           OriginalPrimaryButton(
             label: saving ? 'در حال ذخیره…' : primaryLabel,
             icon: saving ? Icons.hourglass_top_rounded : Icons.check_rounded,

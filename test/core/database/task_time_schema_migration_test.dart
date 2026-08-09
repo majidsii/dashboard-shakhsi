@@ -12,7 +12,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 void main() {
   test(
-    'schema version six upgrades append-only to timer schema seven',
+    'schema version six upgrades append-only to timer schema eight',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'dashboard-task-time-migration-',
@@ -46,11 +46,11 @@ void main() {
 
         final upgraded = AppDatabase(NativeDatabase(file));
         try {
-          expect(upgraded.schemaVersion, 7);
+          expect(upgraded.schemaVersion, 8);
           final versionRows = await upgraded
               .customSelect('PRAGMA user_version')
               .get();
-          expect(versionRows.single.read<int>('user_version'), 7);
+          expect(versionRows.single.read<int>('user_version'), 8);
           expect(
             (await DriftTaskRepository(
               upgraded,
