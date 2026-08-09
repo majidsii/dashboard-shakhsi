@@ -166,3 +166,33 @@ Changing any source file or source hash is a design-contract change and requires
 2. manifest update;
 3. impact review against existing extracted tokens/components;
 4. Roadmap/spec update before implementation continues.
+
+## Generated reference outputs
+
+Gate A deterministically derives repository-safe metadata/reference data from the
+source-locked binaries without copying the Sketch binaries or font binaries into
+the repository:
+
+- `docs/superpowers/references/generated/apple_ui_kit_reference.json`
+- `docs/superpowers/references/generated/apple_ui_kit_component_map.md`
+- extractor: `tool/apple_ui_kit_reference_extractor.py`
+- verifier: `tool/verify_visual_foundation_2a_sources.py`
+
+The generated JSON is not an authority independent of the Sketch sources. Its
+source hashes must match this manifest on every regeneration.
+
+The supplied Sketch archives contain font references/PostScript names but no
+embedded `.ttf`, `.otf`, `.woff`, or `.woff2` binaries. Therefore cross-platform
+exact typography packaging remains an explicit fidelity blocker until resolved;
+a substitute font must not be silently treated as exact.
+
+## Current exactness blocker
+
+Gate A extraction is green, but exact runtime typography and symbol rendering
+for Android/Windows/Linux remain blocked. Read:
+
+`docs/superpowers/references/2026-08-09-apple-typography-symbol-fidelity-blocker.md`
+
+This blocker must be resolved by valid exact runtime assets/rights or by an
+explicit user-approved change to the frozen fidelity contract. It must not be
+silently replaced by approximate fonts or icons.
