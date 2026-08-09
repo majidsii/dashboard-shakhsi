@@ -206,3 +206,19 @@ No future session may downgrade this to “Apple-like” without explicit user i
 The target is visual indistinguishability from the corresponding supplied Apple reference at the same layout/component/state.
 
 Anything merely similar does not satisfy this contract.
+
+## Approved deviation addendum — 2026-08-09
+
+Two and only two non-Apple deviations are approved:
+
+1. Persian/Arabic typography glyph artwork may use Vazirmatn.
+2. Required symbols/icons may use project-owned calibrated vector artwork.
+
+Material Icons and Cupertino Icons are not allowed as final visible fallback
+artwork on migrated Apple visual surfaces.
+
+All other Liquid Glass, material, color, geometry, spacing, radius, border,
+shadow, highlight, state, light/dark and family-mapping requirements remain
+source-locked.
+
+Any later renderer/compositor mismatch requires a separate measured approval.

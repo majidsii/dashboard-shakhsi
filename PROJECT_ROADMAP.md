@@ -876,7 +876,15 @@ Task 2.8 is complete only when all of the following are fresh:
 
 # 7. CURRENT TASK — Visual Foundation 2.A — Apple Liquid Glass System Migration
 
-**Status: DESIGN APPROVED — DOCUMENTATION FROZEN — IMPLEMENTATION NOT STARTED**
+### Current implementation gate
+
+- Gate A — Reproducible Source Extraction: **COMPLETE**
+- Typography deviation: **Vazirmatn approved for non-Apple Persian/Arabic**
+- Symbol deviation: **project-owned calibrated vectors approved**
+- Gate B — Platform Family, Source Tokens, Typography and Metrics: **NEXT**
+- Task 2.9: **remains blocked until Visual Foundation 2.A is complete**
+
+**Status: IMPLEMENTATION ACTIVE — GATE A COMPLETE — NEXT: GATE B**
 
 This cross-cutting visual foundation is the only normal implementation boundary that should proceed before Task 2.9.
 

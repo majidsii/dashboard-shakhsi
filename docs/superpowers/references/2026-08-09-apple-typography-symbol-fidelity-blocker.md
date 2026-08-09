@@ -1,7 +1,7 @@
 # Visual Foundation 2.A — Exact Typography and Symbol Fidelity Blocker
 
 Date: 2026-08-09
-Status: **BLOCKING — USER DECISION / EXTERNAL RIGHTS OR ASSETS REQUIRED**
+Status: **RESOLVED BY EXPLICIT USER-APPROVED DEVIATION**
 Boundary: **Gate A — Reproducible Source Extraction Before Visual Code**
 
 ## Why this document exists
@@ -106,3 +106,11 @@ Production UI code remains unchanged.
 
 The committed Gate A extraction boundary is evidence/tooling only and does not
 represent acceptance of any visual deviation.
+
+## Resolution — 2026-08-09
+
+Resolved by:
+`docs/superpowers/decisions/2026-08-09-cross-platform-typography-symbol-deviation.md`
+
+Approved deviations are limited to Vazirmatn glyph artwork on non-Apple
+platforms and project-owned calibrated vector icon artwork. Gate A is complete.
