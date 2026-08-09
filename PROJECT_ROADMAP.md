@@ -9,12 +9,12 @@
 >
 > `Read PROJECT_ROADMAP.md first. Treat it as the source of truth for scope, architecture, completed work, current task, verification gates, and handoff rules. Continue only from CURRENT TASK and do not redesign completed work unless there is verified evidence of a defect.`
 
-Last updated: **2026-08-07**
+Last updated: **2026-08-09**
 Current branch: `feat/v2-complete-dashboard`
-Last known synced HEAD at handoff capture: `b556ea11fb04f253fb464c6f0f6abd458726b90a`
+Latest fully verified checkpoint commit: `458499dfdb3504034d1d7115bd1515fe20ffc876`
 Project stack: Flutter desktop + Riverpod + Drift/SQLite
-Current database schema: **7**
-Next proposed schema for Task 2.8: **8**
+Current database schema: **8**
+Latest completed roadmap task: **Task 2.8 — Quick-Entry Templates**
 
 ---
 
@@ -74,8 +74,8 @@ Do not:
 - Persisted timestamps are UTC.
 - Restart behavior must be tested for persisted features.
 - Every schema change requires migration and restart tests.
-- Current schema version is **7**.
-- Task 2.8 is designed to move schema to **8**.
+- Current schema version is **8**.
+- Task 2.8 moved schema append-only from **7** to **8**.
 
 ### 3.3 Implementation discipline
 
@@ -388,9 +388,33 @@ Compatibility invariants:
 
 ---
 
-# 7. CURRENT TASK — Task 2.8 Quick-Entry Templates
+## Task 2.8 — Quick-Entry Templates
 
-**Status: DESIGN APPROVED — IMPLEMENTATION NOT STARTED**
+**Status: IMPLEMENTED AND FRESHLY VERIFIED**
+
+Implementation commit:
+
+`0972d8feba1566c0a876d8d5e3969f95281e2e6e`
+
+Checkpoint commit:
+
+`458499dfdb3504034d1d7115bd1515fe20ffc876`
+
+Checkpoint:
+
+`docs/superpowers/checkpoints/2026-08-07-task-2-8-quick-entry-templates-checkpoint.md`
+
+Fresh Task 2.8 evidence:
+
+- focused tests: **57 passed**
+- full suite: **1245 passed**
+- `flutter analyze`: **No issues found**
+- Linux debug build: **passed**
+- `git diff --check`: **clean**
+- Task 2.5 verifier: **passed**
+- Task 2.6 verifier: **passed**
+- Task 2.7 verifier: **passed**
+- Task 2.8 complete verifier: **passed**
 
 This is the only normal roadmap task that should be implemented next.
 
@@ -846,11 +870,9 @@ Task 2.8 is complete only when all of the following are fresh:
 
 ---
 
-# 8. UPCOMING ROADMAP
+# 7. CURRENT TASK — Task 2.9 — Undo, 30-Day Trash, and Audit History
 
-## Task 2.9 — Undo, 30-Day Trash, and Audit History
-
-**Status: PENDING**
+**Status: PENDING — DESIGN NOT STARTED**
 
 Planned generic infrastructure:
 
@@ -872,9 +894,11 @@ A Task in Trash must not produce:
 
 Detailed design must be created immediately before implementation.
 
-Do not implement Task 2.9 while Task 2.8 is incomplete.
+Task 2.8 is complete. Before implementing Task 2.9, create and approve its detailed design and implementation plan, then proceed RED → GREEN.
 
 ---
+
+# 8. UPCOMING ROADMAP
 
 ## Task 2.10 — Dashboard Card Visibility and Ordering
 
@@ -910,19 +934,22 @@ No new unrelated feature work should be added under Task 2.11.
 
 # 9. Current repository map for Tasks
 
-At the Task 2.7 checkpoint, the Tasks feature includes these major boundaries:
+At the Task 2.8 checkpoint, the Tasks feature includes these major boundaries:
 
 ### Application
 
 - task occurrence projector;
 - recurrence service;
 - reminder projection/projector/rules services;
-- timer service.
+- timer service;
+- Task-template mapper.
 
 ### Data
 
 - Drift Task repository;
 - Drift reminder repository;
+- Drift Task-template repository;
+- system Task-template catalog/synchronizer/codec;
 - Drift recurrence repository;
 - Drift time repository;
 - reminder-aware Task repository;
@@ -934,7 +961,8 @@ At the Task 2.7 checkpoint, the Tasks feature includes these major boundaries:
 - reminder rule/trigger/repository;
 - recurrence rule/bundle/exception/repository;
 - occurrence completion/calendar occurrence;
-- time entry/repository.
+- time entry/repository;
+- Task template/repository/relative recurrence defaults.
 
 ### Presentation
 
@@ -942,21 +970,22 @@ At the Task 2.7 checkpoint, the Tasks feature includes these major boundaries:
 - Calendar board;
 - Task Details dialog/form/drafts;
 - duration/date-time/reminder/recurrence fields;
-- timer panel/manual time-entry dialog.
+- timer panel/manual time-entry dialog;
+- Task-template picker/manager/editor and dedicated presentation drafts.
 
-Task 2.8 should extend these boundaries rather than collapse them into one large file.
+Task 2.9 should extend these boundaries rather than collapse them into one large file.
 
 ---
 
 # 10. Verification baseline
 
-Latest fully recorded checkpoint baseline after Task 2.7:
+Latest fully recorded checkpoint baseline after Task 2.8:
 
-- focused Task 2.7: **72**
-- full project tests: **1188**
+- focused Task 2.8: **57**
+- full project tests: **1245**
 - analyzer: **clean**
 - Linux debug build: **green**
-- database schema: **7**
+- database schema: **8**
 
 These numbers are historical evidence, **not permanent minimum contracts**.
 
@@ -1043,14 +1072,14 @@ Suggested new-chat prompt:
 
 As of this document:
 
-- Phase 2 Tasks **2.1 through 2.7 are implemented**.
-- Task 2.7 is the latest fully verified checkpoint.
-- Repository schema is **7**.
-- The next implementation is **Task 2.8 — Quick-Entry Templates**.
-- Task 2.8 product/architecture design in this file is approved.
-- Task 2.8 implementation has **not started**.
-- The next action is to create the detailed Task 2.8 implementation plan and RED test package from the approved design.
-- Tasks 2.9–2.11 remain pending and must be designed individually before implementation.
+- Phase 2 Tasks **2.1 through 2.8 are implemented**.
+- Task 2.8 is the latest fully verified checkpoint.
+- Repository schema is **8**.
+- The next roadmap task is **Task 2.9 — Undo, 30-Day Trash, and Audit History**.
+- Task 2.8 is implemented, checkpointed, and semantically verified.
+- Task 2.9 detailed design has **not started**.
+- The next action is to create and approve the detailed Task 2.9 design and implementation plan before writing its RED test package.
+- Tasks 2.10–2.11 remain pending and must be designed individually before implementation.
 
 ---
 
@@ -1066,6 +1095,6 @@ Latest checkpoint:
 
 Latest semantic verifier:
 
-`tool/verify_phase2_task2_7_complete.py`
+`tool/verify_phase2_task2_8_complete.py`
 
 This file should point to newer equivalents as the project advances.
