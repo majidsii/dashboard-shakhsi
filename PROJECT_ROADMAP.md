@@ -8,6 +8,8 @@
 > **Resume instruction for a new chat:**
 >
 > `Read PROJECT_ROADMAP.md first. Treat it as the source of truth for scope, architecture, completed work, current task, verification gates, and handoff rules. Continue only from CURRENT TASK and do not redesign completed work unless there is verified evidence of a defect.`
+>
+> **Visual fidelity lock:** when CURRENT TASK is Visual Foundation 2.A, also read `docs/superpowers/references/2026-08-09-apple-ui-kit-source-manifest.md`, `docs/superpowers/specs/2026-08-09-apple-liquid-glass-fidelity-contract.md`, and `docs/superpowers/specs/2026-08-09-apple-liquid-glass-visual-system-design.md` before proposing any UI change. Android/mobile is iOS 27; Windows/Linux desktop is macOS 27; approximation is not accepted.
 
 Last updated: **2026-08-09**
 Current branch: `feat/v2-complete-dashboard`
@@ -15,6 +17,8 @@ Latest fully verified checkpoint commit: `458499dfdb3504034d1d7115bd1515fe20ffc8
 Project stack: Flutter desktop + Riverpod + Drift/SQLite
 Current database schema: **8**
 Latest completed roadmap task: **Task 2.8 — Quick-Entry Templates**
+Current blocking boundary: **Visual Foundation 2.A — Apple Liquid Glass System Migration**
+Visual target: **Android/mobile = iOS 27 exact; Windows/Linux desktop = macOS 27 exact**
 
 ---
 
@@ -870,9 +874,40 @@ Task 2.8 is complete only when all of the following are fresh:
 
 ---
 
-# 7. CURRENT TASK — Task 2.9 — Undo, 30-Day Trash, and Audit History
+# 7. CURRENT TASK — Visual Foundation 2.A — Apple Liquid Glass System Migration
 
-**Status: PENDING — DESIGN NOT STARTED**
+**Status: DESIGN APPROVED — DOCUMENTATION FROZEN — IMPLEMENTATION NOT STARTED**
+
+This cross-cutting visual foundation is the only normal implementation boundary that should proceed before Task 2.9.
+
+Canonical references:
+
+- `docs/superpowers/references/2026-08-09-apple-ui-kit-source-manifest.md`
+- `docs/superpowers/specs/2026-08-09-apple-liquid-glass-fidelity-contract.md`
+- `docs/superpowers/specs/2026-08-09-apple-liquid-glass-visual-system-design.md`
+- `docs/superpowers/specs/2026-08-09-apple-liquid-glass-change-request.md`
+
+Frozen requirements:
+
+- Android/mobile must reproduce the supplied iOS 27 visual system exactly;
+- Windows/Linux desktop must reproduce the supplied macOS 27 visual system exactly;
+- no Material, Fluent or native desktop visual fallback;
+- source-derived values replace arbitrary visual magic numbers;
+- Liquid Glass is a centralized material system, not local blur decoration;
+- light/dark and applicable interactive states require fidelity evidence;
+- undocumented visual deviations are incomplete by default;
+- Task 2.8 remains complete and immutable;
+- Task 2.9 remains blocked until this boundary is implemented, verified and checkpointed.
+
+No production implementation should start until the current app visual/theme architecture is audited against the canonical design and a detailed implementation plan is written.
+
+---
+
+# 8. UPCOMING ROADMAP
+
+## Task 2.9 — Undo, 30-Day Trash, and Audit History
+
+**Status: BLOCKED BY VISUAL FOUNDATION 2.A — DESIGN NOT STARTED**
 
 Planned generic infrastructure:
 
@@ -894,7 +929,7 @@ A Task in Trash must not produce:
 
 Detailed design must be created immediately before implementation.
 
-Task 2.8 is complete. Before implementing Task 2.9, create and approve its detailed design and implementation plan, then proceed RED → GREEN.
+Task 2.8 is complete. Task 2.9 is now explicitly blocked by Visual Foundation 2.A. After Visual Foundation 2.A is checkpointed and the Roadmap advances, create and approve Task 2.9's detailed functional design and implementation plan, then proceed RED → GREEN.
 
 ---
 
@@ -1075,10 +1110,13 @@ As of this document:
 - Phase 2 Tasks **2.1 through 2.8 are implemented**.
 - Task 2.8 is the latest fully verified checkpoint.
 - Repository schema is **8**.
-- The next roadmap task is **Task 2.9 — Undo, 30-Day Trash, and Audit History**.
 - Task 2.8 is implemented, checkpointed, and semantically verified.
-- Task 2.9 detailed design has **not started**.
-- The next action is to create and approve the detailed Task 2.9 design and implementation plan before writing its RED test package.
+- The blocking CURRENT TASK is **Visual Foundation 2.A — Apple Liquid Glass System Migration**.
+- Its exact-fidelity platform mapping and documentation are frozen; implementation has **not started**.
+- Android/mobile is locked to the supplied **iOS 27** reference system.
+- Windows/Linux desktop is locked to the supplied **macOS 27** reference system.
+- Task 2.9 detailed design/implementation remains blocked until Visual Foundation 2.A is checkpointed.
+- The next action is to audit the current visual/theme architecture against the canonical Visual Foundation 2.A design, then write its detailed implementation plan before production changes.
 - Tasks 2.10–2.11 remain pending and must be designed individually before implementation.
 
 ---
@@ -1096,5 +1134,17 @@ Latest checkpoint:
 Latest semantic verifier:
 
 `tool/verify_phase2_task2_8_complete.py`
+
+Current Apple UI source manifest:
+
+`docs/superpowers/references/2026-08-09-apple-ui-kit-source-manifest.md`
+
+Current frozen visual fidelity contract:
+
+`docs/superpowers/specs/2026-08-09-apple-liquid-glass-fidelity-contract.md`
+
+Current visual-system design:
+
+`docs/superpowers/specs/2026-08-09-apple-liquid-glass-visual-system-design.md`
 
 This file should point to newer equivalents as the project advances.

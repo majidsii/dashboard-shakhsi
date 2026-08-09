@@ -124,8 +124,10 @@ roadmap_tokens = (
     f"`{EXPECTED_CHECKPOINT_COMMIT}`",
     "focused tests: **57 passed**",
     "full suite: **1245 passed**",
-    "# 7. CURRENT TASK — Task 2.9 — Undo, 30-Day Trash, and Audit History",
-    "**Status: PENDING — DESIGN NOT STARTED**",
+    "# 7. CURRENT TASK — Visual Foundation 2.A — Apple Liquid Glass System Migration",
+    "**Status: DESIGN APPROVED — DOCUMENTATION FROZEN — IMPLEMENTATION NOT STARTED**",
+    "## Task 2.9 — Undo, 30-Day Trash, and Audit History",
+    "**Status: BLOCKED BY VISUAL FOUNDATION 2.A — DESIGN NOT STARTED**",
     "Latest fully recorded checkpoint baseline after Task 2.8:",
     "Repository schema is **8**.",
     "`docs/superpowers/checkpoints/"
@@ -170,5 +172,6 @@ print(
     f"with {EXPECTED_FOCUSED} focused and {EXPECTED_FULL} full passing tests, "
     "clean analyze/build/diff evidence, schema-8 migration/restart proof, "
     "seven stable built-ins, template lifecycle/mapping/UI coverage, stable "
-    "Task 2.7 verification, and PROJECT_ROADMAP.md advanced to Task 2.9."
+    "Task 2.7 verification, while PROJECT_ROADMAP.md keeps Task 2.8 complete "
+    "and inserts the frozen Visual Foundation 2.A boundary before Task 2.9."
 )
