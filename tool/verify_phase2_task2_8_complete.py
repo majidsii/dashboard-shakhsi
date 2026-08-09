@@ -131,6 +131,9 @@ roadmap_tokens = (
     "`docs/superpowers/checkpoints/"
     "2026-08-07-task-2-8-quick-entry-templates-checkpoint.md`",
     "`tool/verify_phase2_task2_8_complete.py`",
+    "Latest checkpoint:\n\n`docs/superpowers/checkpoints/"
+    "2026-08-07-task-2-8-quick-entry-templates-checkpoint.md`",
+    "Latest semantic verifier:\n\n`tool/verify_phase2_task2_8_complete.py`",
 )
 for token in roadmap_tokens:
     need(token in roadmap, f"Roadmap Task 2.8/2.9 marker missing: {token}")

@@ -1091,7 +1091,7 @@ Primary Phase 2 design:
 
 Latest checkpoint:
 
-`docs/superpowers/checkpoints/2026-08-06-task-2-7-timer-checkpoint.md`
+`docs/superpowers/checkpoints/2026-08-07-task-2-8-quick-entry-templates-checkpoint.md`
 
 Latest semantic verifier:
 
