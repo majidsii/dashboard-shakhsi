@@ -119,10 +119,18 @@ if missing:
     fail(f"incomplete plan status: {missing}")
 
 required_design = (
-    "Status: Approved for implementation; Tasks 2.1–2.7 implemented",
+    (
+        "Status: Approved for implementation; Tasks 2.1–2.7 implemented"
+        if "Status: Approved for implementation; Tasks 2.1–2.7 implemented" in design
+        else "Status: Approved for implementation; Tasks 2.1–2.8 implemented"
+    ),
     "## Implementation status",
     f"Task 2.1 — Task Status, Display Number, and Per-Status Position: **Implemented** ([checkpoint]({relative}))",
-    "Tasks 2.8–2.11: **Pending**",
+    (
+        "Tasks 2.8–2.11: **Pending**"
+        if "Tasks 2.8–2.11: **Pending**" in design
+        else "Tasks 2.9–2.11: **Pending**"
+    ),
     "Phase 2 overall: **In progress**",
     f"Task 2.1 status: **Implemented** — [checkpoint]({relative})",
 )
