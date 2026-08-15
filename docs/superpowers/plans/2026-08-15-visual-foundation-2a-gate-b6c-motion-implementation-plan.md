@@ -510,6 +510,158 @@ unless values come from generated records rather than numeric literals.
 
 ---
 
+### Task 4A: Repair the Incomplete B.5 Typography Token Group Boundary
+
+**Why this task exists:** During Task 4 preflight, repository evidence showed that B.5 created exact source-backed `typographyRole(...)` mapping but never created a resolved `AppleTypographyTokens` group. Because `AppleVisualThemeData.isResolved` requires `typography.isResolved`, a fully resolved theme is currently impossible even though the individual typography roles are source-backed. This is a B.5 completion defect discovered by B.6C verification, not a new visual design decision.
+
+**Files:**
+- Modify: `lib/app/apple_visual/foundation/apple_visual_typography.dart`
+- Modify: `lib/app/apple_visual/foundation/apple_source_token_mapper.dart`
+- Modify: `test/app/apple_visual/apple_typography_mapping_test.dart`
+- Verify: `test/app/apple_visual/apple_visual_tokens_contract_test.dart`
+
+**Interfaces:**
+- Existing source role API remains:
+  - `AppleSourceTokenMapper.typographyRole({required AppleVisualFamily family, required AppleTypographyRole role})`
+- Add the missing group API:
+  - `AppleTypographyTokens AppleSourceTokenMapper.typography({required AppleVisualFamily family})`
+- `AppleTypographyTokens.resolved(...)` must contain exactly:
+  - `body`
+  - `headline`
+  - `title1`
+
+- [ ] **Step 1: Write a focused RED proving the group boundary is missing**
+
+Add to `apple_typography_mapping_test.dart`:
+
+```dart
+for (final family in AppleVisualFamily.values) {
+  test('$family typography token group resolves all approved roles', () {
+    final typography = AppleSourceTokenMapper.typography(
+      family: family,
+    );
+
+    expect(typography.isResolved, isTrue);
+    expect(
+      typography.body.sourceId,
+      AppleSourceTokenMapper.typographyRole(
+        family: family,
+        role: AppleTypographyRole.body,
+      ).sourceId,
+    );
+    expect(
+      typography.headline.sourceId,
+      AppleSourceTokenMapper.typographyRole(
+        family: family,
+        role: AppleTypographyRole.headline,
+      ).sourceId,
+    );
+    expect(
+      typography.title1.sourceId,
+      AppleSourceTokenMapper.typographyRole(
+        family: family,
+        role: AppleTypographyRole.title1,
+      ).sourceId,
+    );
+  });
+}
+```
+
+Run only the typography test and verify RED fails because `AppleSourceTokenMapper.typography(...)`, resolved token getters, and/or `AppleTypographyTokens.resolved(...)` are missing.
+
+- [ ] **Step 2: Implement the minimal resolved typography group**
+
+`AppleTypographyTokens` must preserve `empty` and add immutable resolved storage:
+
+```dart
+class AppleTypographyTokens {
+  const AppleTypographyTokens._({
+    required this.isResolved,
+    AppleSourceTypographyToken? body,
+    AppleSourceTypographyToken? headline,
+    AppleSourceTypographyToken? title1,
+  }) : _body = body,
+       _headline = headline,
+       _title1 = title1;
+
+  const AppleTypographyTokens.resolved({
+    required AppleSourceTypographyToken body,
+    required AppleSourceTypographyToken headline,
+    required AppleSourceTypographyToken title1,
+  }) : this._(
+         isResolved: true,
+         body: body,
+         headline: headline,
+         title1: title1,
+       );
+
+  static const empty = AppleTypographyTokens._(isResolved: false);
+
+  final bool isResolved;
+  final AppleSourceTypographyToken? _body;
+  final AppleSourceTypographyToken? _headline;
+  final AppleSourceTypographyToken? _title1;
+}
+```
+
+Each getter must throw `StateError('Apple typography tokens are unresolved.')` when accessed from `empty`.
+
+- [ ] **Step 3: Add the missing group mapper without changing role semantics**
+
+Implement:
+
+```dart
+static AppleTypographyTokens typography({
+  required AppleVisualFamily family,
+}) {
+  return AppleTypographyTokens.resolved(
+    body: typographyRole(
+      family: family,
+      role: AppleTypographyRole.body,
+    ),
+    headline: typographyRole(
+      family: family,
+      role: AppleTypographyRole.headline,
+    ),
+    title1: typographyRole(
+      family: family,
+      role: AppleTypographyRole.title1,
+    ),
+  );
+}
+```
+
+No font size, line height, weight, PostScript name, or font-family values may be duplicated or manually re-entered in this group mapper.
+
+- [ ] **Step 4: Verify GREEN and B.5 regression**
+
+Run:
+
+```bash
+/home/shabin/develop/flutter/bin/flutter test \
+  test/app/apple_visual/apple_typography_mapping_test.dart
+```
+
+Expected: all typography source-role tests plus the new group-resolution tests pass.
+
+- [ ] **Step 5: Verify unresolved behavior remains intact**
+
+Add/assert:
+
+```dart
+expect(AppleTypographyTokens.empty.isResolved, isFalse);
+expect(() => AppleTypographyTokens.empty.body, throwsStateError);
+expect(() => AppleTypographyTokens.empty.headline, throwsStateError);
+expect(() => AppleTypographyTokens.empty.title1, throwsStateError);
+```
+
+- [ ] **Step 6: Re-run B.1-B.6C focused regression**
+
+All existing focused tests must pass before returning to aggregate theme verification.
+
+**Task boundary:** this repairs the incomplete B.5 token-group boundary only. It does not change the approved typography source values, Vazirmatn deviation, motion design, or Gate C scope. No production commit yet.
+
+---
 ### Task 4: Verify Aggregate Theme Resolution
 
 **Files:**
@@ -544,11 +696,16 @@ expect(
 
 - [ ] **Step 2: Add fully-resolved theme tests for both visual families**
 
-For each family:
+For each `(family, brightness)` pair:
 
 ```dart
 final theme = AppleVisualThemeData(
-  colors: AppleSourceTokenMapper.colors(family: family),
+  family: family,
+  brightness: brightness,
+  colors: AppleSourceTokenMapper.colors(
+    family: family,
+    brightness: brightness,
+  ),
   typography: AppleSourceTokenMapper.typography(family: family),
   metrics: AppleSourceTokenMapper.metrics(family: family),
   materials: AppleSourceTokenMapper.materials(family: family),
