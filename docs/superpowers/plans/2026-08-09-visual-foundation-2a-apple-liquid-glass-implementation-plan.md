@@ -1264,3 +1264,85 @@ Core public names frozen by this plan:
 - `AppleRendererDeviation`
 
 Later tasks must use these exact names unless the plan itself is revised and recommitted before implementation proceeds.
+
+<!-- VISUAL_FOUNDATION_2A_GATE_B6_PROGRESS_START -->
+## Gate B.6 Progress Record — 2026-08-15
+
+**Gate B status:** IMPLEMENTATION ACTIVE — NOT COMPLETE
+
+- B.1 Platform visual family resolver: GREEN
+- B.2 Unresolved token/theme boundary: GREEN
+- B.3 Deterministic Apple source reference: GREEN
+- B.4 Semantic source colors: GREEN
+- B.5 Source typography + approved Vazirmatn deviation: GREEN
+- B.6A Source-backed Liquid Glass materials: GREEN
+- B.6B Variant-aware source metrics: GREEN
+- B.6C Motion: BLOCKED — no explicit source-backed motion duration/easing/spring values have been established
+- `AppleVisualThemeData`: unresolved
+- Gate B complete: NO
+- Gate C start: BLOCKED
+- Task 2.9 start: BLOCKED
+
+### B.6B Verified Contract
+
+- Architecture: variant-aware Apple source metrics
+- Single canonical metric per control family: rejected
+- Geometry: source-backed only
+- Exact geometry deduplication: verified
+- Provenance retention: verified
+- iOS Segmented Control Small/Large distinction: preserved
+- macOS explicit source size labels: preserved
+- macOS Toggle equal-geometry state provenance: preserved
+- Keyboard Switch false-positive as Toggle: rejected
+- Blur/shadow/material-effect values as metrics: rejected
+- Generated metric reference: deterministic and source-hash locked
+- Guessed metric values: none
+- Production commit for Gate B: NO
+
+### Next Gate B Action
+
+Resolve **B.6C Motion** through exactly one approved path:
+
+1. discover explicit source-backed Apple motion values; or
+2. document and approve a separate motion deviation.
+
+Do not mark Gate B complete, resolve the theme, start Gate C, retire OriginalTheme, or start Task 2.9 before B.6C is resolved and the final Gate B verification boundary is reached.
+<!-- VISUAL_FOUNDATION_2A_GATE_B6_PROGRESS_END -->
+
+<!-- VISUAL_FOUNDATION_2A_GATE_B_COMPLETION_2026_08_15 -->
+## Gate B completion record — 2026-08-15
+
+Gate B is complete after fresh full verification.
+
+Completed scope:
+- B.1 — Apple visual platform family resolution.
+- B.2 — unresolved/resolved token and aggregate theme boundary.
+- B.3 — deterministic extracted Apple source reference.
+- B.4 — source-backed semantic color mapping.
+- B.5 — source-backed typography role mapping plus resolved typography token group.
+- B.6A — source-backed Liquid Glass material data.
+- B.6B — variant-aware source metrics; no false canonical variant collapse.
+- B.6C — approved official SwiftUI runtime spring reference with explicit Reduce Motion policy.
+
+Approved motion claim boundary:
+- `OFFICIAL_SWIFTUI_RUNTIME_REFERENCE=YES`
+- `EXACT_INTERNAL_LIQUID_GLASS_MOTION=NO`
+- `GUESSED_MOTION_VALUES=NONE`
+
+Typography claim boundary:
+- Apple font binaries are not shipped.
+- Non-Apple Persian/Arabic runtime typography uses the approved Vazirmatn deviation.
+- Project-owned glyph artwork is not claimed to be exact SF Symbols.
+- `GUESSED_TYPOGRAPHY_VALUES=NONE`
+
+Fresh Task 5 verification:
+- all source generators fresh and deterministic;
+- Gate A source verifier passed;
+- B.1–B.6C focused tests passed;
+- full Flutter test suite passed;
+- `flutter analyze` passed with no issues;
+- Linux debug build passed;
+- `git diff --check` passed.
+
+Task 2.9 remains blocked until Visual Foundation 2.A as a whole is complete.
+Next: Gate C — Liquid Glass primitives.

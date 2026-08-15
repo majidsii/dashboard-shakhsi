@@ -884,7 +884,7 @@ Task 2.8 is complete only when all of the following are fresh:
 - Gate B — Platform Family, Source Tokens, Typography and Metrics: **NEXT**
 - Task 2.9: **remains blocked until Visual Foundation 2.A is complete**
 
-**Status: IMPLEMENTATION ACTIVE — GATE A COMPLETE — NEXT: GATE B**
+**Status: IMPLEMENTATION ACTIVE — GATE B COMPLETE — NEXT: GATE C**
 
 This cross-cutting visual foundation is the only normal implementation boundary that should proceed before Task 2.9.
 
@@ -1156,3 +1156,17 @@ Current visual-system design:
 `docs/superpowers/specs/2026-08-09-apple-liquid-glass-visual-system-design.md`
 
 This file should point to newer equivalents as the project advances.
+
+<!-- VISUAL_FOUNDATION_2A_GATE_B_CHECKPOINT_2026_08_15 -->
+### Visual Foundation 2.A — Gate B checkpoint (2026-08-15)
+
+- Gate B source-token foundation is complete and verified.
+- Completed: B.1 platform family, B.2 token/theme boundary, B.3 source reference,
+  B.4 semantic colors, B.5 typography including resolved token-group repair,
+  B.6A materials, B.6B variant-aware metrics, and B.6C motion.
+- Motion source is the approved official SwiftUI runtime reference.
+- Exact internal Liquid Glass motion is **not** claimed.
+- Reduce Motion policy remains required.
+- No guessed motion or typography values were introduced.
+- Task 2.9 remains blocked until the entire Visual Foundation 2.A is complete.
+- Next implementation gate: **Gate C — Liquid Glass primitives**.

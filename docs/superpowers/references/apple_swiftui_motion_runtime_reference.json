@@ -1,0 +1,28 @@
+{
+  "referenceClass": "officialSwiftUIRuntimeReference",
+  "verifiedAt": "2026-08-15",
+  "presets": [
+    {
+      "id": "defaultSpring",
+      "apiReference": "Animation.default",
+      "responseSeconds": 0.55,
+      "dampingFraction": 1.0,
+      "blendDurationSeconds": 0.0,
+      "officialSwiftUIRuntimeReference": true,
+      "exactInternalLiquidGlassMotion": false
+    },
+    {
+      "id": "interactiveSpring",
+      "apiReference": "Animation.interactiveSpring(response:dampingFraction:blendDuration:)",
+      "responseSeconds": 0.15,
+      "dampingFraction": 0.86,
+      "blendDurationSeconds": 0.25,
+      "officialSwiftUIRuntimeReference": true,
+      "exactInternalLiquidGlassMotion": false
+    }
+  ],
+  "accessibilityPolicies": [
+    "standard",
+    "reduceMotion"
+  ]
+}

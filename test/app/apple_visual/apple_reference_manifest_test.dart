@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,9 +10,8 @@ void main() {
   const macosAssetsSha =
       '4bbbb036ce008f2213803ad05d7591ed4c0ac009f677a2e1d3d3b315ceb1ce31';
 
-  File generatedReference() => File(
-    'docs/superpowers/references/generated/apple_ui_kit_reference.json',
-  );
+  File generatedReference() =>
+      File('docs/superpowers/references/generated/apple_ui_kit_reference.json');
 
   test('generated Apple reference is pinned to the frozen source hashes', () {
     final file = generatedReference();
@@ -32,7 +30,10 @@ void main() {
 
     expect((ios['source'] as Map<String, dynamic>)['sha256'], iosSha);
     expect((macos['source'] as Map<String, dynamic>)['sha256'], macosSha);
-    expect((assets['source'] as Map<String, dynamic>)['sha256'], macosAssetsSha);
+    expect(
+      (assets['source'] as Map<String, dynamic>)['sha256'],
+      macosAssetsSha,
+    );
   });
 
   test('generated reference contains the locked page counts', () {

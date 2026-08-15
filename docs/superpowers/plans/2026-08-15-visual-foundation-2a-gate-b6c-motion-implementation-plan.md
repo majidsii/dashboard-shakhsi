@@ -959,3 +959,24 @@ GIT_DIFF_CHECK=PASS
 GATE_B_COMPLETE=YES
 NEXT=Gate C — Liquid Glass primitives
 ```
+
+<!-- B6C_EXECUTION_COMPLETE_2026_08_15 -->
+## Execution result — 2026-08-15
+
+Status: **COMPLETE**
+
+- Task 1 RED: passed for missing approved motion API.
+- Task 2: locked SwiftUI motion reference manifest + deterministic generator.
+- Task 3 GREEN: motion domain model + generated-source-backed mapper.
+- Task 4A: repaired the discovered B.5 aggregate typography token-group gap via RED/GREEN.
+- Task 4: aggregate `AppleVisualThemeData` resolution passed for iOS 27/macOS 27
+  in light/dark, and unresolved motion correctly gates theme resolution.
+- Task 5: full Gate B verification passed.
+
+Motion contract remains:
+- default spring: `0.55 / 1.0 / 0.0`
+- interactive spring: `0.15 / 0.86 / 0.25`
+- source class: official SwiftUI runtime reference
+- exact internal Liquid Glass motion: **false**
+- Reduce Motion policy: **required**
+- guessed motion values: **none**
