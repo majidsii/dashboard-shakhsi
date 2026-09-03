@@ -6,15 +6,12 @@
 
 ## Context
 
-Standard Flutter composition was evaluated against locked Apple source-backed
-Liquid Glass goldens.
+Standard Flutter composition was evaluated against locked Apple source-backed Liquid Glass goldens.
 
-The measured comparison produced:
+Result:
 
     STANDARD_FLUTTER_COMPOSITION_ACCEPTED=NO
     GATE_C_RENDERER_COMPOSITOR_BLOCKED=YES
-
-The blocker is not missing source data.
 
 The blocker is a renderer semantic mismatch between:
 
@@ -28,59 +25,50 @@ No exact source-backed conversion exists.
 
 ## Decision
 
-The project will not accept a permanent visual deviation through standard
-Flutter composition.
+The project will not accept a permanent visual deviation through standard Flutter composition.
 
-The target implementation path is:
+The target path is:
 
     CUSTOM_LIQUID_GLASS_RENDERER
 
-The renderer must preserve the existing public widget contract:
+The public widget contract remains:
 
     AppleLiquidGlass
 
-while allowing an internal rendering strategy switch.
-
-## Rendering Strategy
-
-The implementation will use a layered architecture:
+Rendering strategy:
 
     AppleLiquidGlass
             |
             v
     AppleGlassRenderStrategy
             |
-            +--------------------+
-            |                    |
-            v                    v
-Standard Flutter Renderer   Custom Glass Renderer
+            +----------------+
+            |                |
+            v                v
+ Standard Flutter     Custom Glass Renderer
 
-Standard composition remains valid for source-backed layers that can be
-represented accurately.
+Custom renderer responsibilities:
 
-Custom rendering is reserved for Apple Glass semantics that require:
-
-- sampled background input;
-- advanced blur kernel behavior;
-- saturation adaptation;
-- brightness adaptation;
-- distortion;
-- depth/light response.
+- sampled background input
+- advanced blur behavior
+- saturation adaptation
+- brightness adaptation
+- distortion
+- depth/light response
 
 ## Constraints
 
-The following remain forbidden until separately approved:
+Forbidden until separately approved:
 
-- arbitrary blur radius conversion;
-- magic opacity compensation;
-- fake shadow compensation;
-- shader creation without implementation design;
-- replacing source-backed fixtures.
+- arbitrary blur radius conversion
+- magic opacity compensation
+- fake shadow compensation
+- shader creation without design approval
+- replacing source-backed fixtures
 
 ## Prototype Requirement
 
-Before production integration, a renderer prototype must prove improvement
-against at least:
+First prototype target:
 
     ios27/light/smallControl
 
@@ -88,13 +76,11 @@ Current baseline:
 
     61.33%, 5262px diff
 
-Prototype acceptance target:
-
-    measured improvement with deterministic comparison.
+The prototype must demonstrate deterministic improvement before production integration.
 
 ## Next Phase
 
-Create renderer prototype design only.
+Only create renderer design.
 
 Do not create production shader code until:
 
