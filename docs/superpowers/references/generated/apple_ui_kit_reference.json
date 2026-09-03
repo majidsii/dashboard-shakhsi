@@ -56242,6 +56242,1678 @@
         }
       }
     ],
+    "liquidGlassUsageLayers": [
+      {
+        "childCount": 8,
+        "class": "group",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 1000,
+          "x": -77,
+          "y": -770
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds",
+        "name": "Liquid Glass - Over Dark Backgrounds",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "2CD93E0E-DC5D-41B3-B560-BBCC1570B2B9",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 40
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI",
+        "name": "Dark - Small UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "6083EE56-7140-41AB-A4F1-A5AB25870F01",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 150
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)",
+        "name": "Dark - Small UI (Tinted)",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "51E345E2-0B62-4ABF-B3D8-F095CE9579DE",
+        "stateName": "Dark - Small UI (Tinted)",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "10CCD1C7-5618-4E69-9FDD-D7278464A795",
+        "stateName": "Button",
+        "symbolId": "F01136B0-ABC1-4E8D-8FB5-0DE0C4DC2F02"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1B0E44CE-FDCB-4C19-8DBB-A23BF2746F14",
+        "stateName": "Button",
+        "symbolId": "F01136B0-ABC1-4E8D-8FB5-0DE0C4DC2F02"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "31BBD217-2868-448A-831F-00527677DEDD",
+        "stateName": "Button",
+        "symbolId": "F01136B0-ABC1-4E8D-8FB5-0DE0C4DC2F02"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "AE4B07A4-F5F6-4BFC-B55F-3F297FBBE9C8",
+        "stateName": "Button",
+        "symbolId": "F01136B0-ABC1-4E8D-8FB5-0DE0C4DC2F02"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "E00DB7A1-853B-437C-A44E-E3BEB8F44E29",
+        "stateName": "Button",
+        "symbolId": "F01136B0-ABC1-4E8D-8FB5-0DE0C4DC2F02"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "F32B7DEF-BD13-4F47-8011-555FA25DDE70",
+        "stateName": "Button",
+        "symbolId": "F01136B0-ABC1-4E8D-8FB5-0DE0C4DC2F02"
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "E867C512-B38E-4F58-8A5D-14DAABAB369C",
+        "sourceId": "01E15FA2-D31E-44FE-8BE5-A9B692F461CE",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "E867C512-B38E-4F58-8A5D-14DAABAB369C",
+        "sourceId": "2909BBA5-27C7-4B12-BFE1-8078A3E94341",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "E867C512-B38E-4F58-8A5D-14DAABAB369C",
+        "sourceId": "33A0CA0F-668A-442B-AFB4-E3AFA662999F",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "E867C512-B38E-4F58-8A5D-14DAABAB369C",
+        "sourceId": "394CF322-D105-43EF-B8A9-A446BB63D9DE",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "E867C512-B38E-4F58-8A5D-14DAABAB369C",
+        "sourceId": "4163458E-A1F4-47A8-84F1-CF976E047B37",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "E867C512-B38E-4F58-8A5D-14DAABAB369C",
+        "sourceId": "DC3DA398-1F13-4203-9C55-33628D9CFB9D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 400,
+          "width": 580,
+          "x": 60,
+          "y": 550
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Large UI",
+        "name": "Large UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "460400B7-BD34-4889-A22C-F48264A12A05",
+        "sourceId": "78C98350-D00A-40E6-ADB5-C66329A77940",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 680,
+          "y": 563
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Large UI Dark Mode",
+        "name": "Large UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "EC01690C-432D-4F77-B424-6108107F122C",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 200,
+          "width": 580,
+          "x": 60,
+          "y": 260
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Medium UI",
+        "name": "Medium UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "24AB598E-EAFC-4C68-A3CD-DA081B3A4C7F",
+        "sourceId": "C4890002-1015-4EE5-BE05-6E6C5174A056",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 680,
+          "y": 257
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Medium UI Dark Mode",
+        "name": "Medium UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "47F9A82B-4C25-407A-A664-1CDE7C395AEE",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 237,
+          "x": 680,
+          "y": 48
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Small UI Dynamic (Ov",
+        "name": "Small UI Dynamic (Ov",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "15A67DA3-B461-4191-BD5B-1AD7E61CF821",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 600,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack",
+        "name": "Stack",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "17F8EB75-0A18-4B52-8E3B-A931D518E007",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "148D0CED-3CA1-4046-BEC6-301C8084C535",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "4E636CF3-BC54-4CA4-A6EB-7CB9F34AE5D2",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "58D6A612-2D85-484E-8D73-3EBEC40471EF",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "5E052880-5900-4314-880E-1CC3D0480E7C",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "8779ECA5-9500-4F50-B3C3-39DA213001B4",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "FD9A76DF-9604-4BA9-BAAE-BE0C97A0EED6",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 8,
+        "class": "group",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 1000,
+          "x": -1097,
+          "y": -770
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds",
+        "name": "Liquid Glass - Over Light Backgrounds",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "0709016B-B060-4824-8366-1229D930579A",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 400,
+          "width": 580,
+          "x": 60,
+          "y": 550
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Large UI",
+        "name": "Large UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "43F5338F-7034-4E45-9BC8-2A4417378DC3",
+        "sourceId": "432E0B50-B5A1-4232-858C-769017255C00",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 680,
+          "y": 563
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Large UI Dark Mode",
+        "name": "Large UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "B032B093-C5B1-41EA-93ED-A01D6DBE61A2",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 40
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI",
+        "name": "Light - Small UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "69BA7493-0562-42D0-A145-9431E7345179",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 150
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)",
+        "name": "Light - Small UI (Tinted)",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "20125EA4-55A5-41DA-9F98-EEEB3A26B9F6",
+        "stateName": "Light - Small UI (Tinted)",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "06D30713-9147-4AA5-A9D8-F4E408605DC6",
+        "stateName": "Button",
+        "symbolId": "D5EF0C07-51DA-429C-8E16-3602B58D7AF6"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "7F3F4DA0-12BB-4477-B4B7-4B1ED563E7F2",
+        "stateName": "Button",
+        "symbolId": "D5EF0C07-51DA-429C-8E16-3602B58D7AF6"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "7F40779D-4991-4C03-A275-E70F33E97466",
+        "stateName": "Button",
+        "symbolId": "D5EF0C07-51DA-429C-8E16-3602B58D7AF6"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "82F0BFBA-7FED-47A5-961F-6085AF948F7A",
+        "stateName": "Button",
+        "symbolId": "D5EF0C07-51DA-429C-8E16-3602B58D7AF6"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "F3347F35-2624-4F81-9D88-1F39723DB305",
+        "stateName": "Button",
+        "symbolId": "D5EF0C07-51DA-429C-8E16-3602B58D7AF6"
+      },
+      {
+        "childCount": 0,
+        "class": "symbolInstance",
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Button",
+        "name": "Button",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "FEC5861C-DB74-4D6C-BC48-E55438E77968",
+        "stateName": "Button",
+        "symbolId": "D5EF0C07-51DA-429C-8E16-3602B58D7AF6"
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549",
+        "sourceId": "0315F158-5651-4D4A-BB00-02E5DA95C4ED",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549",
+        "sourceId": "0E369F7F-9D18-43D4-B8EA-964EC8E8AC0A",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549",
+        "sourceId": "22BC8070-D83B-4670-AE9E-E89384EA2B3D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549",
+        "sourceId": "3807209F-3A2E-4EB5-A01F-BC19549DA825",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549",
+        "sourceId": "BEB70E68-424A-4572-B436-BADA2F9FBB08",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549",
+        "sourceId": "CC0489F9-D209-4B07-831B-FD73A190CE1E",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 200,
+          "width": 580,
+          "x": 60,
+          "y": 260
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Medium UI",
+        "name": "Medium UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B83A48A5-32D7-402F-919B-E7656C26CEDB",
+        "sourceId": "F9D1029B-BA6C-4D80-82E8-E840589D808D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 680,
+          "y": 257
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Medium UI Dark Mode",
+        "name": "Medium UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "E97F6B35-9CE8-4AAC-84DB-C9C291C1D691",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 237,
+          "x": 680,
+          "y": 48
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Small UI Dynamic (Ov",
+        "name": "Small UI Dynamic (Ov",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "10141796-6261-40B7-B291-C88D7F838EAC",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 600,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack",
+        "name": "Stack",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "A2CD235E-4FC9-415C-9517-3D61E8BB2F80",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "0AFC0137-FCDB-4F9E-9D05-754FE57D0B94",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "3215CD9B-24A1-47C2-BA5C-36C9DB596A90",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "57F66E09-8FE9-452E-95B2-2B86E26EB192",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "67088CF8-FEE3-45FD-9EE4-1949131B3EA1",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "D9A82309-36C6-407E-BA26-E2A4E76A7D56",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "FB77FFCD-450E-4411-8F10-306526164F87",
+        "stateName": null,
+        "symbolId": null
+      }
+    ],
     "meta": {
       "app": "com.bohemiancoding.sketchtool",
       "appVersion": "2026.2",
@@ -248036,6 +249708,2668 @@
           ],
           "sourceId": "73D79FEA-F4A9-43E8-8B61-7DD5E7C69D87",
           "text": null
+        }
+      }
+    ],
+    "liquidGlassUsageLayers": [
+      {
+        "childCount": 9,
+        "class": "group",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 1080,
+          "x": 1200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds",
+        "name": "Liquid Glass - Over Dark Backgrounds",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "5C469C0E-9B68-4300-914D-5C85A93E74D0",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 40
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI",
+        "name": "Dark - Small UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "301CF31D-5C25-4CCC-BED8-8552674D92AE",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 150
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)",
+        "name": "Dark - Small UI (Tinted)",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "969CD8AD-1A7A-4556-8B21-EC7EE8549F59",
+        "stateName": "Dark - Small UI (Tinted)",
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "354422DC-DEF2-4637-A5F5-B79F848B4D3B",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "57A727EA-C95A-4471-92AF-8FE02263E09C",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "5B1B4D70-556E-4141-85E1-E5ECEB622D81",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "AD7F0FF4-3E7A-4B1E-8686-A438DD5C8207",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "B00E8881-B014-4B13-B163-641393868B8D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "E894A9F0-6A56-4092-98EB-4DA5114DE389",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "08EBAA3E-25F5-4CA8-B474-CDA2A15D837B",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1DB0C51E-E590-466E-AA8E-7880635D84C0",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "3E9BD422-EEAC-491E-95C6-9489B5F34769",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "A66B6228-DF53-42F5-A3A2-4CF985800A74",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "BD202A59-CEC9-40E4-B700-435291CAF77D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "C287A8AF-ED85-46CB-8244-D8F8819563AF",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "4C404544-A51B-4DD4-804E-F7A17FBE1B1E",
+        "sourceId": "08DED369-B02E-438E-A250-E237AC6E9557",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "4C404544-A51B-4DD4-804E-F7A17FBE1B1E",
+        "sourceId": "0BF8366D-0791-40F3-9CB6-ABA7EA60C15F",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "4C404544-A51B-4DD4-804E-F7A17FBE1B1E",
+        "sourceId": "68E897B3-743A-40F1-904E-2A77A925F499",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "4C404544-A51B-4DD4-804E-F7A17FBE1B1E",
+        "sourceId": "8619BA3A-3E27-49CE-88DC-E09006502FB7",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "4C404544-A51B-4DD4-804E-F7A17FBE1B1E",
+        "sourceId": "D0200A06-4115-4855-A9E1-8112B5DF916D",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI (Tinted)/BG - Small/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "4C404544-A51B-4DD4-804E-F7A17FBE1B1E",
+        "sourceId": "FBB2D209-B91C-405D-9E74-3524C577904F",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "6AA9A79F-FF72-4274-B908-DBE775E206A6",
+        "sourceId": "64FBCFED-5133-432D-A777-72E62ED347E4",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "6AA9A79F-FF72-4274-B908-DBE775E206A6",
+        "sourceId": "818504EA-9D37-47E5-AEB0-F3B2A5595EAB",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "6AA9A79F-FF72-4274-B908-DBE775E206A6",
+        "sourceId": "92C1D96A-F751-4203-AD9A-338A3EB8B478",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "6AA9A79F-FF72-4274-B908-DBE775E206A6",
+        "sourceId": "938CB4A1-DDBE-484D-BF32-AD51E5DC6E28",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "6AA9A79F-FF72-4274-B908-DBE775E206A6",
+        "sourceId": "D085FCA4-0021-4858-BE22-56904A24CBAF",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Dark - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "6AA9A79F-FF72-4274-B908-DBE775E206A6",
+        "sourceId": "E8C56133-9C21-49C8-A2D4-CB9A7CB33876",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 400,
+          "width": 580,
+          "x": 60,
+          "y": 550
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Large UI",
+        "name": "Large UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "0B0168D9-8096-4668-B38B-C88D6559032F",
+        "sourceId": "12A4AC53-C83D-4441-A751-1F0F512927E7",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 700,
+          "y": 563
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Large UI Dark Mode",
+        "name": "Large UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "B9B76CFB-5E39-415E-9833-75DA9B2C6948",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 200,
+          "width": 580,
+          "x": 60,
+          "y": 260
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Medium UI",
+        "name": "Medium UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "37F534D8-B479-41D6-A7BA-C270096EBC22",
+        "sourceId": "7169DD1B-7093-4166-B2BF-CFE09C08A539",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 700,
+          "y": 257
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Medium UI Dark Mode",
+        "name": "Medium UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "E509E46F-DA6A-46D7-BBE2-7CB7D4B5F232",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 237,
+          "x": 700,
+          "y": 48
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Small UI Dynamic (Ov",
+        "name": "Small UI Dynamic (Ov",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "4DC1D065-4424-4558-BE4E-BAA020B508A4",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 600,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack",
+        "name": "Stack",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1479E48D-36EA-45C9-9B00-F25C81112DCA",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "0BD6D946-D956-4E0A-8595-C82CDFDBA203",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "12345A25-C52A-4032-9256-6BE3553BD5E7",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "514E263A-E54E-494F-8B15-E81F35EEFF0D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "9A566317-A1BF-4ACC-940E-D2B2EB82E42F",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "B9E85FCA-AF24-4475-87B3-4742268ED3B1",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "EEF7456C-8C40-4454-96F3-DDE9FF3C9C56",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 18,
+          "width": 46,
+          "x": 700,
+          "y": 150
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Dark Backgrounds/Tinted",
+        "name": "Tinted",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "E5C27A74-52C8-4F40-B824-CD3028B61BAA",
+        "stateName": "Tinted",
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 1.0,
+            "green": 1.0,
+            "hexArgb": "#FFFFFFFF",
+            "red": 1.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 9,
+        "class": "group",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 1080,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds",
+        "name": "Liquid Glass - Over Light Backgrounds",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1615B3DA-4DCA-4315-94DC-6EE1BBA09A1F",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 400,
+          "width": 580,
+          "x": 60,
+          "y": 550
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Large UI",
+        "name": "Large UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "8F9B3BE4-BCA3-4899-8ACD-C7F1E00BEC67",
+        "sourceId": "027B1558-3302-4B48-BB8C-B9B603935EC3",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 700,
+          "y": 563
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Large UI Dark Mode",
+        "name": "Large UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "84F2648E-EEA8-497E-BA25-BC850A0E497B",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 40
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI",
+        "name": "Light - Small UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "903420CA-7032-48DE-B64F-14593C7637A8",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 580,
+          "x": 60,
+          "y": 150
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)",
+        "name": "Light - Small UI (Tinted)",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "F75B2F41-BB58-41CB-99F3-2471E1E90C27",
+        "stateName": "Light - Small UI (Tinted)",
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light",
+        "name": "Light",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1BB6675E-8ACE-47D3-BD32-3ED8EE9B6164",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light",
+        "name": "Light",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1C42DC83-B846-456E-AFC5-09AF4B4BE559",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light",
+        "name": "Light",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "61CC8F83-7E1F-4EC9-A537-E35F02A90788",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light",
+        "name": "Light",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "758699AC-863B-4E0E-809C-BAD771060584",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light",
+        "name": "Light",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "98C4FED4-8AF2-4FE5-A0B5-D343F7763302",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 2,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light",
+        "name": "Light",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "F8BC88BA-D77A-47FB-A5F7-59E2BBFAA940",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "04B179BA-1D3F-4BB4-BEBE-38C2343A8A14",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "26801A27-40E7-45D8-AD5E-44DDF8CDF97C",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "3D84F135-2417-45D8-9AD0-BE13B53AAAAE",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "608EF20C-9DDC-4F40-8818-6A06F0C5E098",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "78E6C7A8-B7F8-41FF-BEEF-51739AAA86AD",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 49,
+          "width": 81,
+          "x": -0.5,
+          "y": -0.5
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tint Color",
+        "name": "Tint Color",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "7F6DD52F-CACB-4731-96F8-A73B87619119",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B48042CE-0B0F-414B-88A9-FE5AE46AD14A",
+        "sourceId": "1DE100FE-2C03-451C-AFBE-FA77F76FBA72",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B48042CE-0B0F-414B-88A9-FE5AE46AD14A",
+        "sourceId": "6022EA66-B8F5-4754-A0D7-7631E98CD76F",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B48042CE-0B0F-414B-88A9-FE5AE46AD14A",
+        "sourceId": "637987A8-575A-41BC-8D06-16C0B1053FD2",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B48042CE-0B0F-414B-88A9-FE5AE46AD14A",
+        "sourceId": "A9F472FE-698E-4CC5-ABB3-C9896EB5EEA9",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B48042CE-0B0F-414B-88A9-FE5AE46AD14A",
+        "sourceId": "DCB2B102-91DE-40CB-8067-4D37545112A1",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI (Tinted)/Light/Tinted Glass",
+        "name": "Tinted Glass",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "B48042CE-0B0F-414B-88A9-FE5AE46AD14A",
+        "sourceId": "E709240A-B437-42C3-8FFD-EF2BD44CD069",
+        "stateName": "Tinted Glass",
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "A44272CF-223C-4E6B-97BC-4DEC8A291E9F",
+        "sourceId": "195F6B64-567C-4B76-8D9D-51465E42DC9D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "A44272CF-223C-4E6B-97BC-4DEC8A291E9F",
+        "sourceId": "63A89B8D-B7EB-465B-98E0-0648CEDAFB42",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "A44272CF-223C-4E6B-97BC-4DEC8A291E9F",
+        "sourceId": "63FE4FC6-B326-40BC-B28F-EDF8788F068E",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "A44272CF-223C-4E6B-97BC-4DEC8A291E9F",
+        "sourceId": "B619C62B-138E-4B08-BA66-461F10E1D7E2",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "A44272CF-223C-4E6B-97BC-4DEC8A291E9F",
+        "sourceId": "D0F79AB4-FC97-4E65-88E0-479C43B3E1B9",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            3.402823466385289e+38
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 48,
+          "width": 80,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Light - Small UI/BG - Small",
+        "name": "BG - Small",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "A44272CF-223C-4E6B-97BC-4DEC8A291E9F",
+        "sourceId": "D46B83E1-A26F-4A7E-B740-16DA9B281A5C",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            20
+          ],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 200,
+          "width": 580,
+          "x": 60,
+          "y": 260
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Medium UI",
+        "name": "Medium UI",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": "9C49F69B-CD54-4052-BB98-7D621E5B524C",
+        "sourceId": "AB19B37C-8DCF-448D-8E7C-58C990737C9D",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 78,
+          "x": 700,
+          "y": 257
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Medium UI Dark Mode",
+        "name": "Medium UI Dark Mode",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "F3CE7D43-66AD-4529-9669-A49C4E2AA507",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 36,
+          "width": 237,
+          "x": 700,
+          "y": 48
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Small UI Dynamic (Ov",
+        "name": "Small UI Dynamic (Ov",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "57ACE261-A1C0-4F05-B545-0E911CD183D9",
+        "stateName": null,
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
+        }
+      },
+      {
+        "childCount": 6,
+        "class": "group",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [],
+          "smoothing": 0.6,
+          "style": 1
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 600,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack",
+        "name": "Stack",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "0C025D7D-2C7A-4E15-99B1-02F4E419C131",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 100,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "11167B7C-FDA7-4BB1-B38D-D02433830977",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 500,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "16DA8301-DD76-4197-A329-54D20DE59B24",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 200,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1B60AFD3-1EF0-4BFF-9798-4C7A663BDCC4",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 400,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1C22634E-835A-40C8-AF4F-8C5259C90224",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 0,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "99104E35-88F8-4939-A1C0-358501D0C33A",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "childCount": 0,
+        "class": "rectangle",
+        "frame": {
+          "constrainProportions": false,
+          "height": 1030,
+          "width": 100,
+          "x": 300,
+          "y": 0
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Stack/Swatch",
+        "name": "Swatch",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "CA661F8D-7EFF-4572-8E8A-CA5EE52265B2",
+        "stateName": null,
+        "symbolId": null
+      },
+      {
+        "attributedString": null,
+        "childCount": 0,
+        "class": "text",
+        "corners": {
+          "prefersConcentric": false,
+          "radii": [
+            0
+          ],
+          "smoothing": 0.6,
+          "style": 0
+        },
+        "frame": {
+          "constrainProportions": false,
+          "height": 18,
+          "width": 46,
+          "x": 700,
+          "y": 150
+        },
+        "isVisible": true,
+        "layerPath": "Liquid Glass - Over Light Backgrounds/Tinted",
+        "name": "Tinted",
+        "opacity": {
+          "blendMode": 0,
+          "isProgressive": false,
+          "opacity": 1
+        },
+        "pageName": "􁄻 Materials",
+        "rotation": 0,
+        "sharedStyleId": null,
+        "sourceId": "1E9AA794-4BC2-45FA-9CCC-DABCEC147D8E",
+        "stateName": "Tinted",
+        "symbolId": null,
+        "textStyle": {
+          "alignment": null,
+          "fontPostScriptName": "SFPro-Semibold",
+          "fontSize": 15,
+          "kerning": null,
+          "lineHeightMax": null,
+          "lineHeightMin": null,
+          "textColor": {
+            "alpha": 1.0,
+            "blue": 0.0,
+            "green": 0.0,
+            "hexArgb": "#FF000000",
+            "red": 0.0,
+            "swatchId": null
+          },
+          "verticalAlignment": 0
         }
       }
     ],

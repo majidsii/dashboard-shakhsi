@@ -82,6 +82,23 @@ def _state_name(name):
         if any(k.lower() in p.lower() for k in known): return p
     return None
 
+_CANONICAL_SOURCE_FILE_NAMES={
+    '5941547509b49a3756667905f18492dfdf4e59a977de1deacccfcf7ff94ac295':
+        'Apple iOS 27 UI Kit.sketch',
+    '8f83805217d979dc560d008fce66c1c77014f631cccff8978f31baf1d7ef3b28':
+        'Apple macOS 27 UI Kit.sketch',
+    '4bbbb036ce008f2213803ad05d7591ed4c0ac009f677a2e1d3d3b315ceb1ce31':
+        'apple-macos-27-ui-kit_assets_2026-06-23_v12.zip',
+}
+
+def _canonical_source_file_name(sha256,local_name):
+    return _CANONICAL_SOURCE_FILE_NAMES.get(sha256,local_name)
+
+_LIQUID_GLASS_USAGE_ROOT_NAMES=(
+    'Liquid Glass - Over Dark Backgrounds',
+    'Liquid Glass - Over Light Backgrounds',
+)
+
 def _layer_record(layer,page_name,path):
     name=layer.get('name') or ''
     rec={'sourceId':layer.get('do_objectID'),'pageName':page_name,'layerPath':'/'.join(path+[name]) if name else '/'.join(path),'name':name,'stateName':_state_name(name),'class':layer.get('_class'),'frame':_frame(layer.get('frame')),'sharedStyleId':layer.get('sharedStyleID'),'symbolId':layer.get('symbolID'),'childCount':len(layer.get('layers') or []),'rotation':layer.get('rotation'),'isVisible':layer.get('isVisible'),'opacity':_context((layer.get('style') or {}).get('contextSettings'))}
@@ -91,17 +108,37 @@ def _layer_record(layer,page_name,path):
     if isinstance(layer.get('style'),dict) and isinstance(layer['style'].get('corners'),dict): rec['corners']=_corners(layer['style']['corners'])
     return rec
 
+def _liquid_glass_usage_records(layer,page_name,path,inside_usage_root=False):
+    if not isinstance(layer,dict): return []
+    name=layer.get('name') or ''
+    is_root=name in _LIQUID_GLASS_USAGE_ROOT_NAMES
+    include=inside_usage_root or is_root
+    records=[]
+    if include:
+        records.append(_layer_record(layer,page_name,path))
+    child_path=path+([name] if name else [])
+    for child in layer.get('layers') or []:
+        records.extend(
+            _liquid_glass_usage_records(
+                child,page_name,child_path,include
+            )
+        )
+    return records
+
 def extract_sketch_reference(source: SourceFile)->dict[str,Any]:
     verify_sha256(source)
     with zipfile.ZipFile(source.path) as z:
         doc=json.loads(z.read('document.json')); meta=json.loads(z.read('meta.json'))
-        page_names=[]; layers=[]
+        page_names=[]; layers=[]; liquid_glass_usage=[]
         page_entries=sorted(n for n in z.namelist() if n.startswith('pages/') and n.endswith('.json'))
         for entry in page_entries:
             p=json.loads(z.read(entry)); pname=p.get('name') or ''
             page_names.append({'sourceId':p.get('do_objectID'),'name':pname,'topLevelLayerCount':len(p.get('layers') or [])})
             for layer in p.get('layers') or []:
                 layers.append(_layer_record(layer,pname,[]))
+                liquid_glass_usage.extend(
+                    _liquid_glass_usage_records(layer,pname,[],False)
+                )
         swatches=[]
         for x in (doc.get('sharedSwatches') or {}).get('objects',[]):
             swatches.append({'sourceId':x.get('do_objectID'),'name':x.get('name'),'color':_color(x.get('value'))})
@@ -115,7 +152,7 @@ def extract_sketch_reference(source: SourceFile)->dict[str,Any]:
         for x in doc.get('fontReferences') or []:
             fonts.append({'sourceId':x.get('do_objectID'),'fontFamilyName':x.get('fontFamilyName'),'fontFileName':x.get('fontFileName'),'postscriptNames':x.get('postscriptNames') or [],'options':x.get('options')})
         key=lambda x:((x.get('name') or ''),(x.get('sourceId') or ''))
-        return {'source':{'fileName':source.path.name,'sha256':_sha256(source.path),'sizeBytes':source.path.stat().st_size},'meta':{k:meta.get(k) for k in ('app','appVersion','build','version','compatibilityVersion','created','variant')},'pageCount':len(page_entries),'pages':sorted(page_names,key=key),'swatches':sorted(swatches,key=key),'textStyles':sorted(text,key=key),'layerStyles':sorted(lst,key=key),'fontReferences':sorted(fonts,key=lambda x:((x.get('fontFamilyName') or ''),(x.get('sourceId') or ''))),'componentLayers':sorted(layers,key=lambda x:((x.get('pageName') or ''),(x.get('layerPath') or ''),(x.get('sourceId') or '')))}
+        return {'source':{'fileName':_canonical_source_file_name(_sha256(source.path),source.path.name),'sha256':_sha256(source.path),'sizeBytes':source.path.stat().st_size},'meta':{k:meta.get(k) for k in ('app','appVersion','build','version','compatibilityVersion','created','variant')},'pageCount':len(page_entries),'pages':sorted(page_names,key=key),'swatches':sorted(swatches,key=key),'textStyles':sorted(text,key=key),'layerStyles':sorted(lst,key=key),'fontReferences':sorted(fonts,key=lambda x:((x.get('fontFamilyName') or ''),(x.get('sourceId') or ''))),'componentLayers':sorted(layers,key=lambda x:((x.get('pageName') or ''),(x.get('layerPath') or ''),(x.get('sourceId') or ''))),'liquidGlassUsageLayers':sorted(liquid_glass_usage,key=lambda x:((x.get('pageName') or ''),(x.get('layerPath') or ''),(x.get('sourceId') or '')))}
 
 def extract_asset_bundle(source: SourceFile):
     verify_sha256(source)
@@ -124,7 +161,7 @@ def extract_asset_bundle(source: SourceFile):
       for info in sorted(z.infolist(),key=lambda i:i.filename):
         if info.is_dir(): continue
         entries.append({'path':info.filename,'sizeBytes':info.file_size,'compressedSizeBytes':info.compress_size,'crc32':f'{info.CRC:08x}'})
-    return {'source':{'fileName':source.path.name,'sha256':_sha256(source.path),'sizeBytes':source.path.stat().st_size},'entryCount':len(entries),'entries':entries}
+    return {'source':{'fileName':_canonical_source_file_name(_sha256(source.path),source.path.name),'sha256':_sha256(source.path),'sizeBytes':source.path.stat().st_size},'entryCount':len(entries),'entries':entries}
 
 def write_deterministic_json(value, output:Path)->None:
     output.parent.mkdir(parents=True,exist_ok=True)

@@ -1,0 +1,1 @@
+enum AppleControlState { idle, pressed }
