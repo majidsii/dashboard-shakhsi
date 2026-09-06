@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 
 import '../../foundation/apple_liquid_glass_recipe.dart';
+import '../shader/apple_liquid_glass_shader_repository.dart';
 
 final class AppleCustomGlassFilter extends StatefulWidget {
   const AppleCustomGlassFilter({
@@ -19,8 +20,6 @@ final class AppleCustomGlassFilter extends StatefulWidget {
 }
 
 final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
-  static const _shaderAsset = 'shaders/apple_liquid_glass_identity.frag';
-
   ui.FragmentShader? _shader;
   Object? _loadError;
 
@@ -44,7 +43,8 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
     }
 
     try {
-      final program = await ui.FragmentProgram.fromAsset(_shaderAsset);
+      final program = await AppleLiquidGlassShaderRepository.instance
+          .loadProgram();
 
       if (!mounted) {
         return;
