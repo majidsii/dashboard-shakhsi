@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 
 import '../../foundation/apple_liquid_glass_recipe.dart';
-import '../shader/apple_liquid_glass_shader_repository.dart';
+import '../shader/apple_liquid_glass_shader_parameters_mapper.dart';
 import '../shader/apple_liquid_glass_shader_repository.dart';
 
 final class AppleCustomGlassFilter extends StatefulWidget {
@@ -14,6 +14,7 @@ final class AppleCustomGlassFilter extends StatefulWidget {
   });
 
   final AppleLiquidGlassRecipe recipe;
+
   final Widget child;
 
   @override
@@ -22,11 +23,15 @@ final class AppleCustomGlassFilter extends StatefulWidget {
 
 final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
   ui.FragmentShader? _shader;
+
   Object? _loadError;
+
+  static const _parameterMapper = AppleLiquidGlassShaderParametersMapper();
 
   @override
   void initState() {
     super.initState();
+
     _loadShader();
   }
 
@@ -40,6 +45,7 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
           );
         });
       }
+
       return;
     }
 
@@ -52,6 +58,14 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
       }
 
       final shader = program.fragmentShader();
+
+      final params = _parameterMapper.map(widget.recipe);
+
+      shader
+        ..setFloat(0, params.opacity)
+        ..setFloat(1, params.blurRadius)
+        ..setFloat(2, params.tintStrength)
+        ..setFloat(3, params.specularStrength);
 
       setState(() {
         _shader = shader;
@@ -70,6 +84,7 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
   @override
   void dispose() {
     _shader?.dispose();
+
     super.dispose();
   }
 
