@@ -4,6 +4,7 @@ import 'package:dashboard_shakhsi/app/apple_visual/foundation/apple_visual_famil
 import 'package:dashboard_shakhsi/app/apple_visual/foundation/apple_visual_state.dart';
 import 'package:dashboard_shakhsi/app/apple_visual/rendering/apple_custom_glass_renderer.dart';
 import 'package:dashboard_shakhsi/app/apple_visual/rendering/apple_glass_backend_capabilities.dart';
+import 'package:dashboard_shakhsi/app/apple_visual/rendering/apple_glass_backend_resolver.dart';
 import 'package:dashboard_shakhsi/app/apple_visual/rendering/apple_glass_render_strategy_resolver.dart';
 import 'package:dashboard_shakhsi/app/apple_visual/rendering/apple_standard_glass_renderer.dart';
 import 'package:dashboard_shakhsi/app/apple_visual/rendering/apple_unsupported_glass_renderer.dart';
@@ -33,8 +34,10 @@ void main() {
         );
 
         final resolver = AppleGlassRenderStrategyResolver(
-          capabilities: const _FakeAppleGlassBackendCapabilities(
-            shaderFilterSupported: true,
+          backendResolver: AppleGlassBackendResolver(
+            capabilities: const _FakeAppleGlassBackendCapabilities(
+              shaderFilterSupported: true,
+            ),
           ),
         );
 
@@ -55,8 +58,10 @@ void main() {
         );
 
         final resolver = AppleGlassRenderStrategyResolver(
-          capabilities: const _FakeAppleGlassBackendCapabilities(
-            shaderFilterSupported: false,
+          backendResolver: AppleGlassBackendResolver(
+            capabilities: const _FakeAppleGlassBackendCapabilities(
+              shaderFilterSupported: false,
+            ),
           ),
         );
 
@@ -82,8 +87,10 @@ void main() {
         );
 
         final resolver = AppleGlassRenderStrategyResolver(
-          capabilities: const _FakeAppleGlassBackendCapabilities(
-            shaderFilterSupported: false,
+          backendResolver: AppleGlassBackendResolver(
+            capabilities: const _FakeAppleGlassBackendCapabilities(
+              shaderFilterSupported: false,
+            ),
           ),
         );
 
