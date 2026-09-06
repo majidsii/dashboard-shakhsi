@@ -1,32 +1,35 @@
 import '../foundation/apple_liquid_glass_recipe.dart';
 import 'apple_custom_glass_renderer.dart';
-import 'apple_glass_backend_capabilities.dart';
+import 'apple_glass_backend_resolver.dart';
+import 'apple_glass_semantic_resolver.dart';
 import 'apple_glass_render_strategy.dart';
 import 'apple_standard_glass_renderer.dart';
 import 'apple_unsupported_glass_renderer.dart';
 
 final class AppleGlassRenderStrategyResolver {
   const AppleGlassRenderStrategyResolver({
-    this.capabilities = const FlutterAppleGlassBackendCapabilities(),
+    this.semanticResolver = const AppleGlassSemanticResolver(),
+    this.backendResolver = const AppleGlassBackendResolver(),
   });
 
-  final AppleGlassBackendCapabilities capabilities;
+  final AppleGlassSemanticResolver semanticResolver;
+  final AppleGlassBackendResolver backendResolver;
 
   AppleGlassRenderStrategy resolve(AppleLiquidGlassRecipe recipe) {
-    final sourceValues = recipe.sourceValues;
+    final requiresCustom = semanticResolver.requiresCustomGlass(recipe);
 
-    final hasEnabledCustomGlass =
-        sourceValues['style.blurs[0].isCustomGlass'] == 1 &&
-        sourceValues['style.blurs[0].isEnabled'] == true;
-
-    if (!hasEnabledCustomGlass) {
+    if (!requiresCustom) {
       return const AppleStandardGlassRenderer();
     }
 
-    if (!capabilities.shaderFilterSupported) {
-      return const AppleUnsupportedGlassRenderer();
-    }
+    final backend = backendResolver.resolve();
 
-    return const AppleCustomGlassRenderer();
+    switch (backend) {
+      case AppleGlassBackendState.shaderSupported:
+        return const AppleCustomGlassRenderer();
+
+      case AppleGlassBackendState.shaderUnsupported:
+        return const AppleUnsupportedGlassRenderer();
+    }
   }
 }
