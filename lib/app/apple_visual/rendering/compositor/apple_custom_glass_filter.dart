@@ -1,10 +1,9 @@
-import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 
 import '../../foundation/apple_liquid_glass_recipe.dart';
-import '../shader/apple_liquid_glass_shader_parameters_mapper.dart';
-import '../shader/apple_liquid_glass_shader_repository.dart';
+import '../shader/apple_glass_shader_runtime.dart';
 
 final class AppleCustomGlassFilter extends StatefulWidget {
   const AppleCustomGlassFilter({
@@ -14,7 +13,6 @@ final class AppleCustomGlassFilter extends StatefulWidget {
   });
 
   final AppleLiquidGlassRecipe recipe;
-
   final Widget child;
 
   @override
@@ -22,82 +20,34 @@ final class AppleCustomGlassFilter extends StatefulWidget {
 }
 
 final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
-  ui.FragmentShader? _shader;
+  final _runtime = AppleGlassShaderRuntime();
 
-  Object? _loadError;
-
-  static const _parameterMapper = AppleLiquidGlassShaderParametersMapper();
+  FragmentShader? _shader;
 
   @override
   void initState() {
     super.initState();
-
     _loadShader();
   }
 
   Future<void> _loadShader() async {
-    if (!ui.ImageFilter.isShaderFilterSupported) {
-      if (mounted) {
-        setState(() {
-          _loadError = UnsupportedError(
-            'Apple Custom Glass requires '
-            'ImageFilter.shader support from Impeller.',
-          );
-        });
-      }
-
+    if (!ImageFilter.isShaderFilterSupported) {
       return;
     }
 
-    try {
-      final program = await AppleLiquidGlassShaderRepository.instance
-          .loadProgram();
+    final shader = await _runtime.createShader();
 
-      if (!mounted) {
-        return;
-      }
-
-      final shader = program.fragmentShader();
-
-      final params = _parameterMapper.map(widget.recipe);
-
-      shader
-        ..setFloat(0, params.opacity)
-        ..setFloat(1, params.blurRadius)
-        ..setFloat(2, params.tintStrength)
-        ..setFloat(3, params.specularStrength);
-
-      setState(() {
-        _shader = shader;
-      });
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _loadError = error;
-      });
+    if (!mounted) {
+      return;
     }
-  }
 
-  @override
-  void dispose() {
-    _shader?.dispose();
-
-    super.dispose();
+    setState(() {
+      _shader = shader;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final error = _loadError;
-
-    if (error != null) {
-      throw FlutterError(
-        'Failed to initialize Apple Custom Glass shader: $error',
-      );
-    }
-
     final shader = _shader;
 
     if (shader == null) {
@@ -106,7 +56,7 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
 
     return ClipRect(
       child: BackdropFilter(
-        filter: ui.ImageFilter.shader(shader),
+        filter: ImageFilter.shader(shader),
         child: widget.child,
       ),
     );

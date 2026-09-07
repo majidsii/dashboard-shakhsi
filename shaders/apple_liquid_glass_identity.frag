@@ -1,16 +1,10 @@
 #include <flutter/runtime_effect.glsl>
 
-uniform vec2 u_size;
-uniform sampler2D u_texture_input;
+uniform vec2 uSize;
 
-out vec4 frag_color;
+out vec4 fragColor;
 
 void main() {
-  vec2 uv = FlutterFragCoord().xy / u_size;
-
-#ifdef IMPELLER_TARGET_OPENGLES
-  uv.y = 1.0 - uv.y;
-#endif
-
-  frag_color = texture(u_texture_input, uv);
+  vec2 uv = FlutterFragCoord().xy / uSize;
+  fragColor = vec4(uv.x, uv.y, 0.0, 1.0);
 }
