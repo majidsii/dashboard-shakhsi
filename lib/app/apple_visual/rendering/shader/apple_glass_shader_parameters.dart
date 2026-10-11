@@ -5,6 +5,8 @@ final class AppleGlassShaderParameters {
     required this.distortionStrength,
     required this.depthResponse,
     required this.lightingResponse,
+    required this.chromaticAberration,
+    required this.customGlassRadius,
   });
 
   final double saturation;
@@ -12,4 +14,6 @@ final class AppleGlassShaderParameters {
   final double distortionStrength;
   final double depthResponse;
   final double lightingResponse;
+  final double chromaticAberration;
+  final double customGlassRadius;
 }

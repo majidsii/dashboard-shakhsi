@@ -43,6 +43,7 @@ dev_dependencies:
 flutter:
   shaders:
     - shaders/apple_liquid_glass_identity.frag
+    - shaders/apple_liquid_glass.frag
   uses-material-design: true
   generate: true
   assets:

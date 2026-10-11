@@ -11,18 +11,42 @@ final class AppleGlassShaderParameterResolver {
       customGlassEnabled:
           values['style.blurs[0].isCustomGlass'] == 1 &&
           values['style.blurs[0].isEnabled'] == true,
-      saturation: _read(values, 'style.blurs[0].saturation'),
-      brightness: _read(values, 'style.blurs[0].brightness'),
-      distortion: _read(values, 'style.blurs[0].distortion'),
-      depth: _read(values, 'style.blurs[0].depth'),
-      chromaticAberration: _read(values, 'style.blurs[0].chromaticAberration'),
-      skipLightingEffects: values['style.blurs[0].skipLightingEffects'] == true,
-      customGlassRadius: _read(values, 'style.blurs[0].radius'),
+      saturation: _first(values, [
+        'style.saturation',
+        'style.blurs[0].saturation',
+      ]),
+      brightness: _first(values, [
+        'style.brightness',
+        'style.blurs[0].brightness',
+      ]),
+      distortion: _first(values, [
+        'style.distortion',
+        'style.blurs[0].distortion',
+      ]),
+      depth: _first(values, ['style.depth', 'style.blurs[0].depth']),
+      chromaticAberration: _first(values, [
+        'style.chromaticAberration',
+        'style.blurs[0].chromaticAberration',
+      ]),
+      skipLightingEffects:
+          values['style.skipLightingEffects'] == true ||
+          values['style.blurs[0].skipLightingEffects'] == true,
+      customGlassRadius: _first(values, [
+        'style.radius',
+        'style.blurs[0].radius',
+      ]),
     );
   }
 
-  double _read(Map<String, Object?> values, String key) {
-    final value = values[key];
-    return value is num ? value.toDouble() : 0;
+  double _first(Map<String, Object?> values, List<String> keys) {
+    for (final key in keys) {
+      final value = values[key];
+
+      if (value is num) {
+        return value.toDouble();
+      }
+    }
+
+    return 0;
   }
 }

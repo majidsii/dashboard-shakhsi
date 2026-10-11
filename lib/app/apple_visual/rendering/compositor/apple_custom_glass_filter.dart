@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 
 import '../../foundation/apple_liquid_glass_recipe.dart';
 import '../shader/apple_glass_shader_runtime.dart';
+import '../shader/apple_glass_shader_uniform_mapper.dart';
+import '../shader/apple_glass_shader_uniform_resolver.dart';
 
 final class AppleCustomGlassFilter extends StatefulWidget {
   const AppleCustomGlassFilter({
@@ -21,6 +23,8 @@ final class AppleCustomGlassFilter extends StatefulWidget {
 
 final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
   final _runtime = AppleGlassShaderRuntime();
+  final _uniformResolver = const AppleGlassShaderUniformResolver();
+  final _uniformMapper = const AppleGlassShaderUniformMapper();
 
   FragmentShader? _shader;
 
@@ -36,6 +40,10 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
     }
 
     final shader = await _runtime.createShader();
+
+    final uniforms = _uniformResolver.resolve(widget.recipe);
+
+    _uniformMapper.apply(shader, uniforms);
 
     if (!mounted) {
       return;
@@ -54,11 +62,9 @@ final class _AppleCustomGlassFilterState extends State<AppleCustomGlassFilter> {
       return widget.child;
     }
 
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.shader(shader),
-        child: widget.child,
-      ),
+    return BackdropFilter(
+      filter: ImageFilter.shader(shader),
+      child: widget.child,
     );
   }
 }

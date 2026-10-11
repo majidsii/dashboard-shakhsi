@@ -3,8 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 
 import '../../foundation/apple_liquid_glass_recipe.dart';
+import 'apple_custom_glass_material_surface.dart';
 import 'apple_glass_compositor.dart';
-import '../shader/apple_glass_shader_runtime.dart';
 import 'apple_glass_shader_filter_factory.dart';
 
 final class AppleCustomGlassCompositor implements AppleGlassCompositor {
@@ -17,7 +17,7 @@ final class AppleCustomGlassCompositor implements AppleGlassCompositor {
     required AppleLiquidGlassRecipe recipe,
     required Widget child,
   }) {
-    return child;
+    return AppleCustomGlassMaterialSurface(recipe: recipe, child: child);
   }
 
   @visibleForTesting
