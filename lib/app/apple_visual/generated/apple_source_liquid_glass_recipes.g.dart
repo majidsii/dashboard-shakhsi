@@ -28,8 +28,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'dark',
       role: 'smallControl',
-      sourceIds: ['E867C512-B38E-4F58-8A5D-14DAABAB369C'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Small'],
+      sourceIds: [
+        'E867C512-B38E-4F58-8A5D-14DAABAB369C',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -273,20 +277,37 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
         'style.shadows[9].offsetY': 0,
         'style.shadows[9].spread': 0.5,
         'style.sourceId': 'D2C74201-F498-4698-928C-21D8D8F7256A',
+        'usage.corners.radii[0]': 3.402823466385289e+38,
+        'usage.corners.smoothing': 0.6,
+        'usage.corners.style': 1,
+        'usage.frame.height': 48,
+        'usage.frame.width': 80,
       },
       roleMappingEvidence: [
         'exactStyleName=Liquid Glass/Dark/Regular - Small',
         'candidateResolution=singleExactSourceStyle',
         'usageRoot=Liquid Glass - Over Dark Backgrounds',
         'usageCount=6',
+        'usageGeometrySelector=name:BG - Small',
+        'usageGeometryAgreementCount=6',
+        'usageGeometryLayerSourceId=01E15FA2-D31E-44FE-8BE5-A9B692F461CE',
+        'usageGeometryLayerSourceId=2909BBA5-27C7-4B12-BFE1-8078A3E94341',
+        'usageGeometryLayerSourceId=33A0CA0F-668A-442B-AFB4-E3AFA662999F',
+        'usageGeometryLayerSourceId=394CF322-D105-43EF-B8A9-A446BB63D9DE',
+        'usageGeometryLayerSourceId=4163458E-A1F4-47A8-84F1-CF976E047B37',
+        'usageGeometryLayerSourceId=DC3DA398-1F13-4203-9C55-33628D9CFB9D',
       ],
     ),
     AppleGeneratedLiquidGlassRecipe(
       family: 'ios27',
       appearance: 'dark',
       role: 'tintedSmallControl',
-      sourceIds: ['C1E3E7E1-162E-40FF-A005-3890BE2E8B72'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Small - Tinted'],
+      sourceIds: [
+        'C1E3E7E1-162E-40FF-A005-3890BE2E8B72',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Small - Tinted',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -496,8 +517,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'dark',
       role: 'mediumSurface',
-      sourceIds: ['24AB598E-EAFC-4C68-A3CD-DA081B3A4C7F'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Medium'],
+      sourceIds: [
+        '24AB598E-EAFC-4C68-A3CD-DA081B3A4C7F',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Medium',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -746,8 +771,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'dark',
       role: 'largeSurface',
-      sourceIds: ['460400B7-BD34-4889-A22C-F48264A12A05'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Large'],
+      sourceIds: [
+        '460400B7-BD34-4889-A22C-F48264A12A05',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Large',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -996,8 +1025,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'dark',
       role: 'overGlassControl',
-      sourceIds: ['E867C512-B38E-4F58-8A5D-14DAABAB369C'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Small'],
+      sourceIds: [
+        'E867C512-B38E-4F58-8A5D-14DAABAB369C',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -1262,8 +1295,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'light',
       role: 'smallControl',
-      sourceIds: ['7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549'],
-      sourceNames: ['Liquid Glass/Light/Regular - Small'],
+      sourceIds: [
+        '7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -1583,20 +1620,37 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
         'style.shadows[9].offsetY': 1,
         'style.shadows[9].spread': 0,
         'style.sourceId': 'D50D583D-B7E4-463E-A108-EF3EC7F5D0D8',
+        'usage.corners.radii[0]': 3.402823466385289e+38,
+        'usage.corners.smoothing': 0.6,
+        'usage.corners.style': 1,
+        'usage.frame.height': 48,
+        'usage.frame.width': 80,
       },
       roleMappingEvidence: [
         'exactStyleName=Liquid Glass/Light/Regular - Small',
         'candidateResolution=singleExactSourceStyle',
         'usageRoot=Liquid Glass - Over Light Backgrounds',
         'usageCount=6',
+        'usageGeometrySelector=name:BG - Small',
+        'usageGeometryAgreementCount=6',
+        'usageGeometryLayerSourceId=0315F158-5651-4D4A-BB00-02E5DA95C4ED',
+        'usageGeometryLayerSourceId=0E369F7F-9D18-43D4-B8EA-964EC8E8AC0A',
+        'usageGeometryLayerSourceId=22BC8070-D83B-4670-AE9E-E89384EA2B3D',
+        'usageGeometryLayerSourceId=3807209F-3A2E-4EB5-A01F-BC19549DA825',
+        'usageGeometryLayerSourceId=BEB70E68-424A-4572-B436-BADA2F9FBB08',
+        'usageGeometryLayerSourceId=CC0489F9-D209-4B07-831B-FD73A190CE1E',
       ],
     ),
     AppleGeneratedLiquidGlassRecipe(
       family: 'ios27',
       appearance: 'light',
       role: 'tintedSmallControl',
-      sourceIds: ['48FBCF47-D236-47FC-8B34-88145F7F9CFF'],
-      sourceNames: ['Liquid Glass/Light/Regular - Small - Tinted'],
+      sourceIds: [
+        '48FBCF47-D236-47FC-8B34-88145F7F9CFF',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Small - Tinted',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -1806,8 +1860,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'light',
       role: 'mediumSurface',
-      sourceIds: ['B83A48A5-32D7-402F-919B-E7656C26CEDB'],
-      sourceNames: ['Liquid Glass/Light/Regular - Medium'],
+      sourceIds: [
+        'B83A48A5-32D7-402F-919B-E7656C26CEDB',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Medium',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -2024,8 +2082,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'light',
       role: 'largeSurface',
-      sourceIds: ['43F5338F-7034-4E45-9BC8-2A4417378DC3'],
-      sourceNames: ['Liquid Glass/Light/Regular - Large'],
+      sourceIds: [
+        '43F5338F-7034-4E45-9BC8-2A4417378DC3',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Large',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -2242,8 +2304,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'ios27',
       appearance: 'light',
       role: 'overGlassControl',
-      sourceIds: ['7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549'],
-      sourceNames: ['Liquid Glass/Light/Regular - Small'],
+      sourceIds: [
+        '7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -2584,8 +2650,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'dark',
       role: 'smallControl',
-      sourceIds: ['6AA9A79F-FF72-4274-B908-DBE775E206A6'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Small'],
+      sourceIds: [
+        '6AA9A79F-FF72-4274-B908-DBE775E206A6',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -2829,20 +2899,37 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
         'style.shadows[9].offsetY': 0,
         'style.shadows[9].spread': -0.75,
         'style.sourceId': 'C08695D5-EA02-4FD4-A35B-1F53BED80A53',
+        'usage.corners.radii[0]': 3.402823466385289e+38,
+        'usage.corners.smoothing': 0.6,
+        'usage.corners.style': 1,
+        'usage.frame.height': 48,
+        'usage.frame.width': 80,
       },
       roleMappingEvidence: [
         'exactStyleName=Liquid Glass/Dark/Regular - Small',
         'candidateResolution=singleExactSourceStyle',
         'usageRoot=Liquid Glass - Over Dark Backgrounds',
         'usageCount=6',
+        'usageGeometrySelector=name:BG - Small',
+        'usageGeometryAgreementCount=6',
+        'usageGeometryLayerSourceId=64FBCFED-5133-432D-A777-72E62ED347E4',
+        'usageGeometryLayerSourceId=818504EA-9D37-47E5-AEB0-F3B2A5595EAB',
+        'usageGeometryLayerSourceId=92C1D96A-F751-4203-AD9A-338A3EB8B478',
+        'usageGeometryLayerSourceId=938CB4A1-DDBE-484D-BF32-AD51E5DC6E28',
+        'usageGeometryLayerSourceId=D085FCA4-0021-4858-BE22-56904A24CBAF',
+        'usageGeometryLayerSourceId=E8C56133-9C21-49C8-A2D4-CB9A7CB33876',
       ],
     ),
     AppleGeneratedLiquidGlassRecipe(
       family: 'macos27',
       appearance: 'dark',
       role: 'tintedSmallControl',
-      sourceIds: ['4C404544-A51B-4DD4-804E-F7A17FBE1B1E'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Small - Tinted'],
+      sourceIds: [
+        '4C404544-A51B-4DD4-804E-F7A17FBE1B1E',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Small - Tinted',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -3053,8 +3140,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'dark',
       role: 'mediumSurface',
-      sourceIds: ['37F534D8-B479-41D6-A7BA-C270096EBC22'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Medium'],
+      sourceIds: [
+        '37F534D8-B479-41D6-A7BA-C270096EBC22',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Medium',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -3303,8 +3394,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'dark',
       role: 'largeSurface',
-      sourceIds: ['0B0168D9-8096-4668-B38B-C88D6559032F'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Large'],
+      sourceIds: [
+        '0B0168D9-8096-4668-B38B-C88D6559032F',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Large',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -3553,8 +3648,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'dark',
       role: 'overGlassControl',
-      sourceIds: ['6AA9A79F-FF72-4274-B908-DBE775E206A6'],
-      sourceNames: ['Liquid Glass/Dark/Regular - Small'],
+      sourceIds: [
+        '6AA9A79F-FF72-4274-B908-DBE775E206A6',
+      ],
+      sourceNames: [
+        'Liquid Glass/Dark/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -3819,8 +3918,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'light',
       role: 'smallControl',
-      sourceIds: ['A44272CF-223C-4E6B-97BC-4DEC8A291E9F'],
-      sourceNames: ['Liquid Glass/Light/Regular - Small'],
+      sourceIds: [
+        'A44272CF-223C-4E6B-97BC-4DEC8A291E9F',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -4141,20 +4244,37 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
         'style.shadows[9].offsetY': 8,
         'style.shadows[9].spread': 0,
         'style.sourceId': '74DA16C1-BE7D-4AAB-BEDC-2B187B76CE54',
+        'usage.corners.radii[0]': 3.402823466385289e+38,
+        'usage.corners.smoothing': 0.6,
+        'usage.corners.style': 1,
+        'usage.frame.height': 48,
+        'usage.frame.width': 80,
       },
       roleMappingEvidence: [
         'exactStyleName=Liquid Glass/Light/Regular - Small',
         'candidateResolution=singleExactSourceStyle',
         'usageRoot=Liquid Glass - Over Light Backgrounds',
         'usageCount=6',
+        'usageGeometrySelector=name:BG - Small',
+        'usageGeometryAgreementCount=6',
+        'usageGeometryLayerSourceId=195F6B64-567C-4B76-8D9D-51465E42DC9D',
+        'usageGeometryLayerSourceId=63A89B8D-B7EB-465B-98E0-0648CEDAFB42',
+        'usageGeometryLayerSourceId=63FE4FC6-B326-40BC-B28F-EDF8788F068E',
+        'usageGeometryLayerSourceId=B619C62B-138E-4B08-BA66-461F10E1D7E2',
+        'usageGeometryLayerSourceId=D0F79AB4-FC97-4E65-88E0-479C43B3E1B9',
+        'usageGeometryLayerSourceId=D46B83E1-A26F-4A7E-B740-16DA9B281A5C',
       ],
     ),
     AppleGeneratedLiquidGlassRecipe(
       family: 'macos27',
       appearance: 'light',
       role: 'tintedSmallControl',
-      sourceIds: ['B48042CE-0B0F-414B-88A9-FE5AE46AD14A'],
-      sourceNames: ['Liquid Glass/Light/Regular - Small - Tinted'],
+      sourceIds: [
+        'B48042CE-0B0F-414B-88A9-FE5AE46AD14A',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Small - Tinted',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -4365,8 +4485,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'light',
       role: 'mediumSurface',
-      sourceIds: ['9C49F69B-CD54-4052-BB98-7D621E5B524C'],
-      sourceNames: ['Liquid Glass/Light/Regular - Medium'],
+      sourceIds: [
+        '9C49F69B-CD54-4052-BB98-7D621E5B524C',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Medium',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -4583,8 +4707,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'light',
       role: 'largeSurface',
-      sourceIds: ['8F9B3BE4-BCA3-4899-8ACD-C7F1E00BEC67'],
-      sourceNames: ['Liquid Glass/Light/Regular - Large'],
+      sourceIds: [
+        '8F9B3BE4-BCA3-4899-8ACD-C7F1E00BEC67',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Large',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',
@@ -4801,8 +4929,12 @@ abstract final class AppleSourceLiquidGlassRecipeReference {
       family: 'macos27',
       appearance: 'light',
       role: 'overGlassControl',
-      sourceIds: ['A44272CF-223C-4E6B-97BC-4DEC8A291E9F'],
-      sourceNames: ['Liquid Glass/Light/Regular - Small'],
+      sourceIds: [
+        'A44272CF-223C-4E6B-97BC-4DEC8A291E9F',
+      ],
+      sourceNames: [
+        'Liquid Glass/Light/Regular - Small',
+      ],
       sourceValues: {
         'style.blurs[0].brightness': 1,
         'style.blurs[0].center': '{0.5, 0.5}',

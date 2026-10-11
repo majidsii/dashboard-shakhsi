@@ -176,6 +176,168 @@ def select_direct_style(
     ]
 
 
+
+# GATE_C_APPLIED_USAGE_GEOMETRY_V1
+def attach_small_control_usage_geometry(
+    records: list[dict[str, Any]],
+) -> None:
+    # Preserve applied-layer geometry without rewriting shared-style values.
+    #
+    # Gate C source goldens are exports of concrete usage layers. Some Apple
+    # shared Liquid Glass styles omit the effective corner radius while the
+    # applied BG - Small usage layer contains it. Keep those usage values in
+    # a separate namespace so provenance is not collapsed into style.*.
+    import sys
+
+    input_path = Path(
+        "docs/superpowers/references/generated/apple_ui_kit_reference.json"
+    )
+
+    if "--input" in sys.argv:
+        index = sys.argv.index("--input")
+        if index + 1 >= len(sys.argv):
+            fail("--input requires a path")
+        input_path = Path(sys.argv[index + 1])
+
+    source_reference = json.loads(input_path.read_text())
+
+    family_keys = {
+        "ios27": "ios",
+        "macos27": "macos",
+    }
+    appearance_roots = {
+        "dark": (
+            "Dark",
+            "Liquid Glass - Over Dark Backgrounds",
+        ),
+        "light": (
+            "Light",
+            "Liquid Glass - Over Light Backgrounds",
+        ),
+    }
+
+    for record in records:
+        if record.get("role") != "smallControl":
+            continue
+
+        family = str(record.get("family"))
+        appearance = str(record.get("appearance"))
+
+        family_key = family_keys.get(family)
+        appearance_spec = appearance_roots.get(appearance)
+        if family_key is None or appearance_spec is None:
+            fail(
+                "unsupported smallControl usage-geometry tuple "
+                f"family={family} appearance={appearance}"
+            )
+
+        source_ids = record.get("sourceIds") or []
+        if len(source_ids) != 1:
+            fail(
+                "smallControl usage geometry requires exactly one source style "
+                f"family={family} appearance={appearance} sourceIds={source_ids}"
+            )
+
+        source_id = str(source_ids[0])
+        appearance_title, root = appearance_spec
+
+        family_reference = source_reference.get(family_key)
+        if not isinstance(family_reference, dict):
+            fail(f"missing source family {family_key}")
+
+        usage = family_reference.get("liquidGlassUsageLayers") or []
+        branch = f"{appearance_title} - Small UI"
+
+        rows = [
+            row
+            for row in usage
+            if isinstance(row, dict)
+            and row.get("name") == "BG - Small"
+            and row.get("sharedStyleId") == source_id
+            and isinstance(row.get("layerPath"), str)
+            and row["layerPath"].startswith(root + "/")
+            and f"/{branch}/" in ("/" + row["layerPath"] + "/")
+            and "Small UI (Tinted)" not in row["layerPath"]
+        ]
+
+        if not rows:
+            fail(
+                "missing source-backed BG - Small usage geometry "
+                f"family={family} appearance={appearance} sourceId={source_id}"
+            )
+
+        signatures: dict[
+            tuple[object, object, tuple[object, ...], object, object],
+            list[dict[str, Any]],
+        ] = {}
+
+        for row in rows:
+            frame = row.get("frame")
+            corners = row.get("corners")
+
+            if not isinstance(frame, dict) or not isinstance(corners, dict):
+                fail(
+                    "incomplete applied usage geometry "
+                    f"family={family} appearance={appearance} "
+                    f"layer={row.get('sourceId')}"
+                )
+
+            radii = corners.get("radii")
+            if not isinstance(radii, list) or not radii:
+                fail(
+                    "missing applied usage corner radius "
+                    f"family={family} appearance={appearance} "
+                    f"layer={row.get('sourceId')}"
+                )
+
+            signature = (
+                frame.get("width"),
+                frame.get("height"),
+                tuple(radii),
+                corners.get("smoothing"),
+                corners.get("style"),
+            )
+            signatures.setdefault(signature, []).append(row)
+
+        if len(signatures) != 1:
+            fail(
+                "ambiguous applied smallControl geometry "
+                f"family={family} appearance={appearance} "
+                f"signatures={list(signatures)}"
+            )
+
+        signature, agreeing_rows = next(iter(signatures.items()))
+        width, height, radii, smoothing, corner_style = signature
+
+        source_values = record.get("sourceValues")
+        evidence = record.get("roleMappingEvidence")
+
+        if not isinstance(source_values, dict) or not isinstance(evidence, list):
+            fail(
+                "malformed generated recipe while attaching usage geometry "
+                f"family={family} appearance={appearance}"
+            )
+
+        # Deliberately separate applied-layer values from shared-style values.
+        source_values["usage.frame.width"] = width
+        source_values["usage.frame.height"] = height
+        source_values["usage.corners.radii[0]"] = radii[0]
+        source_values["usage.corners.smoothing"] = smoothing
+        source_values["usage.corners.style"] = corner_style
+
+        evidence.append("usageGeometrySelector=name:BG - Small")
+        evidence.append(
+            f"usageGeometryAgreementCount={len(agreeing_rows)}"
+        )
+        evidence.extend(
+            "usageGeometryLayerSourceId=" + str(row.get("sourceId"))
+            for row in sorted(
+                agreeing_rows,
+                key=lambda item: str(item.get("sourceId") or ""),
+            )
+            if row.get("sourceId")
+        )
+
 def select_over_glass_style(
     *,
     styles_by_id: dict[str, dict[str, Any]],
@@ -355,6 +517,8 @@ def build_records(reference: dict[str, Any]) -> list[dict[str, Any]]:
                     evidence=evidence,
                 )
             )
+
+    attach_small_control_usage_geometry(records)
 
     records.sort(
         key=lambda row: (

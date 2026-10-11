@@ -9,7 +9,15 @@
         "exactStyleName=Liquid Glass/Dark/Regular - Small",
         "candidateResolution=singleExactSourceStyle",
         "usageRoot=Liquid Glass - Over Dark Backgrounds",
-        "usageCount=6"
+        "usageCount=6",
+        "usageGeometrySelector=name:BG - Small",
+        "usageGeometryAgreementCount=6",
+        "usageGeometryLayerSourceId=01E15FA2-D31E-44FE-8BE5-A9B692F461CE",
+        "usageGeometryLayerSourceId=2909BBA5-27C7-4B12-BFE1-8078A3E94341",
+        "usageGeometryLayerSourceId=33A0CA0F-668A-442B-AFB4-E3AFA662999F",
+        "usageGeometryLayerSourceId=394CF322-D105-43EF-B8A9-A446BB63D9DE",
+        "usageGeometryLayerSourceId=4163458E-A1F4-47A8-84F1-CF976E047B37",
+        "usageGeometryLayerSourceId=DC3DA398-1F13-4203-9C55-33628D9CFB9D"
       ],
       "sourceIds": [
         "E867C512-B38E-4F58-8A5D-14DAABAB369C"
@@ -259,7 +267,12 @@
         "style.shadows[9].offsetX": 0,
         "style.shadows[9].offsetY": 0,
         "style.shadows[9].spread": 0.5,
-        "style.sourceId": "D2C74201-F498-4698-928C-21D8D8F7256A"
+        "style.sourceId": "D2C74201-F498-4698-928C-21D8D8F7256A",
+        "usage.corners.radii[0]": 3.402823466385289e+38,
+        "usage.corners.smoothing": 0.6,
+        "usage.corners.style": 1,
+        "usage.frame.height": 48,
+        "usage.frame.width": 80
       }
     },
     {
@@ -1263,7 +1276,15 @@
         "exactStyleName=Liquid Glass/Light/Regular - Small",
         "candidateResolution=singleExactSourceStyle",
         "usageRoot=Liquid Glass - Over Light Backgrounds",
-        "usageCount=6"
+        "usageCount=6",
+        "usageGeometrySelector=name:BG - Small",
+        "usageGeometryAgreementCount=6",
+        "usageGeometryLayerSourceId=0315F158-5651-4D4A-BB00-02E5DA95C4ED",
+        "usageGeometryLayerSourceId=0E369F7F-9D18-43D4-B8EA-964EC8E8AC0A",
+        "usageGeometryLayerSourceId=22BC8070-D83B-4670-AE9E-E89384EA2B3D",
+        "usageGeometryLayerSourceId=3807209F-3A2E-4EB5-A01F-BC19549DA825",
+        "usageGeometryLayerSourceId=BEB70E68-424A-4572-B436-BADA2F9FBB08",
+        "usageGeometryLayerSourceId=CC0489F9-D209-4B07-831B-FD73A190CE1E"
       ],
       "sourceIds": [
         "7DD2EB52-8E2A-4EC4-90B1-CB7985FF3549"
@@ -1589,7 +1610,12 @@
         "style.shadows[9].offsetX": 0,
         "style.shadows[9].offsetY": 1,
         "style.shadows[9].spread": 0,
-        "style.sourceId": "D50D583D-B7E4-463E-A108-EF3EC7F5D0D8"
+        "style.sourceId": "D50D583D-B7E4-463E-A108-EF3EC7F5D0D8",
+        "usage.corners.radii[0]": 3.402823466385289e+38,
+        "usage.corners.smoothing": 0.6,
+        "usage.corners.style": 1,
+        "usage.frame.height": 48,
+        "usage.frame.width": 80
       }
     },
     {
@@ -2605,7 +2631,15 @@
         "exactStyleName=Liquid Glass/Dark/Regular - Small",
         "candidateResolution=singleExactSourceStyle",
         "usageRoot=Liquid Glass - Over Dark Backgrounds",
-        "usageCount=6"
+        "usageCount=6",
+        "usageGeometrySelector=name:BG - Small",
+        "usageGeometryAgreementCount=6",
+        "usageGeometryLayerSourceId=64FBCFED-5133-432D-A777-72E62ED347E4",
+        "usageGeometryLayerSourceId=818504EA-9D37-47E5-AEB0-F3B2A5595EAB",
+        "usageGeometryLayerSourceId=92C1D96A-F751-4203-AD9A-338A3EB8B478",
+        "usageGeometryLayerSourceId=938CB4A1-DDBE-484D-BF32-AD51E5DC6E28",
+        "usageGeometryLayerSourceId=D085FCA4-0021-4858-BE22-56904A24CBAF",
+        "usageGeometryLayerSourceId=E8C56133-9C21-49C8-A2D4-CB9A7CB33876"
       ],
       "sourceIds": [
         "6AA9A79F-FF72-4274-B908-DBE775E206A6"
@@ -2855,7 +2889,12 @@
         "style.shadows[9].offsetX": 1.25,
         "style.shadows[9].offsetY": 0,
         "style.shadows[9].spread": -0.75,
-        "style.sourceId": "C08695D5-EA02-4FD4-A35B-1F53BED80A53"
+        "style.sourceId": "C08695D5-EA02-4FD4-A35B-1F53BED80A53",
+        "usage.corners.radii[0]": 3.402823466385289e+38,
+        "usage.corners.smoothing": 0.6,
+        "usage.corners.style": 1,
+        "usage.frame.height": 48,
+        "usage.frame.width": 80
       }
     },
     {
@@ -3860,7 +3899,15 @@
         "exactStyleName=Liquid Glass/Light/Regular - Small",
         "candidateResolution=singleExactSourceStyle",
         "usageRoot=Liquid Glass - Over Light Backgrounds",
-        "usageCount=6"
+        "usageCount=6",
+        "usageGeometrySelector=name:BG - Small",
+        "usageGeometryAgreementCount=6",
+        "usageGeometryLayerSourceId=195F6B64-567C-4B76-8D9D-51465E42DC9D",
+        "usageGeometryLayerSourceId=63A89B8D-B7EB-465B-98E0-0648CEDAFB42",
+        "usageGeometryLayerSourceId=63FE4FC6-B326-40BC-B28F-EDF8788F068E",
+        "usageGeometryLayerSourceId=B619C62B-138E-4B08-BA66-461F10E1D7E2",
+        "usageGeometryLayerSourceId=D0F79AB4-FC97-4E65-88E0-479C43B3E1B9",
+        "usageGeometryLayerSourceId=D46B83E1-A26F-4A7E-B740-16DA9B281A5C"
       ],
       "sourceIds": [
         "A44272CF-223C-4E6B-97BC-4DEC8A291E9F"
@@ -4187,7 +4234,12 @@
         "style.shadows[9].offsetX": 0,
         "style.shadows[9].offsetY": 8,
         "style.shadows[9].spread": 0,
-        "style.sourceId": "74DA16C1-BE7D-4AAB-BEDC-2B187B76CE54"
+        "style.sourceId": "74DA16C1-BE7D-4AAB-BEDC-2B187B76CE54",
+        "usage.corners.radii[0]": 3.402823466385289e+38,
+        "usage.corners.smoothing": 0.6,
+        "usage.corners.style": 1,
+        "usage.frame.height": 48,
+        "usage.frame.width": 80
       }
     },
     {
